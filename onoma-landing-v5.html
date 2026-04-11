@@ -448,6 +448,7 @@ img { display:block; }
 </style>
 <script src="hanja-db.js"></script>
 <script src="suri-db.js"></script>
+<script src="manse-db.js"></script>
 <body>
 
 <!-- NAV -->
@@ -508,7 +509,7 @@ img { display:block; }
         <span style="display:block;width:28px;height:1px;background:var(--green);opacity:0.5;"></span>
       </div>
       <h2 class="section-title">3분 이름 1차 진단</h2>
-      <p class="section-sub" style="margin:0 auto;text-align:center;">한글 또는 한자로 이름을 입력하면 수리 사격(원격·형격·이격·정격)을 바탕으로 개명 필요도를 진단합니다.</p>
+      <p class="section-sub" style="margin:0 auto;text-align:center;">이름 수리 사격과 사주 오행을 함께 분석해 개명 필요도를 진단합니다.</p>
     </div>
     <div class="diag-container reveal">
       <div class="trust-bar">
@@ -518,23 +519,40 @@ img { display:block; }
 
       <!-- 입력 폼 -->
       <div style="margin-bottom:20px;">
+        <!-- 생년월일 -->
+        <div class="form-row" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label class="form-label">생년월일 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(사주 오행 분석용)</span></label>
+            <input class="form-input" id="diag-birth" type="text" placeholder="예: 1990-05-15">
+          </div>
+          <div class="form-group">
+            <label class="form-label">성별</label>
+            <select class="form-select" id="diag-gender">
+              <option value="">선택</option>
+              <option value="남성">남성</option>
+              <option value="여성">여성</option>
+            </select>
+          </div>
+        </div>
+        <!-- 한글 이름 -->
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">한글 이름 입력</label>
+          <label class="form-label">한글 이름 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(자모 획수 기준)</span></label>
           <div style="display:flex;gap:10px;">
             <input class="form-input" id="diag-hangul" type="text" placeholder="예: 이지윤" maxlength="6" style="flex:1;" oninput="onHangulInput()">
             <button class="btn-primary" onclick="runSuriDiag()" style="padding:13px 22px;white-space:nowrap;font-size:13px;">진단하기</button>
           </div>
-          <div style="font-size:12px;color:var(--ink3);margin-top:6px;">한글 2~4글자 입력 → 자동으로 수리 계산됩니다</div>
         </div>
-        <div class="form-group">
-          <label class="form-label">또는 한자 직접 입력</label>
+        <!-- 한자 이름 -->
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--green-dark);font-weight:400;">✓ 정확한 수리 계산</span></label>
           <div style="display:flex;gap:10px;">
             <input class="form-input" id="diag-hanja" type="text" placeholder="예: 李智潤" maxlength="5" style="flex:1;">
-            <button class="btn-outline" onclick="runHanjaDiag()" style="padding:13px 22px;white-space:nowrap;font-size:13px;">한자 진단</button>
+            <button class="btn-primary" onclick="runHanjaDiag()" style="padding:13px 22px;white-space:nowrap;font-size:13px;">한자 진단</button>
           </div>
-          <div style="font-size:12px;color:var(--ink3);margin-top:6px;">한자 DB에 있는 글자만 분석 가능합니다</div>
+          <div style="font-size:12px;color:var(--ink3);margin-top:6px;">생년월일 입력 시 사주 오행까지 함께 분석됩니다</div>
         </div>
-        <div class="form-group" style="margin-top:14px;">
+        <!-- 고민 -->
+        <div class="form-group">
           <label class="form-label">현재 가장 고민되는 부분 (선택)</label>
           <textarea class="form-textarea" id="diag-concern" placeholder="예: 직장, 관계, 재정, 건강 등 가장 마음에 걸리는 것을 적어주세요" style="min-height:70px;"></textarea>
         </div>
@@ -551,7 +569,9 @@ img { display:block; }
           <!-- 수리 사격 그리드 -->
           <div id="suri-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;"></div>
           <!-- 오행 흐름 -->
-          <div id="ohang-row" style="margin-bottom:18px;"></div>
+          <div id="ohang-row" style="margin-bottom:14px;"></div>
+          <!-- 사주 오행 분석 -->
+          <div id="saju-row" style="display:none;margin-bottom:18px;background:var(--green-mist);border:1px solid rgba(123,174,90,0.15);padding:16px 18px;border-radius:2px;"></div>
           <!-- 운세 포인트 -->
           <ul class="result-points" id="result-points"></ul>
           <!-- 블러 박스 -->
@@ -1136,101 +1156,96 @@ function setDiagTab(idx) {
   document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'});
 }
 
-/* ── 수리 진단 핵심 로직 ── */
-const CHOSUNG_OHANG = {
+/* ── 수리 진단 — suri-db.js + manse-db.js 직접 사용 ── */
+
+const CHOSUNG_OHANG_MAP = {
   'ㄱ':'木','ㄲ':'木','ㅋ':'木',
-  'ㄴ':'火','ㄷ':'Fire','ㄸ':'火','ㄹ':'火','ㅌ':'火',
-  'ㄴ':'火','ㄷ':'火','ㅌ':'火',
+  'ㄴ':'火','ㄷ':'火','ㄸ':'火','ㄹ':'火','ㅌ':'火',
   'ㅇ':'土','ㅎ':'土',
   'ㅅ':'金','ㅆ':'金','ㅈ':'金','ㅉ':'金','ㅊ':'金',
   'ㅁ':'水','ㅂ':'水','ㅃ':'水','ㅍ':'水'
 };
-const ONAME_K = {'木':'목(木)','火':'화(火)','土':'토(土)','金':'금(金)','水':'수(水)'};
-const OEMO_K  = {'木':'🌿','火':'🔥','土':'⛰','金':'⚡','水':'💧'};
+const CHO_LIST_D = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const ONAME_D = {'木':'목(木)','火':'화(火)','土':'토(土)','金':'금(金)','水':'수(水)'};
+const OEMO_D  = {'木':'🌿','火':'🔥','土':'⛰','金':'⚡','水':'💧'};
+const GEN_D = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
+const KIL_D = {'木':'土','火':'金','土':'水','金':'木','水':'火'};
 
-// 한글 자모 획수 (광미명성학 기준)
-const JAMO_STROKE = {
-  'ㄱ':2,'ㄴ':2,'ㄷ':3,'ㄹ':5,'ㅁ':4,'ㅂ':4,'ㅅ':2,'ㅇ':2,'ㅈ':3,'ㅊ':4,'ㅋ':3,'ㅌ':4,'ㅍ':4,'ㅎ':3,
-  'ㄲ':4,'ㄸ':6,'ㅃ':8,'ㅆ':4,'ㅉ':6,
-  'ㅏ':2,'ㅐ':3,'ㅑ':3,'ㅒ':4,'ㅓ':2,'ㅔ':3,'ㅕ':3,'ㅖ':4,'ㅗ':2,'ㅘ':4,'ㅙ':5,'ㅚ':3,
-  'ㅛ':3,'ㅜ':2,'ㅝ':4,'ㅞ':5,'ㅟ':3,'ㅠ':3,'ㅡ':1,'ㅢ':2,'ㅣ':1,
-  'ㄳ':4,'ㄵ':5,'ㄶ':5,'ㄺ':7,'ㄻ':9,'ㄼ':9,'ㄽ':7,'ㄾ':9,'ㄿ':8,'ㅀ':8,'ㅄ':6
-};
-const CHO_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-const JUNG_LIST = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
-const JONG_LIST = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+// 흉괘 목록 (상담 요망 기준)
+const흉괘_상담 = ['화택규','산지박','산풍고','천수송'];
 
-function hangulStroke(ch) {
-  const code = ch.charCodeAt(0);
-  if (code < 0xAC00 || code > 0xD7A3) return 1;
-  const idx = code - 0xAC00;
-  const jong = idx % 28;
-  const jung = Math.floor(idx / 28) % 21;
-  const cho  = Math.floor(idx / 28 / 21);
-  let s = (JAMO_STROKE[CHO_LIST[cho]]||1) + (JAMO_STROKE[JUNG_LIST[jung]]||1);
-  if (jong > 0) s += (JAMO_STROKE[JONG_LIST[jong]]||1);
-  return s;
-}
-
-function getChoOhang(ch) {
+function getChoOhangD(ch) {
   const code = ch.charCodeAt(0);
   if (code < 0xAC00 || code > 0xD7A3) return '?';
   const cho = Math.floor((code - 0xAC00) / 28 / 21);
-  const CHOSUNG_MAP = {'ㄱ':'木','ㄲ':'木','ㅋ':'木','ㄴ':'火','ㄷ':'火','ㄸ':'火','ㄹ':'火','ㅌ':'火','ㅇ':'土','ㅎ':'土','ㅅ':'金','ㅆ':'金','ㅈ':'金','ㅉ':'金','ㅊ':'金','ㅁ':'水','ㅂ':'水','ㅃ':'水','ㅍ':'水'};
-  return CHOSUNG_MAP[CHO_LIST[cho]] || '?';
+  return CHOSUNG_OHANG_MAP[CHO_LIST_D[cho]] || '?';
+}
+function getOhangFromReadingD(reading) {
+  return reading ? getChoOhangD(reading[0]) : '?';
 }
 
-function normSuri(n) { while(n > 81) n -= 80; return n; }
-
-function calcHangulSuri(name) {
-  const chars = [...name.trim()];
-  if (chars.length < 2) return null;
-  const strokes = chars.map(hangulStroke);
-  const sS = strokes[0];
-  const nS = strokes.slice(1);
-  return {
-    won:   normSuri(nS[nS.length-1]),
-    hyung: normSuri(sS + nS[0]),
-    yi:    normSuri(nS.reduce((a,b)=>a+b,0)),
-    jung:  normSuri(sS + nS.reduce((a,b)=>a+b,0)),
-    ohang: chars.map(getChoOhang),
-    strokes, chars
-  };
+/* 오행 배열 상극 여부 */
+function hasOhangSanggeuk(ohangArr) {
+  for (let i = 0; i < ohangArr.length - 1; i++) {
+    const a = ohangArr[i], b = ohangArr[i+1];
+    if (a==='?' || b==='?') continue;
+    if (KIL_D[a]===b || KIL_D[b]===a) return true;
+  }
+  return false;
 }
 
-function calcHanjaSuri(name) {
-  // hanja-db.js 의 HANJA_DB(=Rt) 사용
+/* 주역 괘 이름이 흉괘인지 */
+function isHyungGua(guaObj) {
+  if (!guaObj) return false;
+  const names = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean).map(g => g.name);
+  return names.some(n =>흉괘_상담.includes(n));
+}
+
+/* wuxing 문자열에서 오행 추출 ("木火" → ['木','火']) */
+function parseWuxing(str) {
+  if (!str || str === '-') return [];
+  const map = {'木':1,'火':1,'土':1,'金':1,'水':1};
+  return [...str].filter(c => map[c]);
+}
+
+/* 사주 오행 분포 계산 */
+function getSajuOhangDist(sajuResult) {
+  const dist = {木:0, 火:0, 土:0, 金:0, 水:0};
+  const wx = sajuResult.wuxing;
+  ['year','month','day','time'].forEach(k => {
+    parseWuxing(wx[k]).forEach(o => { if(dist[o]!==undefined) dist[o]++; });
+  });
+  return dist;
+}
+
+/* 사주에서 부족 오행 (0개) */
+function getDeficientOhang(dist) {
+  return Object.entries(dist).filter(([o,n]) => n===0).map(([o]) => o);
+}
+
+/* 이름 오행이 부족 오행을 보완하는지 */
+function nameCompensates(nameOhang, deficient) {
+  return deficient.every(o => nameOhang.includes(o));
+}
+
+/* 한자 수리 계산 */
+function calcHanjaSuriLanding(name) {
   const db = (typeof Rt !== 'undefined') ? Rt : (typeof HANJA_DB !== 'undefined' ? HANJA_DB : null);
   if (!db) return null;
   const chars = [...name.trim()];
   if (chars.length < 2) return null;
   const strokes = chars.map(c => db[c] ? db[c].s : null);
   if (strokes.some(s => s === null)) return null;
-  const sS = strokes[0];
-  const nS = strokes.slice(1);
-  const getOhangFromReading = (reading) => {
-    if (!reading) return '?';
-    return getChoOhang(reading[0]) || '?';
-  };
+  const sS = strokes[0], nS = strokes.slice(1);
+  const norm = n => { while(n > 81) n -= 80; return n; };
   return {
-    won:   normSuri(nS[nS.length-1]),
-    hyung: normSuri(sS + nS[0]),
-    yi:    normSuri(nS.reduce((a,b)=>a+b,0)),
-    jung:  normSuri(sS + nS.reduce((a,b)=>a+b,0)),
-    ohang: chars.map(c => db[c] ? getOhangFromReading(db[c].e) : '?'),
-    strokes, chars
+    chars, strokes,
+    won:   norm(nS.reduce((a,b) => a+b, 0)),
+    hyung: norm(sS + nS[0]),
+    yi:    norm(sS + nS[nS.length-1]),
+    jung:  norm(sS + nS.reduce((a,b) => a+b, 0)),
+    ohang: chars.map(c => db[c] ? getOhangFromReadingD(db[c].e) : '?'),
   };
-}
-
-function getSuriInfo(n) {
-  // suri-db.js 의 SURI 사용
-  if (typeof SURI !== 'undefined' && SURI[n]) return SURI[n];
-  // fallback 간이 판단
-  const good = [1,3,5,6,11,13,15,16,21,23,24,25,31,32,33,35,37,39,41,45,47,48,52,57,61,63,65,67,68];
-  const bad  = [4,9,10,14,19,20,22,26,28,34,36,40,44,46,54,56,59,60,64,66,69,70,71,72,73,74,75,76,77,78,79,80,81];
-  if (good.includes(n)) return {n:'길수(吉數)', l:4, d:'좋은 기운이 흐르는 수입니다.'};
-  if (bad.includes(n))  return {n:'흉수(凶數)', l:2, d:'주의가 필요한 수입니다.'};
-  return {n:'중수(中數)', l:3, d:'평범한 흐름의 수입니다.'};
 }
 
 function suriColorClass(l) {
@@ -1239,87 +1254,218 @@ function suriColorClass(l) {
   return 'suri-bad';
 }
 
-function renderDiagResult(name, suri, mode) {
-  // 수리 점수 계산 (정격 가중치 가장 높음)
-  const jInfo = getSuriInfo(suri.jung);
-  const hInfo = getSuriInfo(suri.hyung);
-  const yInfo = getSuriInfo(suri.yi);
-  const wInfo = getSuriInfo(suri.won);
-  const avgLevel = (jInfo.l*3 + hInfo.l*3 + yInfo.l*2 + wInfo.l*2) / 10;
+/* ── 생년월일 파싱 ── */
+function parseBirth(str) {
+  if (!str) return null;
+  const m = str.replace(/[.\s년월일]/g, '-').match(/(\d{4})-?(\d{1,2})-?(\d{1,2})/);
+  if (!m) return null;
+  return { year: +m[1], month: +m[2], day: +m[3] };
+}
 
-  // 개명 필요도 판정
-  let grade, gradeClass, urgencyMsg;
-  if (avgLevel >= 3.5) {
-    grade = '개명 불필요';
-    gradeClass = 'grade-필요없음';
-    urgencyMsg = '현재 이름의 수리 구조는 전반적으로 <strong>안정적인 흐름</strong>을 보이고 있습니다. 다만 이름이 좋아도 현재 삶의 사이클이나 오행 흐름과 충돌하는 시기가 있을 수 있습니다. 보다 세밀한 해석은 전문 상담을 통해 확인해보세요.';
-  } else if (avgLevel >= 2.5) {
-    grade = '개명 고려';
-    gradeClass = 'grade-고려';
-    urgencyMsg = '현재 이름에서 <strong>보완이 필요한 수리 구조</strong>가 감지되었습니다. 삶의 특정 흐름에서 반복적인 걸림돌이 생길 수 있습니다. 전문 상담을 통해 정확한 원인을 파악해보시길 권합니다.';
-  } else {
-    grade = '개명 필요';
-    gradeClass = 'grade-필요';
-    urgencyMsg = '⚠️ 현재 이름의 수리 구조에서 <strong>흉수(凶數)가 복수 발견</strong>되었습니다. 이 상태를 방치하면 관계·재정·중요한 선택의 순간에서 반복적인 문제가 발생할 가능성이 있습니다. <strong style="color:var(--green-dark);">개명을 진지하게 검토하시거나 전문 상담을 통해 정확한 원인을 파악하시길 강하게 권합니다.</strong>';
+/* ── 진단 등급 판정 ── */
+function judgeGrade(suri, guaObj, sajuDist, nameOhang) {
+  const sI = n => SURI[n] || {n:'특수수',l:3,d:''};
+  const isHyung = n => sI(n).l <= 1;  // l=1 → 흉수
+
+  // 수리 흉수 체크
+  const jungHyung  = isHyung(suri.jung);
+  const wonHyung   = isHyung(suri.won);
+  const hyungHyung = isHyung(suri.hyung);
+  const yiHyung    = isHyung(suri.yi);
+  const subHyungCount = [wonHyung, hyungHyung, yiHyung].filter(Boolean).length;
+
+  // 오행 상극 여부
+  const ohangSanggeuk = hasOhangSanggeuk(nameOhang.filter(o=>o!=='?'));
+
+  // 사주 부족 오행
+  const deficient = sajuDist ? getDeficientOhang(sajuDist) : [];
+  const sajuDeficient = deficient.length > 0;
+  const nameCompens = nameCompensates(nameOhang, deficient);
+
+  // 흉괘 여부
+  const guaHyung = isHyungGua(guaObj);
+
+  // ── 판정 로직 ──
+  // 1. 개명 권유: 오행 상극 + 정격 흉수 + 사주 오행 부족 (미보완)
+  if (ohangSanggeuk && jungHyung && sajuDeficient && !nameCompens) {
+    return { grade:'개명 권유', cls:'grade-필요', level:4 };
   }
+  // 2. 개명 권유(2): 오행 상극 + 정격 흉수 (사주 없어도)
+  if (ohangSanggeuk && jungHyung) {
+    return { grade:'개명 권유', cls:'grade-필요', level:4 };
+  }
+  // 3. 개명 고려: 정격 흉수 OR 오행 상극 OR 원·형·이격 중 1개 이상 흉수
+  if (jungHyung || ohangSanggeuk || subHyungCount >= 1) {
+    return { grade:'개명 고려', cls:'grade-고려', level:3 };
+  }
+  // 4. 상담 요망: 수리는 길수인데 흉괘
+  if (guaHyung) {
+    return { grade:'상담 요망', cls:'grade-고려', level:2 };
+  }
+  // 5. 애매 — 상담: 사주 부족 오행이 이름으로 미보완
+  if (sajuDeficient && !nameCompens) {
+    return { grade:'애매 — 상담 권장', cls:'grade-고려', level:2 };
+  }
+  // 6. 개명 불필요
+  return { grade:'개명 불필요', cls:'grade-필요없음', level:1 };
+}
 
-  // 결과 박스 표시
-  document.getElementById('result-title').textContent = `"${name}" 수리 진단 결과`;
+/* ── 판정별 안내 메시지 ── */
+function getUrgencyMsg(gradeObj, suri, ohangArr, sajuDist, guaObj) {
+  const sI = n => SURI[n] || {n:'특수수',l:3,d:''};
+  const deficient = sajuDist ? getDeficientOhang(sajuDist) : [];
+
+  if (gradeObj.level === 4) {
+    let reasons = [];
+    if (hasOhangSanggeuk(ohangArr.filter(o=>o!=='?'))) reasons.push('이름 오행 상극');
+    if (sI(suri.jung).l <= 1) reasons.push(`정격 ${suri.jung}수(흉수)`);
+    if (deficient.length) reasons.push(`사주 오행 부족(${deficient.map(o=>ONAME_D[o]).join('·')})`);
+    return `⚠️ <strong>개명을 진지하게 검토하실 필요가 있습니다.</strong><br>
+      감지된 문제: ${reasons.join(', ')}<br>
+      이 상태를 방치하면 관계·재정·중요한 결정의 순간에서 반복적인 걸림돌이 생길 가능성이 높습니다.
+      <strong style="color:var(--green-dark);">전문 상담을 통해 정확한 원인과 개명 방향을 함께 점검해보시길 강하게 권합니다.</strong>`;
+  }
+  if (gradeObj.level === 3) {
+    const issues = [];
+    if (sI(suri.jung).l <= 1) issues.push(`정격(${suri.jung}수) 흉수`);
+    if (hasOhangSanggeuk(ohangArr.filter(o=>o!=='?'))) issues.push('오행 상극');
+    if (sI(suri.won).l<=1||sI(suri.hyung).l<=1||sI(suri.yi).l<=1) issues.push('원·형·이격 중 흉수 포함');
+    return `현재 이름에서 <strong>보완이 필요한 구조</strong>가 감지되었습니다(${issues.join(', ')}).<br>
+      삶의 특정 흐름에서 반복적인 걸림돌이 생길 수 있습니다. 전문 상담을 통해 정확한 원인을 파악해보시길 권합니다.`;
+  }
+  if (gradeObj.level === 2 && isHyungGua(guaObj)) {
+    const names = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean).filter(g=>흉괘_상담.includes(g.name)).map(g=>g.name);
+    return `수리 사격은 길수이지만 <strong>주역괘에서 주의가 필요한 괘</strong>(${names.join(', ')})가 나타났습니다.<br>
+      이름 자체보다 삶의 특정 국면에서 충돌이 생길 수 있으니 전문 상담을 통해 점검해보세요.`;
+  }
+  if (gradeObj.level === 2) {
+    return `수리와 오행은 무난하나, <strong>사주에서 부족한 오행(${deficient.map(o=>ONAME_D[o]).join('·')})이 이름으로 충분히 보완되지 않고</strong> 있습니다.<br>
+      이름이 막힌 느낌이 드신다면 전문 상담을 통해 정확히 확인해보세요.`;
+  }
+  return `현재 이름의 수리 구조는 전반적으로 <strong>안정적인 흐름</strong>을 보이고 있습니다.<br>
+    다만 삶의 사이클이나 현재 고민과의 연관성은 전문 상담을 통해 더 세밀하게 확인하실 수 있습니다.`;
+}
+
+/* ── 메인 렌더 함수 ── */
+function renderDiagResult(name, suri, sajuResult) {
+  const sI = n => SURI[n] || {n:'특수수',l:3,d:'독특한 기운의 수'};
+  const jInfo=sI(suri.jung), hInfo=sI(suri.hyung), yInfo=sI(suri.yi), wInfo=sI(suri.won);
+
+  // 오행
+  const ohangArr = suri.ohang || suri.chars.map(getChoOhangD);
+
+  // 주역괘
+  let guaObj = null;
+  try {
+    if (suri.strokes && suri.strokes.length >= 2) {
+      const sS = suri.strokes[0], nS = suri.strokes.slice(1);
+      guaObj = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
+    }
+  } catch(e) {}
+
+  // 사주 오행 분포
+  const sajuDist = sajuResult ? getSajuOhangDist(sajuResult) : null;
+
+  // 등급 판정
+  const gradeObj = judgeGrade(suri, guaObj, sajuDist, ohangArr);
+
+  // 헤더
+  document.getElementById('result-title').textContent = `"${name}" 진단 결과`;
   const gradeEl = document.getElementById('result-grade');
-  gradeEl.textContent = grade;
-  gradeEl.className = 'result-grade ' + gradeClass;
+  gradeEl.textContent = gradeObj.grade;
+  gradeEl.className = 'result-grade ' + gradeObj.cls;
+
+  // 획수
+  const strokeInfo = suri.chars.map((c,i) => `${c}(${suri.strokes[i]}획)`).join(' + ');
 
   // 수리 사격 그리드
-  document.getElementById('suri-grid').innerHTML = [
-    {k:'원격(元格)', v:suri.won,  i:wInfo},
-    {k:'형격(亨格)', v:suri.hyung,i:hInfo},
-    {k:'이격(利格)', v:suri.yi,   i:yInfo},
-    {k:'정격(貞格)', v:suri.jung, i:jInfo},
-  ].map(g => `<div class="suri-item">
-    <div class="suri-label">${g.k}</div>
-    <div class="suri-num ${suriColorClass(g.i.l)}">${g.v}</div>
-    <div class="suri-name">${g.i.n}</div>
-    <div class="suri-desc">${g.i.d}</div>
-  </div>`).join('');
+  document.getElementById('suri-grid').innerHTML =
+    `<div style="grid-column:1/-1;font-size:12px;color:var(--ink3);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(123,174,90,0.1);">획수: ${strokeInfo}</div>` +
+    [{k:'원격(元格)',v:suri.won,i:wInfo,d:'이름 전체 합'},
+     {k:'형격(亨格)',v:suri.hyung,i:hInfo,d:'성+첫글자'},
+     {k:'이격(利格)',v:suri.yi,i:yInfo,d:'성+끝글자'},
+     {k:'정격(貞格)',v:suri.jung,i:jInfo,d:'성+이름전체'}
+    ].map(g=>`<div class="suri-item">
+      <div class="suri-label">${g.k}</div>
+      <div style="font-size:10px;color:var(--ink-faint);margin-bottom:4px;">${g.d}</div>
+      <div class="suri-num ${suriColorClass(g.i.l)}">${g.v}</div>
+      <div class="suri-name">${g.i.n}</div>
+      <div class="suri-desc">${g.i.d}</div>
+    </div>`).join('');
 
   // 오행 흐름
-  const ohangArr = suri.ohang;
-  const GEN = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
-  const KIL = {'木':'土','火':'金','土':'水','金':'木','水':'火'};
-  let ohangHtml = '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px;">';
-  ohangArr.forEach((o, i) => {
-    if (o === '?') return;
-    ohangHtml += `<span class="ohang-chip-diag ${o}">${OEMO_K[o]||''} ${ONAME_K[o]||o}</span>`;
-    if (i < ohangArr.length - 1) {
-      const next = ohangArr[i+1];
-      if (next && next !== '?') {
-        let rel = '→';
-        if (GEN[o]===next) rel = '→ 상생 ✨';
-        else if (KIL[o]===next) rel = '→ 상극 ⚔️';
-        ohangHtml += `<span style="font-size:11px;color:var(--ink3);">${rel}</span>`;
-      }
+  let ohangHtml = '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px;">';
+  ohangArr.forEach((o,i) => {
+    if (o==='?') return;
+    ohangHtml += `<span class="ohang-chip-diag ${o}">${OEMO_D[o]||''} ${ONAME_D[o]||o}</span>`;
+    if (i<ohangArr.length-1 && ohangArr[i+1]!=='?') {
+      const next=ohangArr[i+1];
+      let rel='→';
+      if(GEN_D[o]===next) rel='→ 상생 ✨';
+      else if(KIL_D[o]===next) rel='→ 상극 ⚔️';
+      ohangHtml+=`<span style="font-size:11px;color:var(--ink3);">${rel}</span>`;
     }
   });
-  ohangHtml += '</div>';
-  ohangHtml += `<div style="font-size:11px;color:var(--ink3);">오행: ${ohangArr.filter(o=>o!=='?').map(o=>ONAME_K[o]||o).join(' → ')}</div>`;
+  ohangHtml += `</div><div style="font-size:11px;color:var(--ink3);">오행: ${ohangArr.filter(o=>o!=='?').map(o=>ONAME_D[o]||o).join(' → ')}</div>`;
   document.getElementById('ohang-row').innerHTML = ohangHtml;
 
-  // 운세 포인트
+  // 사주 오행 분포 표시
+  const sajuEl = document.getElementById('saju-row');
+  if (sajuDist && sajuResult) {
+    const deficient = getDeficientOhang(sajuDist);
+    const distHtml = Object.entries(sajuDist).map(([o,n])=>
+      `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:12px;${n===0?'color:#8B2A20;font-weight:500;':''}">${OEMO_D[o]} ${ONAME_D[o]}: ${n}개${n===0?' ⚠️부족':''}</span>`
+    ).join('');
+    const sajuStr = `${sajuResult.year.full} ${sajuResult.month.full} ${sajuResult.day.full}${sajuResult.time.full!=='모름'?' '+sajuResult.time.full:''}`;
+    sajuEl.innerHTML = `
+      <div style="font-size:11px;letter-spacing:0.12em;color:var(--green-dark);margin-bottom:8px;">사주(四柱) 오행 분포 — ${sajuStr}</div>
+      <div style="margin-bottom:6px;">${distHtml}</div>
+      ${deficient.length?`<div style="font-size:12px;color:#8B2A20;">부족 오행: ${deficient.map(o=>ONAME_D[o]).join(', ')} — 이름 오행으로 보완 ${nameCompensates(ohangArr,deficient)?'✅ 됨':'❌ 안 됨'}</div>`:'<div style="font-size:12px;color:var(--green-dark);">✅ 오행 균형 양호</div>'}`;
+    sajuEl.style.display = 'block';
+  } else {
+    sajuEl.style.display = 'none';
+  }
+
+  // 주역 괘 표시
+  let guaHtml = '';
+  if (guaObj) {
+    const guaNames = [
+      guaObj.원격 ? `원격: ${guaObj.원격.name}(${guaObj.원격.meaning})` : '',
+      guaObj.이격 ? `이격: ${guaObj.이격.name}(${guaObj.이격.meaning})` : '',
+      guaObj.정격 ? `정격: ${guaObj.정격.name}(${guaObj.정격.meaning})` : '',
+    ].filter(Boolean);
+    guaHtml = `<li><span class="point-icon">☯</span><span style="font-size:12px;">${guaNames.join(' / ')}</span></li>`;
+  }
+
+  // 포인트
   const concern = document.getElementById('diag-concern').value.trim();
   document.getElementById('result-points').innerHTML = [
     `<li><span class="point-icon">📊</span><span>정격(종합운) ${suri.jung}수 — ${jInfo.n}: ${jInfo.d}</span></li>`,
     `<li><span class="point-icon">💼</span><span>형격(직업·사회운) ${suri.hyung}수 — ${hInfo.n}</span></li>`,
     `<li><span class="point-icon">🔄</span><span>이격(관계·내면운) ${suri.yi}수 — ${yInfo.n}</span></li>`,
-    concern ? `<li><span class="point-icon">💬</span><span>고민 "${concern}" — 수리 구조와의 연관성은 전문 상담에서 확인하실 수 있습니다.</span></li>` : '',
+    `<li><span class="point-icon">🌟</span><span>원격(이름기운) ${suri.won}수 — ${wInfo.n}</span></li>`,
+    guaHtml,
+    concern ? `<li><span class="point-icon">💬</span><span>고민 "${concern}" — 수리·사주 연관성은 전문 상담에서 확인하실 수 있습니다.</span></li>` : '',
   ].join('');
 
-  document.getElementById('urgency-text').innerHTML = urgencyMsg;
+  document.getElementById('urgency-text').innerHTML = getUrgencyMsg(gradeObj, suri, ohangArr, sajuDist, guaObj);
   document.getElementById('result-box').style.display = 'block';
-  setTimeout(() => document.getElementById('result-box').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+  setTimeout(()=>document.getElementById('result-box').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+/* ── 사주 계산 공통 ── */
+function getSaju() {
+  const birthStr = document.getElementById('diag-birth').value.trim();
+  const gender = document.getElementById('diag-gender').value;
+  if (!birthStr) return null;
+  const b = parseBirth(birthStr);
+  if (!b) return null;
+  try {
+    return calcSaju(b.year, b.month, b.day, null, null, false, gender||'남성');
+  } catch(e) { return null; }
 }
 
 function onHangulInput() {
-  // 한글 입력 시 한자 필드 초기화
   document.getElementById('diag-hanja').value = '';
 }
 
@@ -1327,20 +1473,22 @@ function runSuriDiag() {
   const name = document.getElementById('diag-hangul').value.trim();
   if (!name || name.length < 2) { alert('이름을 2글자 이상 입력해주세요.'); return; }
   const suri = calcHangulSuri(name);
-  if (!suri) { alert('이름 분석에 실패했습니다. 다시 입력해주세요.'); return; }
-  renderDiagResult(name, suri, 'hangul');
+  if (!suri) { alert('이름 분석에 실패했습니다.'); return; }
+  suri.ohang = suri.chars.map(getChoOhangD);
+  const sajuResult = getSaju();
+  renderDiagResult(name, suri, sajuResult);
 }
 
 function runHanjaDiag() {
   const name = document.getElementById('diag-hanja').value.trim();
   if (!name || name.length < 2) { alert('한자 이름을 2글자 이상 입력해주세요.'); return; }
-  const suri = calcHanjaSuri(name);
-  if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다. 한글로 먼저 시도해보세요.'); return; }
-  renderDiagResult(name, suri, 'hanja');
+  const suri = calcHanjaSuriLanding(name);
+  if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다.'); return; }
+  const sajuResult = getSaju();
+  renderDiagResult(name, suri, sajuResult);
 }
 
 async function runDiagnosis(tabIdx) {
-  // 구버전 호환 (서비스 카드에서 호출하는 경우)
   document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'});
 }
 
