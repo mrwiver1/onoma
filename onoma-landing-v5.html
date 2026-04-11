@@ -519,10 +519,10 @@ img { display:block; }
 
       <!-- 입력 폼 -->
       <div style="margin-bottom:20px;">
-        <!-- 생년월일 -->
+        <!-- 생년월일 + 성별 -->
         <div class="form-row" style="margin-bottom:14px;">
           <div class="form-group">
-            <label class="form-label">생년월일 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(사주 오행 분석용)</span></label>
+            <label class="form-label">생년월일 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(사주 오행 분석용 · 선택)</span></label>
             <input class="form-input" id="diag-birth" type="text" placeholder="예: 1990-05-15">
           </div>
           <div class="form-group">
@@ -537,25 +537,23 @@ img { display:block; }
         <!-- 한글 이름 -->
         <div class="form-group" style="margin-bottom:14px;">
           <label class="form-label">한글 이름 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(자모 획수 기준)</span></label>
-          <div style="display:flex;gap:10px;">
-            <input class="form-input" id="diag-hangul" type="text" placeholder="예: 이지윤" maxlength="6" style="flex:1;" oninput="onHangulInput()">
-            <button class="btn-primary" onclick="runSuriDiag()" style="padding:13px 22px;white-space:nowrap;font-size:13px;">진단하기</button>
-          </div>
+          <input class="form-input" id="diag-hangul" type="text" placeholder="예: 이지윤" maxlength="6">
         </div>
         <!-- 한자 이름 -->
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--green-dark);font-weight:400;">✓ 정확한 수리 계산</span></label>
-          <div style="display:flex;gap:10px;">
-            <input class="form-input" id="diag-hanja" type="text" placeholder="예: 李智潤" maxlength="5" style="flex:1;">
-            <button class="btn-primary" onclick="runHanjaDiag()" style="padding:13px 22px;white-space:nowrap;font-size:13px;">한자 진단</button>
-          </div>
-          <div style="font-size:12px;color:var(--ink3);margin-top:6px;">생년월일 입력 시 사주 오행까지 함께 분석됩니다</div>
+          <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--green-dark);font-weight:400;">✓ 입력 시 정확한 수리 계산</span></label>
+          <input class="form-input" id="diag-hanja" type="text" placeholder="예: 李智潤 (선택 — 한자 있으면 더 정확합니다)" maxlength="5">
         </div>
         <!-- 고민 -->
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom:20px;">
           <label class="form-label">현재 가장 고민되는 부분 (선택)</label>
           <textarea class="form-textarea" id="diag-concern" placeholder="예: 직장, 관계, 재정, 건강 등 가장 마음에 걸리는 것을 적어주세요" style="min-height:70px;"></textarea>
         </div>
+        <!-- 진단 버튼 하나 -->
+        <button class="btn-primary" onclick="runDiag()" style="width:100%;padding:17px;font-size:14px;font-weight:500;letter-spacing:0.06em;">
+          내 이름 수리 진단하기
+        </button>
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px;text-align:center;">한자 입력 시 더 정확한 수리 계산 · 생년월일 입력 시 사주 오행 함께 분석</div>
       </div>
 
       <!-- 결과 박스 -->
@@ -1465,32 +1463,43 @@ function getSaju() {
   } catch(e) { return null; }
 }
 
-function onHangulInput() {
-  document.getElementById('diag-hanja').value = '';
-}
+/* ── 통합 진단 버튼 함수 ── */
+function runDiag() {
+  const hangul = document.getElementById('diag-hangul').value.trim();
+  const hanja  = document.getElementById('diag-hanja').value.trim();
 
-function runSuriDiag() {
-  const name = document.getElementById('diag-hangul').value.trim();
-  if (!name || name.length < 2) { alert('이름을 2글자 이상 입력해주세요.'); return; }
-  const suri = calcHangulSuri(name);
-  if (!suri) { alert('이름 분석에 실패했습니다.'); return; }
-  suri.ohang = suri.chars.map(getChoOhangD);
+  if (!hangul && !hanja) {
+    alert('한글 이름을 입력해주세요.'); return;
+  }
+
+  let suri = null;
+  let displayName = '';
+
+  // 한자 우선 (더 정확)
+  if (hanja && hanja.length >= 2) {
+    suri = calcHanjaSuriLanding(hanja);
+    if (!suri) {
+      alert('DB에 없는 한자가 포함되어 있습니다. 한글만 입력해보세요.');
+      return;
+    }
+    displayName = hangul ? `${hangul}(${hanja})` : hanja;
+  } else if (hangul && hangul.length >= 2) {
+    suri = calcHangulSuri(hangul);
+    if (!suri) { alert('이름 분석에 실패했습니다. 다시 입력해주세요.'); return; }
+    suri.ohang = suri.chars.map(getChoOhangD);
+    displayName = hangul;
+  } else {
+    alert('이름을 2글자 이상 입력해주세요.'); return;
+  }
+
   const sajuResult = getSaju();
-  renderDiagResult(name, suri, sajuResult);
+  renderDiagResult(displayName, suri, sajuResult);
 }
 
-function runHanjaDiag() {
-  const name = document.getElementById('diag-hanja').value.trim();
-  if (!name || name.length < 2) { alert('한자 이름을 2글자 이상 입력해주세요.'); return; }
-  const suri = calcHanjaSuriLanding(name);
-  if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다.'); return; }
-  const sajuResult = getSaju();
-  renderDiagResult(name, suri, sajuResult);
-}
+function onHangulInput() {}
 
-async function runDiagnosis(tabIdx) {
-  document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'});
-}
+function runSuriDiag() { runDiag(); }
+function runHanjaDiag() { runDiag(); }
 
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
