@@ -284,16 +284,45 @@ footer { background:var(--green-mist); border-top:2px solid rgba(123,174,90,0.18
 .footer-links a { font-size:13px; color:var(--ink3); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
 .footer-links a:hover { color:var(--green-dark); }
 
-/* 소셜 프루프 */
-#sp-stream { position:fixed; bottom:0; left:0; right:0; z-index:999; pointer-events:none; overflow:hidden; }
+/* 소셜 프루프 — 푸터 바로 위 박스 */
+#sp-stream {
+  background:#fff;
+  border:1px solid rgba(90,144,32,0.2);
+  border-bottom:none;
+  max-width:480px;
+  margin:0 auto;
+  overflow:hidden;
+  max-height:200px;
+}
+#sp-stream-wrap {
+  padding:20px 5% 0;
+  background:var(--bg2);
+  border-top:1px solid rgba(123,174,90,0.15);
+}
+.sp-stream-label {
+  font-size:10px; letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--green-dark); margin-bottom:10px; display:flex;
+  align-items:center; gap:8px;
+}
+.sp-stream-label::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--green); animation:spPulse 1.8s ease infinite;
+}
 #sp-list { display:flex; flex-direction:column; }
-.sp-row { display:flex; align-items:center; background:rgba(232,238,216,0.97); border-top:1px solid rgba(90,144,32,0.25); padding:9px 24px; animation:spSlideIn 0.35s cubic-bezier(0.34,1.2,0.64,1) both; backdrop-filter:blur(10px); box-shadow:0 -1px 8px rgba(30,50,16,0.08); }
+.sp-row {
+  display:flex; align-items:center;
+  background:#fff;
+  border-top:1px solid rgba(123,174,90,0.1);
+  padding:8px 16px;
+  animation:spSlideIn 0.35s cubic-bezier(0.34,1.2,0.64,1) both;
+}
+.sp-row:first-child { border-top:none; }
 @keyframes spSlideIn { from{transform:translateY(100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
-.sp-avatar { width:26px; height:26px; border-radius:50%; background:rgba(123,174,90,0.15); border:1px solid rgba(123,174,90,0.3); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--green-dark); flex-shrink:0; margin-right:11px; font-family:var(--serif); }
+.sp-avatar { width:24px; height:24px; border-radius:50%; background:rgba(123,174,90,0.12); border:1px solid rgba(123,174,90,0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--green-dark); flex-shrink:0; margin-right:10px; font-family:var(--serif); }
 .sp-text { flex:1; font-size:12px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .sp-text strong { color:var(--ink); font-weight:500; }
-.sp-time { font-size:10px; color:var(--ink-faint); margin-left:14px; flex-shrink:0; }
-.sp-dot { width:5px; height:5px; border-radius:50%; background:var(--green); margin-left:10px; flex-shrink:0; animation:spPulse 1.8s ease infinite; }
+.sp-time { font-size:10px; color:var(--ink-faint); margin-left:12px; flex-shrink:0; }
+.sp-dot { width:5px; height:5px; border-radius:50%; background:var(--green); margin-left:8px; flex-shrink:0; animation:spPulse 1.8s ease infinite; }
 @keyframes spPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(0.55);} }
 
 /* 애니메이션 */
@@ -343,10 +372,10 @@ img { display:block; }
 #hero { padding:0 0 80px; background:linear-gradient(180deg, #D4E8A8 0%, #EAF0D8 100%); }
 #hero .section-inner { padding-top:52px; }
 
-/* 위험신호 이미지 — 전체 폭, 자연 비율 */
-.signal-img-col { border-radius:4px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.2); }
-.signal-img-col img { width:100%; height:auto; display:block; object-fit:contain; }
-#signal .section-inner { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; }
+/* 위험신호 이미지 — 텍스트 아래 전체 폭 */
+.signal-img-col { margin-top:36px; border-radius:4px; overflow:hidden; }
+.signal-img-col img { width:100%; height:auto; display:block; }
+#signal .section-inner { display:block; }
 
 /* 서비스 카드 이미지 — 전체 폭, 자연 비율 */
 .svc-img { width:calc(100% + 72px); margin:-36px -36px 24px; overflow:hidden; }
@@ -584,7 +613,7 @@ img { display:block; }
     <div class="about-grid">
       <div class="about-text reveal">
         <div class="section-label">오노마 상담소 소개</div>
-        <h2 class="section-title">이름을 넘어,<br>삶의 방향을 함께 봅니다</h2>
+        <h2 class="section-title">이름을 넘어, 삶의 방향을<br>함께 봅니다</h2>
         <div class="green-line"></div>
         <p>'오노마'는 그리스어로 <strong>'이름'</strong>을 뜻합니다. 오노마 상담소는 이름이 가진 의미를 단순 풀이에 그치지 않고, 그 사람의 현재 삶·고민·관계·진로·감정의 흐름과 함께 해석합니다.</p>
         <p>김포 운양동 오프라인 작명소 <strong>이지윤의 힐링네임</strong>의 신뢰와 경험을 기반으로, 전국 및 해외 교민까지 온라인으로 확장하기 위해 별도로 설계된 프리미엄 상담 브랜드입니다.</p>
@@ -624,7 +653,7 @@ img { display:block; }
     <div class="reveal"><div class="section-label">핵심 서비스</div><h2 class="section-title">오노마 상담소의<br>5가지 상담 서비스</h2></div>
     <div class="services-grid reveal">
       <div class="service-card">
-        <div class="svc-img"><img src="images/onoma-hero-cafe.png" alt="이름 진단"></div>
+        <div class="svc-img"><img src="images/onoma-svc-diagnosis.png" alt="이름 진단"></div>
         <span class="service-tag">이름 진단</span>
         <h3>내 이름이 지금<br>어떤지 알아보기</h3>
         <p>현재 이름이 지금의 삶과 잘 맞는지, 개명을 진지하게 고민해야 할 수준인지 점검합니다.</p>
@@ -646,7 +675,7 @@ img { display:block; }
         <button class="service-cta" onclick="setDiagTab(1)">이 이름 검토받기</button>
       </div>
       <div class="service-card">
-        <div class="svc-img"><img src="images/onoma-signal-night1.png" alt="작명·개명 상담"></div>
+        <div class="svc-img"><img src="images/onoma-naming-write.png" alt="작명·개명 상담"></div>
         <span class="service-tag">작명 · 개명</span>
         <h3>작명·개명<br>전문 상담</h3>
         <p>신생아 작명부터 성인 개명까지, 오노마 상담소에서 직접 이름을 지어드립니다. 이름의 구조와 현재 삶의 흐름을 함께 보며 최적의 이름을 설계합니다.</p>
@@ -657,7 +686,7 @@ img { display:block; }
         <button class="service-cta" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">작명·개명 상담 문의</button>
       </div>
       <div class="service-card">
-        <div class="svc-img"><img src="images/onoma-cta-path.png" alt="상호·브랜드 네이밍"></div>
+        <div class="svc-img"><img src="images/onoma-svc-brand.png" alt="상호·브랜드 네이밍"></div>
         <span class="service-tag">비즈니스</span>
         <h3>상호·브랜드<br>네이밍 상담 및 제작</h3>
         <p>사업의 이름은 첫인상과 방향성을 결정합니다. 업의 성격과 콘셉트를 반영한 네이밍 상담을 제공합니다.</p>
@@ -665,7 +694,7 @@ img { display:block; }
           <li>상호 작명 및 브랜드 네이밍</li><li>콘셉트 방향 해석</li>
           <li>이름 후보 비교 분석</li><li>로고 패키지 연계 가능</li>
         </ul>
-        <button class="service-cta" onclick="setDiagTab(2)">상호/브랜드 상담 문의</button>
+        <button class="service-cta" onclick="openPortfolio()">포트폴리오 보기 →</button>
       </div>
       <div class="service-card featured">
         <div class="svc-img"><img src="images/onoma-insight-report.png" alt="인생통찰 리포트"></div>
@@ -780,6 +809,11 @@ img { display:block; }
         <div class="review-type">인생통찰 · 자기이해 목적</div>
         <p class="review-text">자기계발서를 정말 많이 읽었어요. 근데 이건 좀 달랐습니다. 책은 "이렇게 해라"인데, 이 리포트는 "당신은 원래 이렇게 작동하는 사람이라서, 이 방식이 맞다"고 하거든요. 억지로 바꾸려 했던 게 사실은 바꿀 필요가 없었던 거라는 걸 알게 됐고, 이상하게 그게 더 편해졌어요.</p>
         <div class="review-meta"><div class="review-dot"></div>51세 여성, 상담사 · 자기이해 목적으로 진단</div>
+      </div>
+      <div class="review-card">
+        <div class="review-type">인생통찰 · 진로 전환 고민</div>
+        <p class="review-text">40대 중반에 직업을 바꿔도 되는 건지 너무 무서웠어요. 리포트에서 "당신은 한 곳에 오래 머물기보다 새로운 환경에서 에너지를 얻는 구조"라고 나왔는데, 그게 제 불안이 아니라 제 특성이라는 걸 알게 됐어요. 지금은 전환 준비 중이고, 생각보다 훨씬 마음이 가볍습니다.</p>
+        <div class="review-meta"><div class="review-dot"></div>46세 여성, 직장인 · 진로 전환 고민으로 진단</div>
       </div>
       <div class="review-divider">
         <div class="review-divider-line"></div>
@@ -909,7 +943,140 @@ img { display:block; }
   </div>
 </section>
 
+<!-- 소셜 프루프 스트림 — 푸터 바로 위 -->
+<div id="sp-stream-wrap">
+  <div class="section-inner" style="padding-top:24px;padding-bottom:24px;">
+    <div class="sp-stream-label">실시간 상담 신청 현황</div>
+    <div id="sp-stream">
+      <div id="sp-list"></div>
+    </div>
+  </div>
+</div>
+
 <!-- 푸터 -->
+<!-- 포트폴리오 팝업 -->
+<div id="portfolio-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,35,10,0.72); backdrop-filter:blur(4px); overflow-y:auto; padding:40px 20px;">
+  <div style="max-width:960px; margin:0 auto; background:#FAFAF6; border-radius:4px; overflow:hidden; position:relative;">
+    <!-- 팝업 헤더 -->
+    <div style="padding:32px 40px 24px; border-bottom:1px solid rgba(123,174,90,0.15); display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--green-dark); margin-bottom:8px;">BRAND PORTFOLIO</div>
+        <h3 style="font-family:var(--serif); font-size:22px; font-weight:400; color:var(--ink);">오노마 상담소 브랜드 네이밍 · 제작 사례</h3>
+      </div>
+      <button onclick="closePortfolio()" style="background:none; border:1px solid rgba(123,174,90,0.3); width:40px; height:40px; cursor:pointer; font-size:18px; color:var(--ink3); border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✕</button>
+    </div>
+    <!-- 포트폴리오 그리드 -->
+    <div style="padding:36px 40px 48px; display:grid; grid-template-columns:repeat(2,1fr); gap:24px;">
+
+      <!-- 1 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-01.png" alt="온기소반" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">카페</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">온기소반</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">따뜻함과 한 끼의 정성을 담은 브런치 카페. 온기(온기)와 소반(소반)을 결합해 일상의 온기를 전달하는 이름으로 설계.</p>
+      </div>
+
+      <!-- 2 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-02.png" alt="달빛마당" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">베이커리</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">달빛마당</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">달빛처럼 은은하고 포근한 베이커리. 마당처럼 누구나 편하게 드나들 수 있는 공간의 이미지를 브랜드명에 담음.</p>
+      </div>
+
+      <!-- 3 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-03.png" alt="초록결" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">플로리스트</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">초록결</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">자연의 결을 담은 플라워 숍. 초록과 결의 조합으로 식물의 생명력과 섬세한 감각을 동시에 표현.</p>
+      </div>
+
+      <!-- 4 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-04.png" alt="솔바람" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">한식당</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">솔바람</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">솔숲의 바람처럼 청정하고 깊은 한식. 자연에서 온 재료와 정직한 맛을 브랜드명으로 표현.</p>
+      </div>
+
+      <!-- 5 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-05.png" alt="페이지숲" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">독립서점</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">페이지숲</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">책장을 넘기다 보면 숲처럼 깊어지는 공간. 페이지와 숲의 결합으로 독서의 몰입감을 표현.</p>
+      </div>
+
+      <!-- 6 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-06.png" alt="백담" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">스킨케어</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">백담</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">맑고 깨끗한 물을 담은 스킨케어 브랜드. 백(白)의 순수함과 담(潭)의 깊이로 피부 본연의 아름다움을 표현.</p>
+      </div>
+
+      <!-- 7 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-07.png" alt="결이음" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">인테리어</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">결이음</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">공간의 결을 잇는 인테리어 브랜드. 소재와 공간, 사람을 자연스럽게 연결하는 철학을 이름에 담음.</p>
+      </div>
+
+      <!-- 8 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-08.png" alt="숨빛" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">요가스튜디오</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">숨빛</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">숨결에 빛이 깃드는 요가 공간. 호흡(숨)과 빛(빛)의 결합으로 몸과 마음의 정화를 표현.</p>
+      </div>
+
+      <!-- 9 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-09.png" alt="씨앗뜰" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">아동교육</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">씨앗뜰</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">아이의 가능성이 자라나는 뜰. 씨앗처럼 작지만 무한한 잠재력을 품은 교육 공간의 이름.</p>
+      </div>
+
+      <!-- 10 -->
+      <div style="background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
+        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
+          <img src="images/portfolio/pf-10.png" alt="나침" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>
+        <div style="font-size:10px; letter-spacing:0.15em; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">1인 컨설팅</div>
+        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">나침</h4>
+        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">나만의 방향을 찾는 컨설팅. 나침반의 나침(羅針)에서 따와 삶의 방향을 설계한다는 의미를 담음.</p>
+      </div>
+
+    </div>
+    <!-- 팝업 하단 CTA -->
+    <div style="padding:28px 40px; background:var(--green-mist); border-top:1px solid rgba(123,174,90,0.15); text-align:center;">
+      <p style="font-size:14px; color:var(--ink3); margin-bottom:16px;">내 브랜드 이름도 함께 설계해드립니다</p>
+      <a href="https://pf.kakao.com/_onoma" target="_blank" class="btn-primary">카카오 채널로 상담 문의하기</a>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-inner">
     <div>
@@ -927,10 +1094,19 @@ img { display:block; }
   </div>
 </footer>
 
-<!-- 소셜 프루프 스트림 -->
-<div id="sp-stream"><div id="sp-list"></div></div>
-
 <script>
+function openPortfolio() {
+  document.getElementById('portfolio-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+function closePortfolio() {
+  document.getElementById('portfolio-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.getElementById('portfolio-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePortfolio();
+});
+
 function setDiagTab(idx) {
   document.querySelectorAll('.diag-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   document.querySelectorAll('.diag-form').forEach((f,i) => f.classList.toggle('active', i===idx));
