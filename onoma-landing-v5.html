@@ -276,51 +276,58 @@ section { position:relative; z-index:1; }
 .cta-note { font-size:14px; color:var(--ink3); line-height:1.9; max-width:440px; margin:0 auto; font-style:italic; font-family:var(--serif); }
 
 /* 푸터 */
-footer { background:var(--green-mist); border-top:2px solid rgba(123,174,90,0.18); padding:48px 5%; }
+footer { background:#2A3D1A; border-top:none; padding:52px 5% 32px; }
 .footer-inner { max-width:1100px; margin:0 auto; display:flex; align-items:flex-start; justify-content:space-between; gap:40px; flex-wrap:wrap; }
-.footer-brand { font-family:var(--serif); font-size:16px; color:var(--green-dark); letter-spacing:0.08em; margin-bottom:8px; }
-.footer-sub { font-size:12px; color:var(--ink3); line-height:1.9; }
-.footer-links { list-style:none; display:flex; flex-direction:column; gap:10px; }
-.footer-links a { font-size:13px; color:var(--ink3); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
-.footer-links a:hover { color:var(--green-dark); }
+.footer-brand { font-family:var(--serif); font-size:18px; color:#C8DDA8; letter-spacing:0.08em; margin-bottom:10px; font-weight:500; }
+.footer-sub { font-size:14px; color:rgba(200,221,168,0.78); line-height:2; font-weight:300; }
+.footer-links { list-style:none; display:flex; flex-direction:column; gap:12px; }
+.footer-links a { font-size:14px; color:rgba(200,221,168,0.78); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; font-weight:400; }
+.footer-links a:hover { color:#C8DDA8; }
+/* 소셜 아이콘 */
+.footer-social { display:flex; gap:10px; margin-top:16px; }
+.footer-social a { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; text-decoration:none; background:rgba(200,221,168,0.12); border:1px solid rgba(200,221,168,0.2); }
+.footer-social a:hover { background:rgba(200,221,168,0.22); transform:translateY(-2px); }
+.footer-social svg { width:18px; height:18px; fill:rgba(200,221,168,0.75); }
+/* 사업자 정보 */
+.footer-biz { font-size:12px; color:rgba(200,221,168,0.55); line-height:2; margin-top:28px; padding-top:20px; border-top:1px solid rgba(200,221,168,0.12); max-width:1100px; margin-left:auto; margin-right:auto; font-weight:300; }
 
-/* 소셜 프루프 — 푸터 바로 위 박스 */
+/* 소셜 프루프 — 밝은 배경으로 복원 (경계 강조) */
 #sp-stream {
   background:#fff;
   border:1px solid rgba(90,144,32,0.2);
   border-bottom:none;
-  max-width:480px;
-  margin:0 auto;
+  max-width:100%;
+  margin:0;
   overflow:hidden;
-  max-height:200px;
+  max-height:220px;
 }
 #sp-stream-wrap {
   padding:20px 5% 0;
   background:var(--bg2);
-  border-top:1px solid rgba(123,174,90,0.15);
+  border-top:2px solid rgba(90,144,32,0.25);
 }
 .sp-stream-label {
-  font-size:10px; letter-spacing:0.18em; text-transform:uppercase;
-  color:var(--green-dark); margin-bottom:10px; display:flex;
+  font-size:13px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--green-dark); font-weight:500; margin-bottom:12px; display:flex;
   align-items:center; gap:8px;
 }
 .sp-stream-label::before {
-  content:''; width:6px; height:6px; border-radius:50%;
+  content:''; width:7px; height:7px; border-radius:50%;
   background:var(--green); animation:spPulse 1.8s ease infinite;
 }
 #sp-list { display:flex; flex-direction:column; }
 .sp-row {
   display:flex; align-items:center;
-  background:#fff;
+  background:rgba(232,238,216,0.6);
   border-top:1px solid rgba(123,174,90,0.1);
   padding:8px 16px;
   animation:spSlideIn 0.35s cubic-bezier(0.34,1.2,0.64,1) both;
 }
 .sp-row:first-child { border-top:none; }
 @keyframes spSlideIn { from{transform:translateY(100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
-.sp-avatar { width:24px; height:24px; border-radius:50%; background:rgba(123,174,90,0.12); border:1px solid rgba(123,174,90,0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--green-dark); flex-shrink:0; margin-right:10px; font-family:var(--serif); }
+.sp-avatar { width:24px; height:24px; border-radius:50%; background:rgba(123,174,90,0.15); border:1px solid rgba(123,174,90,0.3); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--green-dark); flex-shrink:0; margin-right:10px; font-family:var(--serif); }
 .sp-text { flex:1; font-size:12px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sp-text strong { color:var(--ink); font-weight:500; }
+.sp-text strong { color:var(--ink2); font-weight:500; }
 .sp-time { font-size:10px; color:var(--ink-faint); margin-left:12px; flex-shrink:0; }
 .sp-dot { width:5px; height:5px; border-radius:50%; background:var(--green); margin-left:8px; flex-shrink:0; animation:spPulse 1.8s ease infinite; }
 @keyframes spPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(0.55);} }
@@ -523,7 +530,20 @@ img { display:block; }
         <div class="form-row" style="margin-bottom:14px;">
           <div class="form-group">
             <label class="form-label">생년월일 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(사주 오행 분석용 · 선택)</span></label>
-            <input class="form-input" id="diag-birth" type="text" placeholder="예: 1990-05-15">
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;">
+              <select class="form-select" id="diag-year">
+                <option value="">년도</option>
+                ${Array.from({length:80},(_,i)=>2024-i).map(y=>`<option value="${y}">${y}년</option>`).join('')}
+              </select>
+              <select class="form-select" id="diag-month">
+                <option value="">월</option>
+                ${Array.from({length:12},(_,i)=>i+1).map(m=>`<option value="${m}">${m}월</option>`).join('')}
+              </select>
+              <select class="form-select" id="diag-day">
+                <option value="">일</option>
+                ${Array.from({length:31},(_,i)=>i+1).map(d=>`<option value="${d}">${d}일</option>`).join('')}
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">성별</label>
@@ -748,7 +768,7 @@ img { display:block; }
           <li>이름 + 생년월일 + 성향 통합 해석</li><li>반복되는 삶의 패턴 구조 분석</li>
           <li>현재 고민 중심 심층 진단</li><li>리포트 기반 심층 상담 연결 가능</li>
         </ul>
-        <a class="service-cta" href="https://life.theweros.com/report-v2.html?mode=test/" target="_blank">인생통찰 서비스 보기</a>
+        <a class="btn-primary" href="https://life.theweros.com/report-v2.html?mode=test/" target="_blank">인생통찰 서비스 보기</a>
       </div>
     </div>
   </div>
@@ -1123,8 +1143,35 @@ img { display:block; }
 <footer>
   <div class="footer-inner">
     <div>
-      <div class="footer-brand">ONOMA 오노마 상담소</div>
+      <img src="images/onoma_logo_white_tracy.png" alt="오노마 상담소 로고" style="height:60px;width:auto;margin-bottom:14px;opacity:0.9;display:block;">
       <p class="footer-sub">이름을 통해 삶의 방향을 함께 읽는 상담소<br>오프라인 연계: 이지윤의 힐링네임 (경기도 김포시 운양동)<br>전국·해외 온라인 상담 가능</p>
+      <!-- 소셜 아이콘 -->
+      <div class="footer-social">
+        <!-- 네이버 블로그 -->
+        <a href="#" target="_blank" title="네이버 블로그">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/>
+          </svg>
+        </a>
+        <!-- 유튜브 -->
+        <a href="#" target="_blank" title="유튜브">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+        <!-- 인스타그램 -->
+        <a href="#" target="_blank" title="인스타그램">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+          </svg>
+        </a>
+        <!-- 카카오톡 채널 -->
+        <a href="https://pf.kakao.com/_onoma" target="_blank" title="카카오톡 채널">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.612 5.087 4.07 6.542L5.1 21l4.507-2.97C10.028 18.17 11 18.3 12 18.3c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
+          </svg>
+        </a>
+      </div>
     </div>
     <ul class="footer-links">
       <li><a href="#services">서비스 소개</a></li>
@@ -1133,7 +1180,11 @@ img { display:block; }
       <li><a href="https://life.theweros.com/report-v2.html?mode=test/" target="_blank">인생통찰 리포트</a></li>
       <li><a href="https://pf.kakao.com/_onoma" target="_blank">카카오 채널 상담</a></li>
     </ul>
-    <p style="font-size:12px;color:var(--ink-faint);align-self:flex-end;">© 2025 오노마 상담소. All rights reserved.</p>
+  </div>
+  <!-- 사업자 정보 -->
+  <div class="footer-biz">
+    © 오노마상담소 All rights reserved.<br>
+    주식회사 위버플레인 &nbsp;|&nbsp; 대표이사 이정운 &nbsp;|&nbsp; 경기도 김포시 김포한강11로 322 138-P44호 (운양동, 더 파크뷰테라스 상업시설) &nbsp;|&nbsp; 사업자등록번호 128-86-27688 &nbsp;|&nbsp; 통신판매업번호 2018-경기김포-0227호
   </div>
 </footer>
 
@@ -1453,14 +1504,14 @@ function renderDiagResult(name, suri, sajuResult) {
 
 /* ── 사주 계산 공통 ── */
 function getSaju() {
-  const birthStr = document.getElementById('diag-birth').value.trim();
+  const year  = document.getElementById('diag-year').value;
+  const month = document.getElementById('diag-month').value;
+  const day   = document.getElementById('diag-day').value;
   const gender = document.getElementById('diag-gender').value;
-  if (!birthStr) return null;
-  const b = parseBirth(birthStr);
-  if (!b) return null;
+  if (!year || !month || !day) return null;
   try {
-    return calcSaju(b.year, b.month, b.day, null, null, false, gender||'남성');
-  } catch(e) { return null; }
+    return calcSaju(+year, +month, +day, null, null, false, gender||'남성');
+  } catch(e) { console.error('사주 계산 오류:', e); return null; }
 }
 
 /* ── 통합 진단 버튼 함수 ── */
