@@ -436,14 +436,36 @@ img { display:block; }
 }
 
 /* 수리 사격 그리드 */
-.suri-item { background:#fff; border:1px solid rgba(123,174,90,0.15); border-top:3px solid var(--green); padding:16px 12px; text-align:center; }
-.suri-label { font-size:10px; letter-spacing:0.12em; color:var(--ink3); margin-bottom:6px; }
-.suri-num { font-family:var(--serif); font-size:26px; font-weight:400; line-height:1; margin-bottom:4px; }
-.suri-name { font-size:12px; font-weight:500; color:var(--ink2); margin-bottom:4px; }
-.suri-desc { font-size:11px; color:var(--ink3); line-height:1.6; }
-.suri-good { color:var(--green-dark); }
-.suri-mid  { color:#7A5C10; }
-.suri-bad  { color:#8B2A20; }
+.suri-section-title { font-size:11px; letter-spacing:0.12em; color:var(--green-dark); font-weight:600; margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(123,174,90,0.15); grid-column:1/-1; }
+.suri-section-title:first-child { margin-top:0; }
+.suri-item { background:#fff; border:1px solid rgba(123,174,90,0.12); border-top:3px solid; padding:14px 10px; text-align:center; }
+.suri-item.good  { border-top-color:#1a6fb5; }
+.suri-item.mid   { border-top-color:#c47c00; }
+.suri-item.bad   { border-top-color:#c0392b; }
+.suri-label { font-size:10px; letter-spacing:0.12em; color:var(--ink3); margin-bottom:4px; }
+.suri-phase { font-size:9px; color:var(--ink-faint); margin-bottom:6px; }
+.suri-num { font-family:var(--serif); font-size:28px; font-weight:400; line-height:1; margin-bottom:4px; }
+.suri-num.good { color:#1a6fb5; }
+.suri-num.mid  { color:#c47c00; }
+.suri-num.bad  { color:#c0392b; }
+.suri-name { font-size:11px; font-weight:600; margin-bottom:4px; }
+.suri-name.good { color:#1a6fb5; }
+.suri-name.mid  { color:#c47c00; }
+.suri-name.bad  { color:#c0392b; }
+.suri-desc { font-size:10px; color:var(--ink3); line-height:1.5; }
+/* 주역괘 */
+.gua-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.gua-item { background:#fff; border:1px solid rgba(123,174,90,0.12); border-left:3px solid; padding:12px; }
+.gua-item.good { border-left-color:#1a6fb5; }
+.gua-item.mid  { border-left-color:#c47c00; }
+.gua-item.bad  { border-left-color:#c0392b; }
+.gua-label { font-size:9px; letter-spacing:0.12em; color:var(--ink3); margin-bottom:4px; }
+.gua-sym { font-size:20px; line-height:1; margin-bottom:4px; }
+.gua-name { font-size:12px; font-weight:600; margin-bottom:2px; }
+.gua-name.good { color:#1a6fb5; }
+.gua-name.mid  { color:#c47c00; }
+.gua-name.bad  { color:#c0392b; }
+.gua-meaning { font-size:10px; color:var(--ink3); line-height:1.5; }
 /* 오행 칩 */
 .ohang-chip-diag { display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:5px 12px; border-radius:2px; font-weight:500; margin:0 2px; }
 .ohang-chip-diag.木 { background:#E8F5E8; color:#2d6a4f; border:1px solid rgba(45,106,79,0.3); }
@@ -451,8 +473,17 @@ img { display:block; }
 .ohang-chip-diag.土 { background:#FBF5E0; color:#8b5e0a; border:1px solid rgba(139,94,10,0.3); }
 .ohang-chip-diag.金 { background:#F0F0F8; color:#4a4a6a; border:1px solid rgba(74,74,106,0.3); }
 .ohang-chip-diag.水 { background:#E8F4F8; color:#2a7f7f; border:1px solid rgba(42,127,127,0.3); }
+.sanggeuk-badge { font-size:10px; color:#c0392b; font-weight:600; margin-left:6px; }
+/* 운세 별점 */
+.fortune-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.fortune-item { background:#fff; border:1px solid rgba(123,174,90,0.12); padding:14px 12px; text-align:center; border-radius:2px; }
+.fortune-label { font-size:11px; color:var(--ink3); letter-spacing:0.1em; margin-bottom:8px; }
+.fortune-stars { font-size:18px; line-height:1; margin-bottom:4px; letter-spacing:1px; }
+.fortune-score { font-size:11px; color:var(--ink3); }
+.star-full  { color:#f0a500; }
+.star-half  { color:#f0a500; opacity:0.5; }
+.star-empty { color:#ddd; }
 /* 개명 진단 등급 */
-/* 개명 진단 등급 — result-header 위에 동일 정의 */
 
 </style>
 <body>
@@ -528,7 +559,7 @@ img { display:block; }
         <!-- 생년월일 + 성별 -->
         <div class="form-row" style="margin-bottom:14px;">
           <div class="form-group">
-            <label class="form-label">생년월일 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(사주 오행 분석용 · 선택)</span></label>
+            <label class="form-label">생년월일 <span style="font-size:11px;color:#c0392b;font-weight:600;">* 필수</span></label>
             <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;">
               <select class="form-select" id="diag-year">
                 <option value="">년도</option>
@@ -566,7 +597,7 @@ img { display:block; }
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">성별</label>
+            <label class="form-label">성별 <span style="font-size:11px;color:#c0392b;font-weight:600;">* 필수</span></label>
             <select class="form-select" id="diag-gender">
               <option value="">선택</option>
               <option value="남성">남성</option>
@@ -576,7 +607,7 @@ img { display:block; }
         </div>
         <!-- 한글 이름 -->
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">한글 이름 <span style="font-size:10px;color:var(--ink3);font-weight:300;">(자모 획수 기준)</span></label>
+          <label class="form-label">한글 이름 <span style="font-size:11px;color:#c0392b;font-weight:600;">* 필수</span></label>
           <input class="form-input" id="diag-hangul" type="text" placeholder="예: 이지윤" maxlength="6">
         </div>
         <!-- 한자 이름 -->
@@ -593,7 +624,7 @@ img { display:block; }
         <button class="btn-primary" onclick="runDiag()" style="width:100%;padding:17px;font-size:14px;font-weight:500;letter-spacing:0.06em;">
           내 이름 확인하기
         </button>
-        <div style="font-size:12px;color:var(--ink3);margin-top:8px;text-align:center;">한자 입력 시 더 정확한 수리 계산 · 생년월일 입력 시 사주 오행 함께 분석</div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px;text-align:center;">현재 나이를 기준으로 앞으로 남은 시절의 수리 흐름을 판단합니다</div>
       </div>
 
       <!-- 결과 박스 -->
@@ -605,6 +636,8 @@ img { display:block; }
           <div id="result-grade-sub" style="font-size:13px;color:var(--ink3);margin-top:8px;"></div>
         </div>
         <div class="result-body">
+          <!-- 운세 별점 -->
+          <div id="fortune-grid" style="display:none;margin-bottom:20px;"></div>
           <!-- 수리 사격 그리드 -->
           <div id="suri-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;"></div>
           <!-- 오행 흐름 -->
@@ -1249,6 +1282,115 @@ const KIL_D = {'木':'土','火':'金','土':'水','金':'木','水':'火'};
 // 흉괘 목록 (상담 요망 기준)
 const HYUNG_GUA_LIST = ['화택규','산지박','산풍고','천수송'];
 
+/* ── 괘별 운세 점수 테이블 ── */
+// 재물(財), 직업(職), 건강(健), 가정(家), 연애(戀), 종합(綜)
+// 점수 1~5 (0.5 단위 가능)
+const GUA_FORTUNE = {
+  '건위천':    {재:3,직:5,건:3,가:3,연:2,종:4},
+  '천택리':    {재:3,직:4,건:3,가:3,연:3,종:3},
+  '천화동인':  {재:4,직:5,건:4,가:4,연:4,종:4.5},
+  '천뢰무망':  {재:3.5,직:3.5,건:4,가:4,연:3.5,종:3.5},
+  '천풍구':    {재:3,직:3,건:3,가:2,연:2,종:2.5},
+  '천수송':    {재:2,직:2,건:2,가:1.5,연:1.5,종:1.5},
+  '천산둔':    {재:2,직:2,건:3,가:2.5,연:2,종:2},
+  '천지비':    {재:2,직:2,건:2.5,가:2,연:2,종:2},
+  '택천쾌':    {재:3,직:3.5,건:3,가:3,연:3,종:3},
+  '태위택':    {재:3,직:3,건:3,가:2.5,연:3,종:3},
+  '택화혁':    {재:3.5,직:3.5,건:3,가:2.5,연:2.5,종:3},
+  '택뢰수':    {재:3,직:3,건:3,가:3,연:3,종:3},
+  '택풍대과':  {재:4,직:4.5,건:3.5,가:3.5,연:3.5,종:4},
+  '택수곤':    {재:2,직:2,건:2,가:2,연:2,종:2},
+  '택산함':    {재:3,직:3.5,건:3,가:4,연:4,종:3.5},
+  '택지췌':    {재:4.5,직:4,건:3.5,가:4,연:3.5,종:4},
+  '화천대유':  {재:5,직:4,건:3.5,가:3.5,연:3.5,종:4},
+  '화택규':    {재:2,직:2,건:2,가:1.5,연:1.5,종:1.5},
+  '이위화':    {재:3.5,직:3.5,건:3,가:3,연:3.5,종:3},
+  '화뢰서합':  {재:3,직:3.5,건:3.5,가:3,연:3,종:3},
+  '화풍정':    {재:3.5,직:5,건:4,가:3.5,연:3.5,종:4},
+  '화수미제':  {재:4,직:4,건:3.5,가:3.5,연:3.5,종:3.5},
+  '화산려':    {재:2.5,직:2.5,건:2.5,가:2,연:2.5,종:2.5},
+  '화지진':    {재:4,직:4.5,건:3.5,가:3.5,연:3.5,종:4},
+  '뇌천대장':  {재:3.5,직:3.5,건:3.5,가:3,연:3,종:3.5},
+  '뇌택귀매':  {재:4,직:4.5,건:4,가:3.5,연:4,종:4},
+  '뇌화풍':    {재:3.5,직:3.5,건:3,가:3,연:3,종:3},
+  '진위뢰':    {재:3,직:3,건:3,가:2.5,연:2.5,종:2.5},
+  '뇌풍항':    {재:3.5,직:3.5,건:3.5,가:4,연:4,종:3.5},
+  '뇌수해':    {재:3.5,직:3.5,건:3.5,가:3.5,연:3.5,종:3.5},
+  '뇌산소과':  {재:2.5,직:2.5,건:3,가:2.5,연:2.5,종:2.5},
+  '뇌지예':    {재:4,직:4,건:3.5,가:4,연:3.5,종:4},
+  '풍천소축':  {재:2.5,직:2.5,건:3,가:3,연:3,종:2.5},
+  '풍택중부':  {재:3,직:3,건:3.5,가:3.5,연:3.5,종:3},
+  '풍화가인':  {재:3.5,직:3.5,건:3.5,가:5,연:4.5,종:4},
+  '풍뢰익':    {재:4.5,직:4,건:4,가:4,연:4,종:4},
+  '손위풍':    {재:4,직:4,건:3.5,가:3,연:3,종:3.5},
+  '풍수환':    {재:3,직:3,건:3,가:2.5,연:2.5,종:2.5},
+  '풍산점':    {재:3,직:3,건:3.5,가:3.5,연:3.5,종:3},
+  '풍지관':    {재:3.5,직:4,건:3.5,가:3.5,연:3.5,종:3.5},
+  '수천수':    {재:3.5,직:4,건:3.5,가:3.5,연:3.5,종:3.5},
+  '수택절':    {재:3,직:3,건:3.5,가:3,연:3,종:3},
+  '수화기제':  {재:4,직:4,건:3.5,가:3.5,연:3.5,종:3.5},
+  '수뢰둔':    {재:2,직:2.5,건:2.5,가:2.5,연:2.5,종:2.5},
+  '수풍정':    {재:5,직:4,건:4,가:4,연:3.5,종:4},
+  '중수감':    {재:2,직:2,건:2,가:2,연:2,종:2},
+  '수산건':    {재:2,직:2,건:2.5,가:2.5,연:2.5,종:2},
+  '수지비':    {재:4,직:4,건:4,가:4.5,연:4,종:4},
+  '산천대축':  {재:5,직:4.5,건:4,가:4,연:3.5,종:4.5},
+  '산택손':    {재:2.5,직:2.5,건:3,가:3,연:3,종:2.5},
+  '산화비':    {재:3.5,직:5,건:3.5,가:3.5,연:3.5,종:4},
+  '산뢰이':    {재:3,직:3,건:3,가:3,연:3,종:3},
+  '산풍고':    {재:2,직:2,건:2,가:2,연:2,종:2},
+  '산수몽':    {재:3,직:3,건:3,가:3,연:3,종:3},
+  '간위산':    {재:2.5,직:2.5,건:3,가:2.5,연:2.5,종:2.5},
+  '산지박':    {재:1.5,직:1.5,건:2,가:1.5,연:1.5,종:1.5},
+  '지천태':    {재:4.5,직:4.5,건:4.5,가:4.5,연:4.5,종:4.5},
+  '지택림':    {재:4,직:4.5,건:3.5,가:4,연:4,종:4},
+  '지화명이':  {재:3,직:3.5,건:3,가:3,연:3,종:3},
+  '지뢰복':    {재:3.5,직:3.5,건:3.5,가:3.5,연:3.5,종:3.5},
+  '지풍승':    {재:4,직:5,건:4,가:4,연:4,종:4.5},
+  '지수사':    {재:3,직:4,건:3,가:3,연:2.5,종:3},
+  '지산겸':    {재:3.5,직:3.5,건:3.5,가:4,연:3.5,종:3.5},
+  '곤위지':    {재:3.5,직:3.5,건:3.5,가:4,연:3.5,종:3.5},
+};
+
+/* 수리 l값 → 운세 점수 변환 */
+function suriToScore(l) {
+  const map = {1:1.5, 2:2.5, 3:3, 4:4, 5:4.5};
+  return map[l] || 3;
+}
+
+/* 6가지 운세 별점 계산 */
+function calcFortuneStars(hangulSuri, hanjaSuri, guaObj) {
+  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {l:3};
+
+  // 수리 점수 (한글 우선, 없으면 한자)
+  const hs = hangulSuri || hanjaSuri;
+  const jungScore  = suriToScore(sI(hs.jung).l);   // 정격 → 종합
+  const hyungScore = suriToScore(sI(hs.hyung).l);  // 형격 → 직업
+  const yiScore    = suriToScore(sI(hs.yi).l);     // 이격 → 관계
+  const wonScore   = suriToScore(sI(hs.won).l);    // 원격 → 이름기운
+
+  // 주역괘 점수 (정격괘 → 종합, 이격괘 → 관계, 원격괘 → 재물/건강)
+  const getGuaF = (gua) => gua && GUA_FORTUNE[gua.name] ? GUA_FORTUNE[gua.name] : null;
+  const jungGua = guaObj ? getGuaF(guaObj.정격) : null;
+  const yiGua   = guaObj ? getGuaF(guaObj.이격) : null;
+  const wonGua  = guaObj ? getGuaF(guaObj.원격) : null;
+
+  // 각 운세 = 수리 점수(60%) + 괘 점수(40%)
+  function mix(suriVal, guaVal, key) {
+    if (!guaVal) return suriVal;
+    return suriVal * 0.6 + guaVal[key] * 0.4;
+  }
+
+  return {
+    재물: Math.min(5, mix(wonScore,  wonGua,  '재')),
+    직업: Math.min(5, mix(hyungScore,jungGua, '직')),
+    건강: Math.min(5, mix(wonScore,  wonGua,  '건')),
+    가정: Math.min(5, mix(yiScore,   yiGua,   '가')),
+    연애: Math.min(5, mix(yiScore,   yiGua,   '연')),
+    종합: Math.min(5, mix(jungScore, jungGua, '종')),
+  };
+}
+
 function getChoOhangD(ch) {
   const code = ch.charCodeAt(0);
   if (code < 0xAC00 || code > 0xD7A3) return '?';
@@ -1342,21 +1484,34 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
   const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3,d:''};
   const isHyung = n => sI(n).l <= 1;
 
-  // ① 정격 흉수 (핵심 — 한글 정격 우선, 한자 정격도 체크)
-  const jungHyung_hangul = hangulSuri ? isHyung(hangulSuri.jung) : false;
-  const jungHyung_hanja  = (suri._mode==='hanja') ? isHyung(suri.jung) : false;
-  const jungHyung = jungHyung_hangul || jungHyung_hanja;
+  // 현재 나이/구간 (suri에 저장됨)
+  const age   = suri._age || 99;
+  const phase = suri._phase || 'jung';
 
-  // ② 형격·이격 흉수 (한글 기준)
-  const hyungHyung = hangulSuri ? isHyung(hangulSuri.hyung) : false;
-  const yiHyung    = hangulSuri ? isHyung(hangulSuri.yi)    : false;
+  // 나이 기반으로 앞으로 영향 줄 구간만 체크
+  // 원격(0~20), 형격(21~40), 이격(41~55), 정격(56~, 평생)
+  const checkWon   = age <= 20;   // 원격은 20세 이하만
+  const checkHyung = age <= 40;   // 형격은 40세 이하만
+  const checkYi    = age <= 55;   // 이격은 55세 이하만
+  const checkJung  = true;        // 정격은 항상 (평생 영향)
+
+  const hS = hangulSuri || suri; // 판정에 사용할 한글 수리
+
+  // ① 정격 흉수 (핵심 — 평생 영향, 항상 체크)
+  const jungHyung_h = isHyung(hS.jung);
+  const jungHyung_j = (suri._mode==='hanja') ? isHyung(suri.jung) : false;
+  const jungHyung   = jungHyung_h || jungHyung_j;
+
+  // ② 형격·이격 흉수 (나이 구간 내만)
+  const hyungHyung = checkHyung && isHyung(hS.hyung);
+  const yiHyung    = checkYi    && isHyung(hS.yi);
   const subHyung   = hyungHyung || yiHyung;
 
-  // ③ 오행 상극 (항상 한글 초성 기준)
-  const validOhang = hangulOhang.filter(o => o !== '?');
+  // ③ 오행 상극 (한글 초성 기준)
+  const validOhang    = hangulOhang.filter(o => o !== '?');
   const ohangSanggeuk = hasOhangSanggeuk(validOhang);
 
-  // ④ 흉괘 여부 (화택규·산지박·산풍고·천수송)
+  // ④ 흉괘
   const guaHyung = isHyungGua(guaObj);
 
   // ⑤ 사주 부족 오행
@@ -1366,44 +1521,45 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
 
   // ── 판정 ──
 
-  // 개명 권유: 오행 상극 + 정격 흉수 + 사주 부족 (3가지 모두)
+  // 개명 권유: 오행 상극 + 정격 흉수 + 사주 부족
   if (ohangSanggeuk && jungHyung && sajuDeficit) {
     return { grade:'개명 권유', cls:'review', level:4,
-      reasons: buildReasons(jungHyung_hangul, hangulSuri, jungHyung_hanja, suri, ohangSanggeuk, deficient, null) };
+      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk, deficient) };
   }
-  // 개명 권유: 흉괘 (화택규 등) — 수리와 무관하게 강한 신호
+  // 개명 권유: 흉괘 단독
   if (guaHyung) {
     const guaNames = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean)
       .filter(g => HYUNG_GUA_LIST.includes(g.name)).map(g => g.name);
     return { grade:'개명 권유', cls:'review', level:4,
-      reasons: [`주역괘에서 흉괘 발견 (${guaNames.join(', ')})`] };
+      reasons: [`흉괘 발견 (${guaNames.join(', ')})`] };
   }
-  // 개명 권유: 오행 상극 + 정격 흉수 (사주 없어도)
+  // 개명 권유: 오행 상극 + 정격 흉수
   if (ohangSanggeuk && jungHyung) {
     return { grade:'개명 권유', cls:'review', level:4,
-      reasons: buildReasons(jungHyung_hangul, hangulSuri, jungHyung_hanja, suri, ohangSanggeuk, deficient, null) };
+      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk, []) };
   }
-  // 개명 고려: 정격 흉수 OR 오행 상극 OR 형·이격 흉수
+  // 개명 고려: 정격 흉수 OR 오행 상극 OR 현재 구간 이후 형·이격 흉수
   if (jungHyung || ohangSanggeuk || subHyung) {
     return { grade:'개명 고려', cls:'caution', level:3,
-      reasons: buildReasons(jungHyung_hangul, hangulSuri, jungHyung_hanja, suri, ohangSanggeuk, [], subHyung ? (hyungHyung?'형격':'')+' '+(yiHyung?'이격':'') : null) };
+      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk, []) };
   }
-  // 애매 — 상담: 사주 부족 오행을 이름이 못 보완
+  // 애매 — 상담: 사주 부족 오행 미보완
   if (sajuDeficit && !nameCompens) {
     return { grade:'애매 — 상담 권장', cls:'caution', level:2,
-      reasons: [`사주 부족 오행(${deficient.map(o=>ONAME_D[o]).join('·')})을 이름이 보완하지 못함`] };
+      reasons: [`사주 부족 오행(${deficient.map(o=>ONAME_D[o]).join('·')}) 미보완`] };
   }
-  // 개명 불필요
   return { grade:'개명 불필요', cls:'stable', level:1, reasons:[] };
 }
 
-function buildReasons(jungH_hangul, hSuri, jungH_hanja, hanjaSuri, sanggeuk, deficient, subHyung) {
+function buildReasons(jungH_hangul, hSuri, jungH_hanja, hanjaSuri, sanggeuk, deficient, subHyungInfo) {
   const r = [];
-  if (jungH_hangul && hSuri) r.push(`한글 정격 ${hSuri.jung}수 → 흉수`);
-  if (jungH_hanja && hanjaSuri) r.push(`한자 정격 ${hanjaSuri.jung}수 → 흉수`);
+  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3};
+  if (jungH_hangul && hSuri) r.push(`한글 정격 ${hSuri.jung}수(${sI(hSuri.jung).n}) → 흉수`);
+  if (jungH_hanja && hanjaSuri) r.push(`한자 정격 ${hanjaSuri.jung}수(${sI(hanjaSuri.jung).n}) → 흉수`);
+  if (hSuri && sI(hSuri.hyung).l <= 1) r.push(`형격 ${hSuri.hyung}수(${sI(hSuri.hyung).n}) → 흉수`);
+  if (hSuri && sI(hSuri.yi).l <= 1) r.push(`이격 ${hSuri.yi}수(${sI(hSuri.yi).n}) → 흉수`);
   if (sanggeuk) r.push('이름 오행 상극');
   if (deficient && deficient.length) r.push(`사주 부족 오행: ${deficient.map(o=>ONAME_D[o]).join('·')}`);
-  if (subHyung && subHyung.trim()) r.push(`${subHyung.trim()} 흉수`);
   return r;
 }
 
@@ -1452,36 +1608,136 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
   gradeEl.textContent = gradeObj.grade;
   gradeEl.className = 'result-grade ' + gradeObj.cls;
 
-  // 판정 근거 표시
+  // 나이/구간 + 판정 근거
+  const phaseLabel = {'won':'원격 구간(0~20세)','hyung':'형격 구간(21~40세)','yi':'이격 구간(41~55세)','jung':'정격 구간(56세~)'};
   const subEl = document.getElementById('result-grade-sub');
-  if (subEl && gradeObj.reasons && gradeObj.reasons.length) {
-    subEl.innerHTML = '판정 근거: ' + gradeObj.reasons.map(r=>`<span style="background:rgba(0,0,0,0.06);padding:2px 8px;border-radius:2px;margin-right:4px;font-size:12px;">${r}</span>`).join('');
-  } else if (subEl) {
-    subEl.textContent = '';
+  if (subEl) {
+    const ageStr = suri._age ? `현재 ${suri._age}세 · ${phaseLabel[suri._phase]||''} · ` : '';
+    const reasonStr = gradeObj.reasons && gradeObj.reasons.length
+      ? '판정 근거: ' + gradeObj.reasons.map(r=>`<span style="background:rgba(0,0,0,0.06);padding:2px 8px;border-radius:2px;margin-right:4px;">${r}</span>`).join('')
+      : '';
+    subEl.innerHTML = `<span style="color:var(--ink3);font-size:12px;">${ageStr}</span>${reasonStr}`;
   }
 
-  // 수리 사격 그리드
-  const strokeInfo = suri.chars.map((c,i) => `${c}(${suri.strokes[i]}획)`).join(' + ');
-  let hangulStrokeInfo = '';
-  if (hangulSuri && suri._mode === 'hanja') {
-    hangulStrokeInfo = `<div style="font-size:11px;color:var(--green-dark);margin-top:4px;">한글 수리: 정격 ${hangulSuri.jung}수 / 형격 ${hangulSuri.hyung}수 / 이격 ${hangulSuri.yi}수</div>`;
+  // ── 운세 별점 ──
+  function starsHTML(score) {
+    const full  = Math.floor(score);
+    const half  = (score - full) >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '★'.repeat(full) +
+      (half ? '<span style="opacity:0.4;">★</span>' : '') +
+      '<span style="color:#ddd;">★</span>'.repeat(empty);
   }
 
-  document.getElementById('suri-grid').innerHTML =
-    `<div style="grid-column:1/-1;font-size:12px;color:var(--ink3);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(123,174,90,0.1);">
-      ${suri._mode==='hanja'?'한자':'한글'} 획수: ${strokeInfo}${hangulStrokeInfo}
-    </div>` +
-    [{k:'원격(元格)',v:suri.won,i:wInfo,d:'이름 전체 합'},
-     {k:'형격(亨格)',v:suri.hyung,i:hInfo,d:'성+첫글자'},
-     {k:'이격(利格)',v:suri.yi,i:yInfo,d:'성+끝글자'},
-     {k:'정격(貞格)',v:suri.jung,i:jInfo,d:'성+이름전체'}
-    ].map(g=>`<div class="suri-item">
-      <div class="suri-label">${g.k}</div>
-      <div style="font-size:10px;color:var(--ink-faint);margin-bottom:4px;">${g.d}</div>
-      <div class="suri-num ${suriColorClass(g.i.l)}">${g.v}</div>
-      <div class="suri-name">${g.i.n}</div>
-      <div class="suri-desc">${g.i.d}</div>
-    </div>`).join('');
+  const fortuneEl = document.getElementById('fortune-grid');
+  try {
+    const hSuriF = hangulSuri || suri;
+    const hGuaF = (() => { try { return calcGua(hSuriF.won, hSuriF.hyung, hSuriF.yi, hSuriF.jung); } catch(e) { return null; } })();
+    const stars = calcFortuneStars(hangulSuri, suri._mode==='hanja' ? suri : null, hGuaF);
+    const labels = {재물:'💰 재물운', 직업:'💼 직업운', 건강:'🌿 건강운', 가정:'🏠 가정운', 연애:'❤️ 연애운', 종합:'⭐ 종합운'};
+    fortuneEl.innerHTML =
+      `<div style="grid-column:1/-1;font-size:11px;letter-spacing:0.12em;color:var(--green-dark);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(123,174,90,0.15);">수리·주역 기반 운세 분석</div>` +
+      Object.entries(stars).map(([k,v]) =>
+        `<div class="fortune-item">
+          <div class="fortune-label">${labels[k]||k}</div>
+          <div class="fortune-stars" style="color:#f0a500;">${starsHTML(v)}</div>
+          <div class="fortune-score">${v.toFixed(1)} / 5.0</div>
+        </div>`).join('');
+    fortuneEl.style.display = 'grid';
+    fortuneEl.style.gridTemplateColumns = 'repeat(3,1fr)';
+    fortuneEl.style.gap = '10px';
+    fortuneEl.style.marginBottom = '20px';
+  } catch(e) { fortuneEl.style.display = 'none'; }
+
+  // ── 수리/주역/오행 렌더링 헬퍼 ──
+  function suriCls(n) {
+    const l = sI(n).l;
+    if (l >= 4) return 'good';
+    if (l >= 2) return 'mid';
+    return 'bad';
+  }
+
+  function renderSuriGrid(suriData, label, phase, age) {
+    const phases = {
+      won:   {k:'원격(元格)', range:'0~20세', desc:'이름 고유 기운'},
+      hyung: {k:'형격(亨格)', range:'21~40세', desc:'직업·사회운'},
+      yi:    {k:'이격(利格)', range:'41~55세', desc:'관계·내면운'},
+      jung:  {k:'정격(貞格)', range:'56세~(평생)', desc:'종합·평생운'},
+    };
+    const keys = ['won','hyung','yi','jung'];
+    let html = `<div class="suri-section-title">${label}</div>`;
+    keys.forEach(k => {
+      const v = suriData[k];
+      const info = sI(v);
+      const p = phases[k];
+      const cls = suriCls(v);
+      // 이미 지난 구간 표시
+      const isPast = (k==='won' && age>20) || (k==='hyung' && age>40) || (k==='yi' && age>55);
+      const pastMark = isPast ? ' <span style="font-size:9px;opacity:0.5;">(지남)</span>' : '';
+      html += `<div class="suri-item ${cls}" style="${isPast?'opacity:0.45;':''}">
+        <div class="suri-label">${p.k}${pastMark}</div>
+        <div class="suri-phase">${p.range} · ${p.desc}</div>
+        <div class="suri-num ${cls}">${v}</div>
+        <div class="suri-name ${cls}">${info.n}</div>
+        <div class="suri-desc">${info.d}</div>
+      </div>`;
+    });
+    return html;
+  }
+
+  function renderGuaRow(guaObj, label) {
+    if (!guaObj) return '';
+    const items = [
+      {k:'원격', g:guaObj.원격},
+      {k:'이격', g:guaObj.이격},
+      {k:'정격', g:guaObj.정격},
+    ].filter(x => x.g);
+    if (!items.length) return '';
+    let html = `<div class="suri-section-title">${label}</div><div class="gua-row">`;
+    items.forEach(({k,g}) => {
+      const isHyungG = HYUNG_GUA_LIST.includes(g.name);
+      const cls = isHyungG ? 'bad' : 'good';
+      html += `<div class="gua-item ${cls}">
+        <div class="gua-label">${k}</div>
+        <div class="gua-sym">${g.sym||''}</div>
+        <div class="gua-name ${cls}">${g.name}${isHyungG?' ⚠️':''}</div>
+        <div class="gua-meaning">${g.meaning||''}</div>
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  // ── 수리 사격 + 주역 렌더 ──
+  const age = suri._age || 0;
+  let gridHTML = '';
+
+  // 한글 수리 + 주역
+  if (hangulSuri) {
+    gridHTML += renderSuriGrid(hangulSuri, '✍️ 한글 이름 수리', suri._phase, age);
+    // 한글 주역괘
+    try {
+      const hGua = calcGua(hangulSuri.won, hangulSuri.hyung, hangulSuri.yi, hangulSuri.jung);
+      gridHTML += renderGuaRow(hGua, '☯ 한글 이름 주역괘');
+    } catch(e) {}
+  } else if (suri._mode !== 'hanja') {
+    gridHTML += renderSuriGrid(suri, '✍️ 한글 이름 수리', suri._phase, age);
+    try {
+      const hGua = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
+      gridHTML += renderGuaRow(hGua, '☯ 한글 이름 주역괘');
+    } catch(e) {}
+  }
+
+  // 한자 수리 + 주역
+  if (suri._mode === 'hanja') {
+    gridHTML += renderSuriGrid(suri, '📖 한자 이름 수리', suri._phase, age);
+    try {
+      const jGua = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
+      gridHTML += renderGuaRow(jGua, '☯ 한자 이름 주역괘');
+    } catch(e) {}
+  }
+
+  document.getElementById('suri-grid').innerHTML = gridHTML;
 
   // 오행 (한글 초성 기준)
   let ohangHtml = '<div style="font-size:11px;color:var(--ink3);margin-bottom:6px;">오행 (한글 초성 기준)</div>';
@@ -1535,10 +1791,6 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
 
   const concern = document.getElementById('diag-concern').value.trim();
   document.getElementById('result-points').innerHTML = [
-    `<li><span class="point-icon">📊</span><span>정격(종합운) ${suri.jung}수 — ${jInfo.n}: ${jInfo.d}</span></li>`,
-    `<li><span class="point-icon">💼</span><span>형격(직업·사회운) ${suri.hyung}수 — ${hInfo.n}: ${hInfo.d}</span></li>`,
-    `<li><span class="point-icon">🔄</span><span>이격(관계·내면운) ${suri.yi}수 — ${yInfo.n}</span></li>`,
-    guaHtml,
     concern ? `<li><span class="point-icon">💬</span><span>고민 "${concern}" — 수리·사주 연관성은 전문 상담에서 확인하실 수 있습니다.</span></li>` : '',
   ].join('');
 
@@ -1559,36 +1811,65 @@ function getSaju() {
   } catch(e) { console.error('사주 계산 오류:', e); return null; }
 }
 
-/* ── 통합 진단 버튼 함수 ── */
+/* ── 나이 계산 ── */
+function calcAge(year, month, day) {
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  const m = today.getMonth() + 1;
+  if (m < month || (m === month && today.getDate() < day)) age--;
+  return age;
+}
+
+/* ── 나이로 현재 수리 구간 판단 ── */
+function getSuriPhase(age) {
+  if (age <= 20) return 'won';       // 원격 구간
+  if (age <= 40) return 'hyung';     // 형격 구간
+  if (age <= 55) return 'yi';        // 이격 구간
+  return 'jung';                     // 정격 구간
+}
+
+/* ── 통합 진단 버튼 ── */
 function runDiag() {
+  const year   = document.getElementById('diag-year').value;
+  const month  = document.getElementById('diag-month').value;
+  const day    = document.getElementById('diag-day').value;
+  const gender = document.getElementById('diag-gender').value;
   const hangul = document.getElementById('diag-hangul').value.trim();
   const hanja  = document.getElementById('diag-hanja').value.trim();
 
-  if (!hangul && !hanja) {
-    alert('한글 이름을 입력해주세요.'); return;
+  // 필수값 검증
+  if (!year || !month || !day) {
+    alert('생년월일을 선택해주세요. (정확한 나이 기반 판정에 필요합니다)'); return;
+  }
+  if (!gender) {
+    alert('성별을 선택해주세요.'); return;
+  }
+  if (!hangul || hangul.length < 2) {
+    alert('한글 이름을 2글자 이상 입력해주세요.'); return;
   }
 
   let suri = null;
   let displayName = '';
 
-  // 한자 우선 (더 정확)
   if (hanja && hanja.length >= 2) {
     suri = calcHanjaSuriLanding(hanja);
-    if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다. 한글만 입력해보세요.'); return; }
+    if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다. 한글만으로 진단해보세요.'); return; }
     suri._mode = 'hanja';
-    displayName = hangul ? `${hangul}(${hanja})` : hanja;
-  } else if (hangul && hangul.length >= 2) {
+    displayName = `${hangul}(${hanja})`;
+  } else {
     suri = calcHangulSuri(hangul);
     if (!suri) { alert('이름 분석에 실패했습니다. 다시 입력해주세요.'); return; }
     suri._mode = 'hangul';
-    suri.ohang = suri.chars.map(getChoOhangD);
     displayName = hangul;
-  } else {
-    alert('이름을 2글자 이상 입력해주세요.'); return;
   }
 
+  // 나이 계산
+  const age = calcAge(+year, +month, +day);
+  suri._age = age;
+  suri._phase = getSuriPhase(age);
+
   const sajuResult = getSaju();
-  renderDiagResult(displayName, suri, sajuResult, hangul || null);
+  renderDiagResult(displayName, suri, sajuResult, hangul);
 }
 
 function onHangulInput() {}
