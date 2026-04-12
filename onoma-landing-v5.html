@@ -1245,7 +1245,7 @@ const GEN_D = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
 const KIL_D = {'木':'土','火':'金','土':'水','金':'木','水':'火'};
 
 // 흉괘 목록 (상담 요망 기준)
-const흉괘_상담 = ['화택규','산지박','산풍고','천수송'];
+const HYUNG_GUA_LIST = ['화택규','산지박','산풍고','천수송'];
 
 function getChoOhangD(ch) {
   const code = ch.charCodeAt(0);
@@ -1271,7 +1271,7 @@ function hasOhangSanggeuk(ohangArr) {
 function isHyungGua(guaObj) {
   if (!guaObj) return false;
   const names = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean).map(g => g.name);
-  return names.some(n =>흉괘_상담.includes(n));
+  return names.some(n =>HYUNG_GUA_LIST.includes(n));
 }
 
 /* wuxing 문자열에서 오행 추출 ("木火" → ['木','火']) */
@@ -1407,7 +1407,7 @@ function getUrgencyMsg(gradeObj, suri, ohangArr, sajuDist, guaObj) {
       삶의 특정 흐름에서 반복적인 걸림돌이 생길 수 있습니다. 전문 상담을 통해 정확한 원인을 파악해보시길 권합니다.`;
   }
   if (gradeObj.level === 2 && isHyungGua(guaObj)) {
-    const names = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean).filter(g=>흉괘_상담.includes(g.name)).map(g=>g.name);
+    const names = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean).filter(g=>HYUNG_GUA_LIST.includes(g.name)).map(g=>g.name);
     return `수리 사격은 길수이지만 <strong>주역괘에서 주의가 필요한 괘</strong>(${names.join(', ')})가 나타났습니다.<br>
       이름 자체보다 삶의 특정 국면에서 충돌이 생길 수 있으니 전문 상담을 통해 점검해보세요.`;
   }
