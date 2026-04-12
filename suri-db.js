@@ -295,54 +295,6 @@ const SURI = {
   81:{n:'환원격',l:5,d:'대성운(大盛運) - 吉. 원점으로 돌아와 대성한다.'},
 }
 
-const HANGUL_CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-const HANGUL_JUNG = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
-const HANGUL_JONG = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-
-// 자모 획수표
-const JAMO_STROKES = {
-  // 자음 - 광미명성학 기준 (PDF 수록)
-  // 핵심: ㅇ=2획 (다른 성명학과 달리 광미명성학은 ㅇ을 2획으로 계산)
-  'ㄱ':1,'ㄲ':2,'ㄴ':1,'ㄷ':2,'ㄸ':4,'ㄹ':3,'ㅁ':3,'ㅂ':4,'ㅃ':8,
-  'ㅅ':2,'ㅆ':4,'ㅇ':2,'ㅈ':3,'ㅉ':6,'ㅊ':4,'ㅋ':2,'ㅌ':3,'ㅍ':4,'ㅎ':4,
-  // 겹받침
-  'ㄳ':3,'ㄵ':4,'ㄶ':5,'ㄺ':4,'ㄻ':6,'ㄼ':7,'ㄽ':5,'ㄾ':6,'ㄿ':7,'ㅀ':7,'ㅄ':6,
-  // 모음 - PDF 기준
-  'ㅏ':2,'ㅐ':3,'ㅑ':3,'ㅒ':4,'ㅓ':2,'ㅔ':3,'ㅕ':3,'ㅖ':4,
-  'ㅗ':2,'ㅘ':4,'ㅙ':5,'ㅚ':3,'ㅛ':3,'ㅜ':2,'ㅝ':4,'ㅞ':5,'ㅟ':3,'ㅠ':3,
-  'ㅡ':1,'ㅢ':2,'ㅣ':1,
-};
-
-
-
-function hangulCharStrokes(ch) {
-  const code = ch.charCodeAt(0) - 0xAC00;
-  if (code < 0 || code > 11171) return null;
-  const cho  = HANGUL_CHO[Math.floor(code / (21 * 28))];
-  const jung = HANGUL_JUNG[Math.floor((code % (21 * 28)) / 28)];
-  const jong = HANGUL_JONG[code % 28];
-  const choS  = JAMO_STROKES[cho]  || 0;
-  const jungS = JAMO_STROKES[jung] || 0;
-  const jongS = jong ? (JAMO_STROKES[jong] || 0) : 0;
-  return choS + jungS + jongS;
-}
-
-function calcHangulSuri(nameStr) {
-  const chars = [...nameStr];
-  const strokes = chars.map(c => hangulCharStrokes(c));
-  if (strokes.some(s => s === null)) return null;
-  const norm = n => { while(n > 81) n -= 80; return n; };
-  const sS = strokes[0];
-  const nS = strokes.slice(1);
-  return {
-    chars, strokes,
-    won:   norm(nS.reduce((a,b) => a+b, 0)),
-    hyung: norm(sS + nS[0]),
-    yi:    norm(sS + nS[nS.length-1]),
-    jung:  norm(sS + nS.reduce((a,b) => a+b, 0)),
-  };
-}
-
 /* 8괘 mod8 변환 (0→8) */
 function mod8(n) {
   while (n <= 0) n += 8;

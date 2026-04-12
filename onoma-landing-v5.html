@@ -1425,15 +1425,10 @@ function renderDiagResult(name, suri, sajuResult) {
 
   const ohangArr = suri.ohang || suri.chars.map(getChoOhangD);
 
-  // 주역괘 — suri-db.js 정확한 함수로 호출
+  // 주역괘 — calcGua(won, hyung, yi, jung)
   let guaObj = null;
   try {
-    const sS = suri.strokes[0];
-    const nS = suri.strokes.slice(1);
-    const 첫 = nS[0], 마지 = nS[nS.length-1];
-    guaObj = suri._mode === 'hanja'
-      ? calcHanjaGua(sS, 첫, 마지)
-      : calcHangulGua(sS, 첫, 마지);
+    guaObj = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
   } catch(e) { console.error('괘 오류:', e); }
 
   const sajuDist = sajuResult ? getSajuOhangDist(sajuResult) : null;
@@ -1496,8 +1491,8 @@ function renderDiagResult(name, suri, sajuResult) {
   if (guaObj) {
     const guaNames = [
       guaObj.원격 ? `원격: ${guaObj.원격.name}` : '',
-      guaObj.형격 ? `형격: ${guaObj.형격.name}` : '',
       guaObj.이격 ? `이격: ${guaObj.이격.name}` : '',
+      guaObj.정격 ? `정격: ${guaObj.정격.name}` : '',
     ].filter(Boolean);
     guaHtml = `<li><span class="point-icon">☯</span><span style="font-size:12px;">주역괘 — ${guaNames.join(' / ')}</span></li>`;
   }
