@@ -166,12 +166,15 @@ section { position:relative; z-index:1; }
 
 /* 결과 */
 #result-box { display:none; margin-top:36px; border:1px solid rgba(123,174,90,0.22); background:#fff; box-shadow:0 4px 24px rgba(44,50,32,0.08); }
-.result-header { padding:22px 28px; border-bottom:1px solid rgba(123,174,90,0.12); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-.result-title { font-family:var(--serif); font-size:17px; color:var(--ink); font-weight:400; }
-.result-grade { font-size:11px; letter-spacing:0.15em; padding:5px 14px; border:1px solid; }
-.result-grade.stable { border-color:rgba(78,122,50,0.4); color:var(--green-dark); background:var(--green-pale); }
-.result-grade.caution { border-color:rgba(180,130,40,0.4); color:#7A5C10; background:#FBF5E0; }
-.result-grade.review { border-color:rgba(180,70,60,0.3); color:#8B2A20; background:#FFF0EE; }
+.result-header { padding:24px 28px 20px; border-bottom:1px solid rgba(123,174,90,0.12); }
+.result-title { font-family:var(--serif); font-size:16px; color:var(--ink3); font-weight:400; margin-bottom:14px; }
+.result-grade { display:inline-block; font-size:22px; font-weight:700; letter-spacing:0.06em; padding:14px 32px; border:2px solid; border-radius:2px; font-family:var(--serif); }
+.result-grade.stable { border-color:rgba(78,122,50,0.5); color:var(--green-dark); background:var(--green-pale); }
+.result-grade.caution { border-color:rgba(180,130,40,0.5); color:#7A5C10; background:#FBF5E0; }
+.result-grade.review { border-color:rgba(180,70,60,0.4); color:#8B2A20; background:#FFF0EE; }
+/* 등급별 왼쪽 강조 바 */
+.result-grade-wrap { display:flex; align-items:center; gap:16px; margin-bottom:4px; }
+.result-grade-icon { font-size:32px; }
 .result-body { padding:28px; }
 .result-points { list-style:none; margin-bottom:24px; }
 .result-points li { font-size:14px; color:var(--ink3); padding:11px 0; border-bottom:1px solid rgba(123,174,90,0.07); display:flex; gap:12px; line-height:1.7; }
@@ -449,9 +452,7 @@ img { display:block; }
 .ohang-chip-diag.金 { background:#F0F0F8; color:#4a4a6a; border:1px solid rgba(74,74,106,0.3); }
 .ohang-chip-diag.水 { background:#E8F4F8; color:#2a7f7f; border:1px solid rgba(42,127,127,0.3); }
 /* 개명 진단 등급 */
-.grade-필요없음 { border-color:rgba(78,122,50,0.4); color:var(--green-dark); background:var(--green-pale); }
-.grade-고려 { border-color:rgba(180,130,40,0.4); color:#7A5C10; background:#FBF5E0; }
-.grade-필요 { border-color:rgba(180,70,60,0.3); color:#8B2A20; background:#FFF0EE; }
+/* 개명 진단 등급 — result-header 위에 동일 정의 */
 
 </style>
 <body>
@@ -600,7 +601,8 @@ img { display:block; }
         <!-- 진단 등급 헤더 -->
         <div class="result-header">
           <div class="result-title" id="result-title">진단 결과</div>
-          <div class="result-grade" id="result-grade"></div>
+          <div id="result-grade" class="result-grade"></div>
+          <div id="result-grade-sub" style="font-size:13px;color:var(--ink3);margin-top:8px;"></div>
         </div>
         <div class="result-body">
           <!-- 수리 사격 그리드 -->
@@ -1438,7 +1440,25 @@ function renderDiagResult(name, suri, sajuResult) {
   document.getElementById('result-title').textContent = `"${name}" 진단 결과`;
   const gradeEl = document.getElementById('result-grade');
   gradeEl.textContent = gradeObj.grade;
-  gradeEl.className = 'result-grade ' + gradeObj.cls;
+
+  // 등급별 색상 클래스 매핑
+  const clsMap = {
+    'grade-필요없음': 'stable',
+    'grade-고려':     'caution',
+    'grade-필요':     'review',
+  };
+  gradeEl.className = 'result-grade ' + (clsMap[gradeObj.cls] || 'caution');
+
+  // 부제 설명
+  const subMap = {
+    '개명 권유':        '⚠️ 이름 구조에서 심각한 문제가 감지되었습니다. 개명을 진지하게 검토하세요.',
+    '개명 고려':        '🔶 이름에 보완이 필요한 구조가 확인되었습니다.',
+    '상담 요망':        '🔷 수리는 무난하나 주역괘에서 주의 신호가 나타났습니다.',
+    '애매 — 상담 권장': '💬 이름 자체보다 사주와의 조화에서 보완이 필요합니다.',
+    '개명 불필요':      '✅ 현재 이름의 수리 구조는 전반적으로 안정적입니다.',
+  };
+  const subEl = document.getElementById('result-grade-sub');
+  if (subEl) subEl.textContent = subMap[gradeObj.grade] || '';
 
   const strokeInfo = suri.chars.map((c,i) => `${c}(${suri.strokes[i]}획)`).join(' + ');
 
