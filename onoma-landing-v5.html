@@ -46,8 +46,7 @@ nav {
 }
 .nav-logo { text-decoration:none; display:flex; align-items:center; gap:18px; }
 .nav-logo img { height:80px; width:auto; display:block; }
-.nav-logo-text { font-family:var(--serif); font-size:20px; font-weight:700; color:var(--green-dark); letter-spacing:0.06em; border-left:2px solid rgba(123,174,90,0.35); padding-left:18px; display:block; }
-.nav-logo span { display:none; }
+.nav-logo-text { font-family:var(--serif); font-size:20px; font-weight:700; color:var(--green-dark); letter-spacing:0.06em; border-left:2px solid rgba(123,174,90,0.35); padding-left:18px; }
 .nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
 .nav-links a { font-size:14px; font-weight:600; color:var(--ink2); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--green-dark); }
@@ -455,6 +454,9 @@ img { display:block; }
 .grade-필요 { border-color:rgba(180,70,60,0.3); color:#8B2A20; background:#FFF0EE; }
 
 </style>
+<script src="hanja-db.js" defer></script>
+<script src="suri-db.js" defer></script>
+<script src="manse-db.js" defer></script>
 <body>
 
 <!-- NAV -->
@@ -1208,6 +1210,7 @@ img { display:block; }
   </div>
 </footer>
 
+<!-- DB 스크립트는 head에서 defer로 로드 -->
 <script>
 function openPortfolio() {
   document.getElementById('portfolio-modal').style.display = 'block';
@@ -1417,11 +1420,7 @@ function getUrgencyMsg(gradeObj, suri, ohangArr, sajuDist, guaObj) {
 
 /* ── 메인 렌더 함수 ── */
 function renderDiagResult(name, suri, sajuResult) {
-  if (typeof SURI === 'undefined') {
-    alert('수리 DB 로드 오류입니다. 페이지를 새로고침 해주세요.'); return;
-  }
-
-  const sI = n => SURI[n] || {n:'특수수',l:3,d:'독특한 기운의 수'};
+  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3,d:'독특한 기운의 수'};
   const jInfo=sI(suri.jung), hInfo=sI(suri.hyung), yInfo=sI(suri.yi), wInfo=sI(suri.won);
 
   const ohangArr = suri.ohang || suri.chars.map(getChoOhangD);
@@ -1618,10 +1617,5 @@ for (let i = 0; i < 5; i++) addSpRow();
 // 이후 5분 간격으로 새 항목 추가
 setInterval(addSpRow, 290000 + Math.random() * 20000);
 </script>
-
-<!-- DB 스크립트 — 반드시 페이지 렌더 후 로드 -->
-<script src="hanja-db.js"></script>
-<script src="suri-db.js"></script>
-<script src="manse-db.js"></script>
 </body>
 </html>
