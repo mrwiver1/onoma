@@ -454,9 +454,6 @@ img { display:block; }
 .grade-필요 { border-color:rgba(180,70,60,0.3); color:#8B2A20; background:#FFF0EE; }
 
 </style>
-<script src="hanja-db.js" defer></script>
-<script src="suri-db.js" defer></script>
-<script src="manse-db.js" defer></script>
 <body>
 
 <!-- NAV -->
@@ -1210,7 +1207,11 @@ img { display:block; }
   </div>
 </footer>
 
-<!-- DB 스크립트는 head에서 defer로 로드 -->
+<!-- DB 스크립트 — 인라인 스크립트보다 먼저 로드 -->
+<script src="hanja-db.js"></script>
+<script src="suri-db.js"></script>
+<script src="manse-db.js"></script>
+
 <script>
 function openPortfolio() {
   document.getElementById('portfolio-modal').style.display = 'block';
