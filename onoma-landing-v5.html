@@ -46,7 +46,7 @@ nav {
 }
 .nav-logo { text-decoration:none; display:flex; align-items:center; gap:18px; }
 .nav-logo img { height:80px; width:auto; display:block; }
-.nav-logo-text { font-family:var(--serif); font-size:22px; font-weight:700; color:var(--green-dark); letter-spacing:0.06em; border-left:2px solid rgba(123,174,90,0.35); padding-left:18px; }
+.nav-logo-text { font-family:var(--serif); font-size:20px; font-weight:700; color:var(--green-dark); letter-spacing:0.06em; border-left:2px solid rgba(123,174,90,0.35); padding-left:18px; display:block; }
 .nav-logo span { display:none; }
 .nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
 .nav-links a { font-size:14px; font-weight:600; color:var(--ink2); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
@@ -455,9 +455,6 @@ img { display:block; }
 .grade-필요 { border-color:rgba(180,70,60,0.3); color:#8B2A20; background:#FFF0EE; }
 
 </style>
-<script src="hanja-db.js"></script>
-<script src="suri-db.js"></script>
-<script src="manse-db.js"></script>
 <body>
 
 <!-- NAV -->
@@ -594,7 +591,7 @@ img { display:block; }
         </div>
         <!-- 진단 버튼 하나 -->
         <button class="btn-primary" onclick="runDiag()" style="width:100%;padding:17px;font-size:14px;font-weight:500;letter-spacing:0.06em;">
-          내 이름 수리 진단하기
+          내 이름 확인하기
         </button>
         <div style="font-size:12px;color:var(--ink3);margin-top:8px;text-align:center;">한자 입력 시 더 정확한 수리 계산 · 생년월일 입력 시 사주 오행 함께 분석</div>
       </div>
@@ -1621,5 +1618,10 @@ for (let i = 0; i < 5; i++) addSpRow();
 // 이후 5분 간격으로 새 항목 추가
 setInterval(addSpRow, 290000 + Math.random() * 20000);
 </script>
+
+<!-- DB 스크립트 — 반드시 페이지 렌더 후 로드 -->
+<script src="hanja-db.js"></script>
+<script src="suri-db.js"></script>
+<script src="manse-db.js"></script>
 </body>
 </html>
