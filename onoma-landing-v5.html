@@ -1389,50 +1389,158 @@ const GUA_FORTUNE = {
   '곤위지':    {재:3.5,직:3.5,건:3.5,가:4,연:3.5,종:3.5},
 };
 
-/* 수리 l값 → 운세 점수 변환 */
-function suriToScore(l) {
-  const map = {1:2, 2:2.5, 3:3, 4:4, 5:4.5};
-  return map[l] || 3;
-}
+/* 수리별 운세 점수 테이블 — l값 기반, 특성 있는 수리는 항목별 차등 */
+const SURI_FORTUNE = (() => {
+  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {l:3};
+  // l값 → 기본 점수
+  const base = l => ({1:2, 2:2.5, 3:3, 4:4, 5:4.5}[l] || 3);
+
+  // 81수 전체 기본값 생성
+  const t = {};
+  for (let i = 1; i <= 81; i++) {
+    const l = sI(i).l;
+    const b = base(l);
+    t[i] = {재:b, 직:b, 건:b, 가:b, 연:b, 종:b};
+  }
+
+  // 특성이 명확한 수리 보정
+  // 1 출발권위 — 직업·종합 강
+  t[1]  = {재:4,   직:5,   건:4,   가:3.5, 연:3,   종:4.5};
+  // 3 지도적인물 — 직업·재물 강
+  t[3]  = {재:4.5, 직:5,   건:4,   가:3.5, 연:3.5, 종:4.5};
+  // 5 부귀봉록 — 재물 강
+  t[5]  = {재:5,   직:4.5, 건:4,   가:4,   연:4,   종:4.5};
+  // 6 계승발전 — 가정 강
+  t[6]  = {재:4,   직:4,   건:4.5, 가:5,   연:4,   종:4.5};
+  // 7 맹호출림 — 직업·재물 강
+  t[7]  = {재:4.5, 직:5,   건:4,   가:3.5, 연:3,   종:4.5};
+  // 8 수복겸전 — 전항목 균형 길
+  t[8]  = {재:4.5, 직:4.5, 건:5,   가:4.5, 연:4,   종:4.5};
+  // 11 중인신망 — 연애·가정 강
+  t[11] = {재:3.5, 직:4,   건:3.5, 가:4.5, 연:4.5, 종:4};
+  // 13 총명지모 — 직업 최강
+  t[13] = {재:4,   직:5,   건:4,   가:3.5, 연:3.5, 종:4.5};
+  // 15 군계일학 — 직업·명예 강
+  t[15] = {재:4,   직:5,   건:4,   가:4,   연:3.5, 종:4.5};
+  // 16 덕망유복 — 가정·연애 강
+  t[16] = {재:4,   직:4.5, 건:4,   가:5,   연:4.5, 종:4.5};
+  // 17 명망사해 — 직업 강, 가정 보통
+  t[17] = {재:4,   직:4.5, 건:3.5, 가:3,   연:3,   종:4};
+  // 18 부귀영달 — 재물·직업 강
+  t[18] = {재:5,   직:5,   건:4,   가:3.5, 연:3.5, 종:4.5};
+  // 21 두령수 — 직업 강, 연애·가정 약
+  t[21] = {재:4,   직:5,   건:4,   가:2.5, 연:2,   종:4};
+  // 23 일흥중천 — 직업 강, 가정 약
+  t[23] = {재:4,   직:5,   건:4,   가:2,   연:2,   종:4};
+  // 24 부귀영화재물풍부 — 재물 최강
+  t[24] = {재:5,   직:4.5, 건:4,   가:4,   연:4,   종:4.5};
+  // 25 지모순조 — 균형 길
+  t[25] = {재:4.5, 직:4.5, 건:4,   가:4,   연:4,   종:4.5};
+  // 27 대인격 — 직업(예술) 강, 가정 약
+  t[27] = {재:3.5, 직:4.5, 건:3.5, 가:2.5, 연:3,   종:4};
+  // 29 권력재물 — 재물·직업 강
+  t[29] = {재:5,   직:5,   건:4,   가:3.5, 연:3.5, 종:4.5};
+  // 31 자수성가 — 균형 대길
+  t[31] = {재:4.5, 직:4.5, 건:4,   가:4,   연:4,   종:4.5};
+  // 32 의외득재 — 재물 강
+  t[32] = {재:5,   직:4,   건:4,   가:4,   연:4,   종:4.5};
+  // 33 권위충천 — 재물·직업 강
+  t[33] = {재:5,   직:5,   건:4,   가:3.5, 연:3,   종:4.5};
+  // 35 온유화순 — 가정·건강 강
+  t[35] = {재:4,   직:4,   건:5,   가:5,   연:4.5, 종:4.5};
+  // 37 권위인덕 — 직업·재물 강
+  t[37] = {재:4.5, 직:5,   건:4,   가:4,   연:3.5, 종:4.5};
+  // 38 문예기예 — 직업(예술) 강, 재물 보통
+  t[38] = {재:3.5, 직:5,   건:3.5, 가:3.5, 연:3.5, 종:4};
+  // 39 위세강중 — 직업·재물 강
+  t[39] = {재:4.5, 직:5,   건:4,   가:3.5, 연:3,   종:4.5};
+  // 41 선견고명 — 균형 대길
+  t[41] = {재:4.5, 직:4.5, 건:4,   가:4,   연:4,   종:4.5};
+  // 45 통달사해 — 전항목 강
+  t[45] = {재:4.5, 직:5,   건:4,   가:4,   연:4,   종:5};
+  // 47 일확천금 — 재물 강
+  t[47] = {재:5,   직:4.5, 건:4,   가:4,   연:3.5, 종:4.5};
+  // 48 배후조종 — 가정·종합 강
+  t[48] = {재:4,   직:4,   건:4.5, 가:5,   연:4,   종:4.5};
+  // 52 비룡승천 — 재물·직업 강
+  t[52] = {재:5,   직:5,   건:4,   가:3.5, 연:3.5, 종:4.5};
+  // 57 고진감래 — 균형 대길
+  t[57] = {재:4.5, 직:4.5, 건:4.5, 가:4.5, 연:4,   종:4.5};
+  // 58 선흉후길 — 직업·명예 강
+  t[58] = {재:4,   직:4.5, 건:3.5, 가:3.5, 연:3.5, 종:4};
+  // 61 영달격
+  t[61] = {재:4.5, 직:5,   건:4,   가:4,   연:3.5, 종:4.5};
+  // 63 길상격
+  t[63] = {재:4.5, 직:4.5, 건:4.5, 가:4.5, 연:4.5, 종:4.5};
+  // 65 유덕격
+  t[65] = {재:4,   직:4,   건:4.5, 가:5,   연:4.5, 종:4.5};
+  // 67 형통격
+  t[67] = {재:4.5, 직:5,   건:4,   가:4,   연:4,   종:4.5};
+  // 68 공명격
+  t[68] = {재:4.5, 직:5,   건:4,   가:4,   연:4,   종:4.5};
+  // 71 발전격
+  t[71] = {재:4,   직:4.5, 건:4,   가:4,   연:4,   종:4.5};
+  // 73 노력격
+  t[73] = {재:3.5, 직:4,   건:3.5, 가:3.5, 연:3.5, 종:4};
+  // 75 수분격
+  t[75] = {재:3.5, 직:4,   건:4,   가:4,   연:4,   종:4};
+  // 77 희비격
+  t[77] = {재:3.5, 직:4,   건:3.5, 가:3.5, 연:3.5, 종:4};
+  // 78 만고격
+  t[78] = {재:3.5, 직:4,   건:3.5, 가:3.5, 연:3.5, 종:4};
+  // 81 환원격 — 전항목 대길
+  t[81] = {재:5,   직:5,   건:5,   가:5,   연:5,   종:5};
+
+  return t;
+})();
 
 /* 6가지 운세 별점 계산 */
-function calcFortuneStars(hangulSuri, hanjaSuri, guaObj) {
-  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {l:3};
 
-  // 판정에 사용할 수리 (한글 우선)
+/* ── 별점 엔진 (판정 엔진과 완전 분리 — 시간축 가중치 적용) ── */
+function calcFortuneStars(hangulSuri, hanjaSuri, guaObj, age) {
+  age = age || 35;
   const hs = hangulSuri || hanjaSuri;
-  const jungScore  = suriToScore(sI(hs.jung).l);
-  const hyungScore = suriToScore(sI(hs.hyung).l);
-  const yiScore    = suriToScore(sI(hs.yi).l);
+  const w  = getSuriWeights(age);
+  const gw = getGuaWeights(age);
 
-  // 주역괘 점수 — 3개 괘 모두 활용
-  const getF = (gua) => gua && GUA_FORTUNE[gua.name] ? GUA_FORTUNE[gua.name] : null;
+  // 수리 점수 — SURI_FORTUNE × 나이 가중치
+  const getSuriF = n => SURI_FORTUNE[n] || {재:3,직:3,건:3,가:3,연:3,종:3};
+  function weightedSuriScore(key) {
+    const total = getSuriF(hs.won)[key]*w.won + getSuriF(hs.hyung)[key]*w.hyung
+                + getSuriF(hs.yi)[key]*w.yi   + getSuriF(hs.jung)[key]*w.jung;
+    const wSum  = w.won + w.hyung + w.yi + w.jung;
+    return total / wSum;
+  }
+
+  // 주역 점수 — GUA_FORTUNE × 나이 가중치 (원격=1~30, 이격=30~55, 정격=55+)
+  const getF  = g => g && GUA_FORTUNE[g.name] ? GUA_FORTUNE[g.name] : null;
   const wonF  = guaObj ? getF(guaObj.원격) : null;
   const yiF   = guaObj ? getF(guaObj.이격) : null;
   const jungF = guaObj ? getF(guaObj.정격) : null;
-
-  // 괘 점수 평균 (있는 것만)
-  function guaAvg(key) {
-    const vals = [wonF, yiF, jungF].filter(Boolean).map(f => f[key]);
-    if (!vals.length) return null;
-    return vals.reduce((a,b) => a+b, 0) / vals.length;
+  function weightedGuaScore(key) {
+    const items = [
+      wonF  && {v:wonF[key],  w:gw.won},
+      yiF   && {v:yiF[key],   w:gw.yi},
+      jungF && {v:jungF[key], w:gw.jung},
+    ].filter(Boolean);
+    if (!items.length) return null;
+    const wSum = items.reduce((a,b)=>a+b.w, 0);
+    return items.reduce((a,b)=>a+b.v*b.w, 0) / wSum;
   }
 
-  // 각 운세 = 주역괘 평균(70%) + 수리(30%)
-  // 괘가 없으면 수리 100%
-  function calc(suriVal, guaKey) {
-    const gAvg = guaAvg(guaKey);
-    if (gAvg === null) return suriVal;
-    return suriVal * 0.3 + gAvg * 0.7;
+  function calc(suriKey, guaKey) {
+    const sVal = weightedSuriScore(suriKey);
+    const gVal = weightedGuaScore(guaKey);
+    return gVal === null ? sVal : sVal*0.3 + gVal*0.7;
   }
 
   return {
-    재물: Math.min(5, calc(jungScore, '재')),
-    직업: Math.min(5, calc(hyungScore,'직')),
-    건강: Math.min(5, calc(jungScore, '건')),
-    가정: Math.min(5, calc(yiScore,   '가')),
-    연애: Math.min(5, calc(yiScore,   '연')),
-    종합: Math.min(5, calc(jungScore, '종')),
+    재물: Math.min(5, Math.max(1, +calc('재','재').toFixed(1))),
+    직업: Math.min(5, Math.max(1, +calc('직','직').toFixed(1))),
+    건강: Math.min(5, Math.max(1, +calc('건','건').toFixed(1))),
+    가정: Math.min(5, Math.max(1, +calc('가','가').toFixed(1))),
+    연애: Math.min(5, Math.max(1, +calc('연','연').toFixed(1))),
+    종합: Math.min(5, Math.max(1, +calc('종','종').toFixed(1))),
   };
 }
 
@@ -1526,68 +1634,210 @@ function parseBirth(str) {
   return { year: +m[1], month: +m[2], day: +m[3] };
 }
 
-/* ── 진단 등급 판정 ── */
+/* ══════════════════════════════════════════════════════
+   판정 엔진 — 시간축 기반 오노마 알고리즘
+   수리: 원격(0~20) / 형격(21~40) / 이격(41~55) / 정격(55+, 평생)
+   주역: 원격괘(1~30) / 이격괘(30~55) / 정격괘(55+)
+   ※ 수리와 주역의 구간이 다름 — 각각 독립 계산 후 종합
+══════════════════════════════════════════════════════ */
+
+/* 수리 l값 → 길/흉 */
+function suriIsGood(n) {
+  const sI = x => (typeof SURI !== 'undefined' && SURI[x]) ? SURI[x] : {l:3};
+  return sI(n).l >= 4;
+}
+function suriIsBad(n) {
+  const sI = x => (typeof SURI !== 'undefined' && SURI[x]) ? SURI[x] : {l:3};
+  return sI(n).l <= 1;
+}
+
+/* 괘 등급 분류 */
+const STRONG_HYUNG_GUA = ['화택규','산지박','산풍고','천수송'];
+function guaGrade(gua) {
+  if (!gua) return 0; // 없음
+  if (STRONG_HYUNG_GUA.includes(gua.name)) return -2; // 강흉
+  // GUA_FORTUNE 기반으로 종합운 낮으면 흉
+  const f = GUA_FORTUNE[gua.name];
+  if (!f) return 0;
+  const avg = (f.재+f.직+f.건+f.가+f.연+f.종) / 6;
+  if (avg >= 4)   return 2;  // 길
+  if (avg >= 3.2) return 1;  // 주의
+  if (avg >= 2.5) return -1; // 흉
+  return -2;                 // 강흉
+}
+
+/* 나이별 수리 가중치 */
+function getSuriWeights(age) {
+  if (age <= 20) return {won:1.0, hyung:0.8, yi:0.6, jung:0.8};
+  if (age <= 30) return {won:0.2, hyung:1.0, yi:0.9, jung:1.0};
+  if (age <= 40) return {won:0.1, hyung:1.0, yi:1.0, jung:1.0};
+  if (age <= 55) return {won:0.0, hyung:0.3, yi:1.0, jung:1.0};
+  return             {won:0.0, hyung:0.1, yi:0.4, jung:1.0};
+}
+
+/* 나이별 주역 가중치 (원격=1~30, 이격=30~55, 정격=55+) */
+function getGuaWeights(age) {
+  if (age < 30)  return {won:0.8, yi:1.0, jung:0.8};
+  if (age < 55)  return {won:0.2, yi:1.0, jung:1.0};
+  return             {won:0.0, yi:0.3, jung:1.0};
+}
+
+/* ── 수리 엔진 ── */
+function calcSuriScore(hS, age) {
+  if (!hS) return {score:0, warnings:[]};
+  const w = getSuriWeights(age);
+  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {l:3};
+
+  // 각 격 원점수: 길=+2, 흉=-2, 정격 흉=-4(특별), 정격 길=+3
+  const rawScore = (n, isJung) => {
+    const l = sI(n).l;
+    if (isJung) return l >= 4 ? 3 : (l <= 1 ? -4 : 0);
+    return l >= 4 ? 2 : (l <= 1 ? -2 : 0);
+  };
+
+  const wonS   = rawScore(hS.won,   false) * w.won;
+  const hyungS = rawScore(hS.hyung, false) * w.hyung;
+  const yiS    = rawScore(hS.yi,    false) * w.yi;
+  const jungS  = rawScore(hS.jung,  true)  * w.jung;
+  const total  = wonS + hyungS + yiS + jungS;
+
+  const warnings = [];
+  if (suriIsBad(hS.jung))          warnings.push({type:'정격흉', weight:'high'});
+  if (age <= 40 && suriIsBad(hS.hyung)) warnings.push({type:'형격흉', weight:'mid'});
+  if (age <= 55 && suriIsBad(hS.yi))    warnings.push({type:'이격흉', weight:'mid'});
+  if (age <= 20 && suriIsBad(hS.won))   warnings.push({type:'원격흉', weight:'low'});
+
+  return {score: total, warnings};
+}
+
+/* ── 주역 엔진 ── */
+function calcGuaScore(guaObj, age) {
+  if (!guaObj) return {score:0, warnings:[], hasMixedSignal:false};
+  const w = getGuaWeights(age);
+
+  const wonG  = guaGrade(guaObj.원격);
+  const yiG   = guaGrade(guaObj.이격);
+  const jungG = guaGrade(guaObj.정격);
+
+  const total = wonG * w.won + yiG * w.yi + jungG * w.jung;
+
+  const warnings = [];
+  // 현재/미래 구간 강흉
+  if (age < 30  && wonG  <= -2) warnings.push({type:'1구간강흉', weight:'mid'});
+  if (age < 55  && yiG   <= -2) warnings.push({type:'2구간강흉', weight:'high'});
+  if (jungG <= -2)               warnings.push({type:'3구간강흉', weight:'high'});
+  // 현재/미래 연속 흉
+  if (age < 55 && yiG < 0 && jungG < 0) warnings.push({type:'미래연속흉', weight:'high'});
+
+  return {score: total, warnings, wonG, yiG, jungG};
+}
+
+/* ── 오행 상극 여부 ── */
+function ohangConflict(ohangArr) {
+  const valid = ohangArr.filter(o => o !== '?');
+  return hasOhangSanggeuk(valid);
+}
+
+/* ── 최종 판정 엔진 ── */
 function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
-  const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3,d:''};
-  const isHyung = n => sI(n).l <= 1;
-
-  // 현재 나이/구간
-  const age = suri._age || 99;
-
-  // 나이 기반으로 앞으로 영향 줄 구간만 체크
-  const checkHyung = age <= 40;
-  const checkYi    = age <= 55;
-
+  const age = suri._age || 35;
   const hS = hangulSuri || suri;
 
-  // ① 정격 흉수 (평생 영향, 항상 체크)
-  const jungHyung_h = isHyung(hS.jung);
-  const jungHyung_j = (suri._mode==='hanja') ? isHyung(suri.jung) : false;
-  const jungHyung   = jungHyung_h || jungHyung_j;
+  // 한글 수리 엔진
+  const suriResult = calcSuriScore(hS, age);
 
-  // ② 형격·이격 흉수 (나이 구간 내만)
-  const hyungHyung = checkHyung && isHyung(hS.hyung);
-  const yiHyung    = checkYi    && isHyung(hS.yi);
-  const subHyung   = hyungHyung || yiHyung;
+  // 한글 주역 엔진
+  const guaResult  = calcGuaScore(guaObj, age);
 
-  // ③ 오행 상극 (한글 초성 기준)
-  const validOhang    = hangulOhang.filter(o => o !== '?');
-  const ohangSanggeuk = hasOhangSanggeuk(validOhang);
-
-  // ④ 흉괘
-  const guaHyung = isHyungGua(guaObj);
-
-  // ── 판정 (사주 부족 오행은 판정에서 제외 — 참고 표시만) ──
-
-  // 개명 권유: 오행 상극 + 정격 흉수
-  if (ohangSanggeuk && jungHyung) {
-    return { grade:'개명 권유', cls:'review', level:4,
-      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk) };
+  // 한자 주역 엔진 (있으면)
+  let hanjaGuaResult = null;
+  if (suri._mode === 'hanja') {
+    try {
+      const hjanjaGua = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
+      hanjaGuaResult = calcGuaScore(hjanjaGua, age);
+    } catch(e) {}
   }
-  // 개명 권유: 흉괘 단독
-  if (guaHyung) {
-    const guaNames = [guaObj.원격, guaObj.이격, guaObj.정격].filter(Boolean)
-      .filter(g => HYUNG_GUA_LIST.includes(g.name)).map(g => g.name);
-    return { grade:'개명 권유', cls:'review', level:4,
-      reasons: [`흉괘 발견 (${guaNames.join(', ')})`] };
+
+  // 오행 상극
+  const hasOhangConflict = ohangConflict(hangulOhang);
+
+  // 전체 경고 수집
+  const allWarnings = [...suriResult.warnings, ...guaResult.warnings];
+  if (hanjaGuaResult) allWarnings.push(...hanjaGuaResult.warnings);
+
+  const highWarnings = allWarnings.filter(w => w.weight === 'high');
+  const midWarnings  = allWarnings.filter(w => w.weight === 'mid');
+
+  // 한글/한자 괘 충돌 감지
+  let mixedSignal = false;
+  if (hanjaGuaResult) {
+    const guaGoodFuture   = guaResult.yiG   >= 0 && guaResult.jungG >= 0;
+    const hanjaGoodFuture = hanjaGuaResult.yiG >= 0 && hanjaGuaResult.jungG >= 0;
+    if (guaGoodFuture !== hanjaGoodFuture) mixedSignal = true;
   }
-  // 개명 고려: 정격 흉수 OR 오행 상극 OR 현재 구간 이후 형·이격 흉수
-  if (jungHyung || ohangSanggeuk || subHyung) {
+
+  // ── 판정 ──
+
+  // 개명 권유 조건
+  const jungBad = suriIsBad(hS.jung); // 정격 흉수
+  const futureSuriBad = (age <= 55 && suriIsBad(hS.yi)) || jungBad;
+  const futureGuaBad  = guaResult.jungG <= -2 || (age < 55 && guaResult.yiG <= -2);
+  const futureGuaBoth = hanjaGuaResult
+    ? (futureGuaBad && (hanjaGuaResult.jungG <= -2 || (age < 55 && hanjaGuaResult.yiG <= -2)))
+    : futureGuaBad;
+
+  if (jungBad) {
+    return { grade:'개명 권유', cls:'review', level:4,
+      reasons: buildReasons2(hS, age, suriResult.warnings, guaResult, '정격 흉수') };
+  }
+  if (futureGuaBoth && highWarnings.length >= 2) {
+    return { grade:'개명 권유', cls:'review', level:4,
+      reasons: buildReasons2(hS, age, suriResult.warnings, guaResult, '미래 주역 연속 흉') };
+  }
+  if (futureSuriBad && futureGuaBad) {
+    return { grade:'개명 권유', cls:'review', level:4,
+      reasons: buildReasons2(hS, age, suriResult.warnings, guaResult, '수리+주역 미래 불안') };
+  }
+  if (hasOhangConflict && highWarnings.length >= 1) {
+    return { grade:'개명 권유', cls:'review', level:4,
+      reasons: buildReasons2(hS, age, suriResult.warnings, guaResult, '오행 상극+구조 불안') };
+  }
+
+  // 상담 요망 (충돌형)
+  if (mixedSignal) {
+    return { grade:'상담 요망', cls:'caution', level:2.5,
+      reasons: ['한글·한자 주역괘 흐름 충돌 — 정밀 해석 필요'] };
+  }
+  if (highWarnings.length >= 1 && suriResult.score > 0) {
+    return { grade:'상담 요망', cls:'caution', level:2.5,
+      reasons: buildReasons2(hS, age, suriResult.warnings, guaResult, '수리↔주역 혼합 구조') };
+  }
+
+  // 개명 고려
+  if (midWarnings.length >= 2 || (futureSuriBad || futureGuaBad)) {
     return { grade:'개명 고려', cls:'caution', level:3,
-      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk) };
+      reasons: buildReasons2(hS, age, suriResult.warnings, guaResult, '') };
   }
+  if (hasOhangConflict) {
+    return { grade:'개명 고려', cls:'caution', level:3,
+      reasons: ['오행 상극'] };
+  }
+
   // 개명 불필요
   return { grade:'개명 불필요', cls:'stable', level:1, reasons:[] };
 }
 
-function buildReasons(jungH_hangul, hSuri, jungH_hanja, hanjaSuri, sanggeuk) {
-  const r = [];
+function buildReasons2(hS, age, suriWarns, guaResult, extra) {
   const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3};
-  if (jungH_hangul && hSuri) r.push(`한글 정격 ${hSuri.jung}수(${sI(hSuri.jung).n}) → 흉수`);
-  if (jungH_hanja && hanjaSuri) r.push(`한자 정격 ${hanjaSuri.jung}수(${sI(hanjaSuri.jung).n}) → 흉수`);
-  if (hSuri && sI(hSuri.hyung).l <= 1) r.push(`형격 ${hSuri.hyung}수(${sI(hSuri.hyung).n}) → 흉수`);
-  if (hSuri && sI(hSuri.yi).l <= 1) r.push(`이격 ${hSuri.yi}수(${sI(hSuri.yi).n}) → 흉수`);
-  if (sanggeuk) r.push('이름 오행 상극');
+  const r = [];
+  suriWarns.forEach(w => {
+    if (w.type === '정격흉') r.push(`정격 ${hS.jung}수(${sI(hS.jung).n}) 흉수 — 평생 영향`);
+    if (w.type === '이격흉') r.push(`이격 ${hS.yi}수(${sI(hS.yi).n}) 흉수`);
+    if (w.type === '형격흉') r.push(`형격 ${hS.hyung}수(${sI(hS.hyung).n}) 흉수`);
+  });
+  if (guaResult.jungG <= -2) r.push('정격(55세+) 주역 강흉괘');
+  if (age < 55 && guaResult.yiG <= -2) r.push('이격(30~55세) 주역 강흉괘');
+  if (extra) r.push(extra);
   return r;
 }
 
@@ -1661,7 +1911,7 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
   try {
     const hSuriF = hangulSuri || suri;
     const hGuaF = (() => { try { return calcGua(hSuriF.won, hSuriF.hyung, hSuriF.yi, hSuriF.jung); } catch(e) { return null; } })();
-    const stars = calcFortuneStars(hangulSuri, suri._mode==='hanja' ? suri : null, hGuaF);
+    const stars = calcFortuneStars(hangulSuri, suri._mode==='hanja' ? suri : null, hGuaF, suri._age || 35);
     const labels = {재물:'💰 재물운', 직업:'💼 직업운', 건강:'🌿 건강운', 가정:'🏠 가정운', 연애:'❤️ 연애운', 종합:'⭐ 종합운'};
     fortuneEl.innerHTML =
       `<div style="grid-column:1/-1;font-size:11px;letter-spacing:0.12em;color:var(--green-dark);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(123,174,90,0.15);">수리·주역 기반 운세 분석</div>` +
