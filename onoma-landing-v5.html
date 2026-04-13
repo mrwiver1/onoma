@@ -202,13 +202,21 @@ section { position:relative; z-index:1; }
 
 /* 블로그 카드 */
 .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:36px; }
-.blog-card { background:#fff; border:1px solid rgba(123,174,90,0.15); padding:28px 24px; display:flex; flex-direction:column; gap:12px; transition:all 0.25s; }
-.blog-card:hover { border-color:rgba(123,174,90,0.4); box-shadow:0 4px 20px rgba(123,174,90,0.1); transform:translateY(-2px); }
+.blog-card { background:#fff; border:1px solid rgba(123,174,90,0.15); padding:28px 24px; display:flex; flex-direction:column; gap:12px; transition:all 0.25s; cursor:pointer; }
+.blog-card:hover { border-color:rgba(123,174,90,0.4); box-shadow:0 4px 20px rgba(123,174,90,0.1); }
+.blog-card.open { border-color:rgba(123,174,90,0.5); box-shadow:0 4px 24px rgba(123,174,90,0.12); }
 .blog-tag { font-size:10px; letter-spacing:0.14em; color:var(--green-dark); background:var(--green-pale); border:1px solid rgba(123,174,90,0.25); padding:3px 10px; display:inline-block; width:fit-content; }
 .blog-title { font-family:var(--serif); font-size:17px; font-weight:400; color:var(--ink); line-height:1.55; }
-.blog-desc { font-size:13px; color:var(--ink3); line-height:1.85; flex:1; }
-.blog-more { font-size:12px; color:var(--green-dark); letter-spacing:0.08em; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:gap 0.2s; margin-top:4px; }
-.blog-more:hover { gap:8px; }
+.blog-desc { font-size:13px; color:var(--ink3); line-height:1.85; }
+.blog-more { font-size:12px; color:var(--green-dark); letter-spacing:0.08em; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s; margin-top:4px; user-select:none; }
+.blog-card.open .blog-more { color:var(--ink3); }
+.blog-expand { display:none; border-top:1px solid rgba(123,174,90,0.15); padding-top:16px; margin-top:4px; }
+.blog-expand p { font-size:13px; color:var(--ink3); line-height:1.9; margin-bottom:12px; }
+.blog-expand strong { color:var(--ink2); font-weight:500; }
+.blog-points { list-style:none; margin-bottom:16px; }
+.blog-points li { font-size:12px; color:var(--ink3); padding:5px 0; border-bottom:1px solid rgba(123,174,90,0.08); display:flex; align-items:flex-start; gap:8px; line-height:1.6; }
+.blog-points li::before { content:''; width:4px; height:1px; background:var(--green); flex-shrink:0; margin-top:9px; }
+.blog-full-link { font-size:12px; color:var(--green-dark); letter-spacing:0.06em; text-decoration:none; display:inline-flex; align-items:center; gap:4px; border-bottom:1px solid rgba(123,174,90,0.3); padding-bottom:1px; }
 
 /* 원장 */
 #director { padding:100px 0; }
@@ -701,7 +709,7 @@ img { display:block; }
           <div id="concern-cta" style="display:none;margin-bottom:20px;padding:16px 20px;background:#fff;border:1px solid rgba(123,174,90,0.2);border-left:3px solid var(--green);">
             <div style="font-size:11px;color:var(--green-dark);letter-spacing:0.1em;margin-bottom:8px;">고민 영역 기반 상담 연결</div>
             <div id="concern-cta-text" style="font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:12px;"></div>
-            <a id="concern-cta-btn" href="https://pf.kakao.com/_onoma" target="_blank" class="btn-primary" style="display:inline-block;padding:10px 20px;font-size:13px;"></a>
+            <a id="concern-cta-btn" href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="btn-primary" style="display:inline-block;padding:10px 20px;font-size:13px;"></a>
           </div>
           <div class="funnel-label" style="font-size:22px;font-weight:700;letter-spacing:-0.01em;">지금 이 결과를 어떻게 활용하실 건가요?</div>
           <div class="funnel-cards">
@@ -725,7 +733,7 @@ img { display:block; }
             </div>
           </div>
           <div class="funnel-btn-row">
-            <a class="btn-primary" href="https://pf.kakao.com/_onoma" target="_blank">카카오 채널로 상담 신청하기</a>
+            <a class="btn-primary" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널로 상담 신청하기</a>
             <a class="btn-outline" href="https://life.theweros.com/report-v2.html?mode=test/" target="_blank">인생통찰 리포트 보기</a>
           </div>
           <p class="funnel-note">전국·해외 교민 온라인 상담 가능 · 화상·전화·카카오</p>
@@ -896,27 +904,61 @@ img { display:block; }
       <h2 class="section-title">상담 전에<br>한 번 읽어보세요</h2>
     </div>
     <div class="blog-grid reveal">
-      <div class="blog-card">
+
+      <!-- 카드 1 -->
+      <div class="blog-card" onclick="toggleBlog(this)">
         <div class="blog-tag">개명</div>
         <h3 class="blog-title">개명을 고민할 때 가장 먼저 봐야 하는 것</h3>
-        <p class="blog-desc">많은 분들이 개명을 고민하지만 정작 무엇을 기준으로 봐야 하는지 모릅니다. 이름 구조에서 먼저 확인해야 할 핵심 신호를 정리했습니다.</p>
-        <a class="blog-more" href="https://blog.naver.com/onoma" target="_blank">더 읽기 →</a>
+        <p class="blog-desc">이름 구조에서 먼저 확인해야 할 핵심 신호를 정리했습니다.</p>
+        <span class="blog-more">핵심 보기 ↓</span>
+        <div class="blog-expand">
+          <p>개명을 고민하는 분들이 가장 많이 하는 실수가 있습니다. "예쁜 이름"을 먼저 찾는 것입니다. 하지만 개명의 핵심은 <strong>지금 이름이 현재 삶의 흐름과 얼마나 충돌하고 있는가</strong>를 먼저 보는 것입니다.</p>
+          <ul class="blog-points">
+            <li>정격(55세 이후)이 흉수인 경우 — 평생 영향</li>
+            <li>현재 구간 수리와 주역괘가 동시에 불안정한 경우</li>
+            <li>이름 오행과 삶의 반복 패턴이 충돌하는 경우</li>
+          </ul>
+          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="blog-full-link">내 이름 구조 상담받기 →</a>
+        </div>
       </div>
-      <div class="blog-card">
+
+      <!-- 카드 2 -->
+      <div class="blog-card" onclick="toggleBlog(this)">
         <div class="blog-tag">진로 · 직업</div>
-        <h3 class="blog-title">진로가 자꾸 흔들릴 때, 이름 구조를 점검하는 이유</h3>
-        <p class="blog-desc">열심히 하는데도 방향이 안 잡히고 선택마다 후회가 남는다면, 이름의 흐름과 삶이 충돌하고 있을 수 있습니다.</p>
-        <a class="blog-more" href="https://blog.naver.com/onoma" target="_blank">더 읽기 →</a>
+        <h3 class="blog-title">진로가 자꾸 흔들릴 때 이름 구조를 보는 이유</h3>
+        <p class="blog-desc">열심히 하는데도 방향이 안 잡힌다면, 이름의 흐름과 삶이 충돌하고 있을 수 있습니다.</p>
+        <span class="blog-more">핵심 보기 ↓</span>
+        <div class="blog-expand">
+          <p>진로 고민의 80%는 "뭘 해야 할지 모르겠다"가 아니라 <strong>"하는데도 안 풀린다"</strong>는 구조입니다. 이름의 형격(직업 구간)이 흉수이거나 주역괘가 갈등성일 때 이런 패턴이 반복됩니다.</p>
+          <ul class="blog-points">
+            <li>이직을 반복하지만 상황이 비슷하게 반복되는 경우</li>
+            <li>실력은 있는데 인정받지 못하는 느낌이 드는 경우</li>
+            <li>선택의 순간마다 확신이 서지 않는 경우</li>
+          </ul>
+          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="blog-full-link">진로 흐름 상담받기 →</a>
+        </div>
       </div>
-      <div class="blog-card">
+
+      <!-- 카드 3 -->
+      <div class="blog-card" onclick="toggleBlog(this)">
         <div class="blog-tag">관계 · 연애</div>
         <h3 class="blog-title">반복되는 관계 문제, 이름과 연결될 수 있을까</h3>
-        <p class="blog-desc">비슷한 상황이 반복되고 같은 패턴의 관계가 이어진다면, 이름의 오행과 수리 구조가 관계 흐름에 영향을 주고 있을 수 있습니다.</p>
-        <a class="blog-more" href="https://blog.naver.com/onoma" target="_blank">더 읽기 →</a>
+        <p class="blog-desc">같은 패턴의 관계가 이어진다면, 이름의 구조가 관계 흐름에 영향을 주고 있을 수 있습니다.</p>
+        <span class="blog-more">핵심 보기 ↓</span>
+        <div class="blog-expand">
+          <p>관계 문제가 반복된다는 건 <strong>나를 둘러싼 구조적 흐름이 바뀌지 않고 있다</strong>는 신호일 수 있습니다. 이름의 이격(관계 구간) 수리와 오행이 이 패턴과 연결되는 경우가 많습니다.</p>
+          <ul class="blog-points">
+            <li>비슷한 유형의 사람과 반복해서 만나는 경우</li>
+            <li>재회를 반복하거나 관계가 깊어지지 않는 경우</li>
+            <li>가족 관계에서 같은 갈등이 반복되는 경우</li>
+          </ul>
+          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="blog-full-link">관계 흐름 상담받기 →</a>
+        </div>
       </div>
+
     </div>
     <div style="text-align:center;margin-top:28px;">
-      <a href="https://blog.naver.com/onoma" target="_blank" class="btn-outline" style="display:inline-block;padding:12px 32px;font-size:13px;letter-spacing:0.08em;">블로그에서 더 보기</a>
+      <a href="https://blog.naver.com/onoma" target="_blank" style="font-size:12px;color:var(--ink3);letter-spacing:0.06em;text-decoration:none;border-bottom:1px solid rgba(0,0,0,0.15);padding-bottom:2px;">네이버 블로그에서 원문 보기 →</a>
     </div>
   </div>
 </section>
@@ -1045,7 +1087,7 @@ img { display:block; }
         <div class="review-cta-text">나도 비슷한 상황인가요?<br><span>내 이름도 같은 문제인지 먼저 확인해보세요.</span></div>
         <div class="review-cta-btns">
           <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">내 이름 무료로 확인하기</button>
-          <a class="btn-outline" href="https://pf.kakao.com/_onoma" target="_blank">카카오 채널 상담 문의</a>
+          <a class="btn-outline" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널 상담 문의</a>
         </div>
       </div>
     </div>
@@ -1062,7 +1104,7 @@ img { display:block; }
         <h2 class="section-title" style="color:var(--dark-section-text);">카카오 채널로<br>편하게 문의하세요</h2>
         <div class="green-line" style="background:var(--dark-section-text);"></div>
         <p style="font-size:15px;color:var(--dark-section-sub);line-height:1.9;margin-bottom:28px;">전화 부담 없이, 텍스트로 먼저 상담 가능합니다.<br>전국·해외 어디서든 카카오로 연결됩니다.</p>
-        <a class="btn-primary" href="https://pf.kakao.com/_onoma" target="_blank" style="background:#5A9020;">카카오 채널 바로가기</a>
+        <a class="btn-primary" href="http://pf.kakao.com/_Txfxmpn" target="_blank" style="background:#5A9020;">카카오 채널 바로가기</a>
       </div>
       <div class="kakao-bar-img reveal">
         <img src="images/onoma-kakao-chat.png" alt="카카오로 상담 신청하는 모습">
@@ -1145,7 +1187,7 @@ img { display:block; }
       <p class="section-sub">이름은 바꾸지 않아도 되는 경우도 있습니다.<br>하지만 확인하지 않으면 알 수 없습니다.</p>
       <div class="cta-btn-row">
         <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">내 이름 상태 무료로 확인하기</button>
-        <a class="btn-outline" href="https://pf.kakao.com/_onoma" target="_blank">카카오 채널로 상담 신청</a>
+        <a class="btn-outline" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널로 상담 신청</a>
         <a class="btn-outline" href="https://life.theweros.com/report-v2.html?mode=test/" target="_blank">인생통찰 서비스 보기</a>
       </div>
       <p class="cta-note">이름을 제대로 보는 일은,<br>삶을 더 명확하게 이해하는 첫 걸음입니다.</p>
@@ -1282,7 +1324,7 @@ img { display:block; }
     <!-- 팝업 하단 CTA -->
     <div style="padding:28px 40px; background:var(--green-mist); border-top:1px solid rgba(123,174,90,0.15); text-align:center;">
       <p style="font-size:14px; color:var(--ink3); margin-bottom:16px;">내 브랜드 이름도 함께 설계해드립니다</p>
-      <a href="https://pf.kakao.com/_onoma" target="_blank" class="btn-primary">카카오 채널로 상담 문의하기</a>
+      <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="btn-primary">카카오 채널로 상담 문의하기</a>
     </div>
   </div>
 </div>
@@ -1313,7 +1355,7 @@ img { display:block; }
           </svg>
         </a>
         <!-- 카카오톡 채널 -->
-        <a href="https://pf.kakao.com/_onoma" target="_blank" title="카카오톡 채널">
+        <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" title="카카오톡 채널">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.612 5.087 4.07 6.542L5.1 21l4.507-2.97C10.028 18.17 11 18.3 12 18.3c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
           </svg>
@@ -1325,7 +1367,7 @@ img { display:block; }
       <li><a href="#diagnosis">무료 이름 진단</a></li>
       <li><a href="#director">원장 소개</a></li>
       <li><a href="https://life.theweros.com/report-v2.html?mode=test/" target="_blank">인생통찰 리포트</a></li>
-      <li><a href="https://pf.kakao.com/_onoma" target="_blank">카카오 채널 상담</a></li>
+      <li><a href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널 상담</a></li>
     </ul>
   </div>
   <!-- 사업자 정보 -->
@@ -2347,6 +2389,24 @@ function _diagGetCandidates(reading, isSurname) {
     const bp = DIAG_NAME_PREFERRED.has(b.h) ? 0:1;
     return ap - bp || a.s - b.s;
   });
+}
+
+// 블로그 카드 펼침/접힘
+function toggleBlog(card) {
+  const expand = card.querySelector('.blog-expand');
+  const more   = card.querySelector('.blog-more');
+  const isOpen = card.classList.contains('open');
+  // 다른 카드 닫기
+  document.querySelectorAll('.blog-card.open').forEach(c => {
+    c.classList.remove('open');
+    c.querySelector('.blog-expand').style.display = 'none';
+    c.querySelector('.blog-more').textContent = '핵심 보기 ↓';
+  });
+  if (!isOpen) {
+    card.classList.add('open');
+    expand.style.display = 'block';
+    more.textContent = '접기 ↑';
+  }
 }
 
 // 음력/양력 토글 안내
