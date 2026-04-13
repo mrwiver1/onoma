@@ -610,10 +610,22 @@ img { display:block; }
           <label class="form-label">한글 이름 <span style="font-size:11px;color:#c0392b;font-weight:600;">* 필수</span></label>
           <input class="form-input" id="diag-hangul" type="text" placeholder="예: 이지윤" maxlength="6">
         </div>
-        <!-- 한자 이름 -->
+        <!-- 한자 이름 + 피커 -->
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--green-dark);font-weight:400;">✓ 입력 시 정확한 수리 계산</span></label>
-          <input class="form-input" id="diag-hanja" type="text" placeholder="예: 李智潤 (선택 — 한자 있으면 더 정확합니다)" maxlength="5">
+          <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--green-dark);font-weight:400;">✓ 입력 시 더 정확한 수리 계산</span></label>
+          <!-- 한글로 한자 찾기 -->
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input class="form-input" id="diag-hanja-search" type="text" placeholder="한글 이름 입력 후 찾기 (예: 이정운)" style="flex:1;">
+            <button type="button" onclick="diagHanjaSearch()" style="padding:10px 14px;background:var(--green-pale);border:1px solid rgba(123,174,90,0.4);color:var(--green-dark);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">한자 찾기</button>
+          </div>
+          <!-- 슬롯 (한자 클릭해서 변경) -->
+          <div id="diag-hanja-slots" style="display:none;margin-bottom:8px;"></div>
+          <!-- 직접 입력 -->
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="form-input" id="diag-hanja" type="text" placeholder="또는 한자 직접 입력 (예: 李定芸)" maxlength="5" style="flex:1;">
+            <button type="button" onclick="diagHanjaDirect()" style="padding:10px 14px;background:var(--green-pale);border:1px solid rgba(123,174,90,0.4);color:var(--green-dark);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">적용</button>
+          </div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:5px;">한자를 클릭하면 다른 한자로 변경할 수 있어요</div>
         </div>
         <!-- 고민 -->
         <div class="form-group" style="margin-bottom:20px;">
@@ -1872,7 +1884,177 @@ function runDiag() {
   renderDiagResult(displayName, suri, sajuResult, hangul);
 }
 
-function onHangulInput() {}
+/* ── 한자 피커 (진단 폼용) ── */
+let _diagHanjaState = [];
+let _diagPickerIdx = null;
+
+const DIAG_DUEUM_MAP = {
+  '이':['이','리'],'나':['나','라'],'노':['노','로'],'뇨':['뇨','료'],
+  '누':['누','루'],'뉴':['뉴','류'],'유':['유','류'],'여':['여','려'],
+  '연':['연','련'],'열':['열','렬'],'염':['염','렴'],'영':['영','령'],
+  '예':['예','례'],'임':['임','림'],'입':['입','립'],
+  '윤':['윤','륜'],'율':['율','률'],
+};
+
+const DIAG_SURNAME_FIRST = {
+  '가':'賈','강':'姜','견':'甄','경':'慶','고':'高','곽':'郭','구':'具','권':'權',
+  '김':'金','나':'羅','남':'南','노':'盧','도':'都','류':'柳','마':'馬','문':'文',
+  '민':'閔','박':'朴','배':'裵','백':'白','변':'卞','서':'徐','석':'石','성':'成',
+  '손':'孫','송':'宋','신':'申','심':'沈','안':'安','양':'梁','오':'吳','왕':'王',
+  '우':'禹','원':'元','유':'劉','윤':'尹','이':'李','임':'林','장':'張','전':'全',
+  '정':'鄭','조':'趙','주':'朱','지':'池','진':'陳','차':'車','채':'蔡','최':'崔',
+  '추':'秋','하':'河','한':'韓','허':'許','현':'玄','홍':'洪','황':'黃',
+};
+
+const DIAG_NAME_PREFERRED = new Set([
+  '仁','義','禮','智','信','孝','誠','忠','德','善','美','賢','俊','秀','英','哲',
+  '明','慧','淑','貞','珍','玉','瑾','瑞','瑛','瑩','瑜','瑤','珠','昊','昌','晟',
+  '晉','晶','曄','景','熙','煜','燁','煥','炳','炫','泳','浩','淵','洵','澈','瀞',
+  '淸','純','洙','洪','洋','泰','潤','植','格','桓','桂','樹','松','棟',
+  '鎭','鉉','錫','鐘','鎬','銀','恩','垠','雄','龍','鳳','虎','鶴',
+  '壽','福','祿','吉','慶','喜','祥','禎','民','旻','旼','玟','珉','敏','閔',
+  '勝','成','聖','誠','城','志','知','祉','池','惠','彗','蕙','恩','銀','映',
+  '賢','鉉','玄','顯','絢','旭','昱','煜','郁','昌','彰','昶','暢','憲',
+  '順','淳','珣','純','正','靜','精','廷','貞','宇','佑','祐','碩','奭','晳',
+  '基','淇','琦','琪','東','棟','彤','允','潤','閏','哲','澈','喆','弘','泓',
+  '亨','享','衡','宣','善','仙','容','珍','眞','欽','欣','昕','彦','奎','圭','珪',
+]);
+
+function _diagGetByReading() {
+  if (typeof Rt === 'undefined') return {};
+  const db = {};
+  for (const [h, d] of Object.entries(Rt)) {
+    if (!db[d.e]) db[d.e] = [];
+    db[d.e].push({ h, s: d.s, o: d.o });
+  }
+  return db;
+}
+
+function _diagGetCandidates(reading, isSurname) {
+  const db = _diagGetByReading();
+  const readings = DIAG_DUEUM_MAP[reading] || [reading];
+  const seen = new Set();
+  let list = readings.flatMap(r => db[r] || []).filter(x => {
+    if (seen.has(x.h)) return false;
+    seen.add(x.h); return true;
+  });
+  if (isSurname) {
+    const sc = DIAG_SURNAME_FIRST[reading];
+    return list.sort((a,b) => {
+      if (sc) { if (a.h===sc) return -1; if (b.h===sc) return 1; }
+      return a.s - b.s;
+    });
+  }
+  return list.sort((a,b) => {
+    const ap = DIAG_NAME_PREFERRED.has(a.h) ? 0:1;
+    const bp = DIAG_NAME_PREFERRED.has(b.h) ? 0:1;
+    return ap - bp || a.s - b.s;
+  });
+}
+
+function diagHanjaSearch() {
+  const val = document.getElementById('diag-hanja-search').value.trim();
+  if (!val || [...val].length < 2) { alert('한글 이름을 2글자 이상 입력해주세요.'); return; }
+
+  _diagHanjaState = [...val].map((c, i) => {
+    const isSurname = (i === 0);
+    const cands = _diagGetCandidates(c, isSurname);
+    const best = cands[0] || null;
+    return best ? { h: best.h, s: best.s, o: best.o, reading: c, cands } : { h: null, s: null, o: null, reading: c, cands };
+  });
+  _diagRenderSlots();
+  _diagSyncInput();
+}
+
+function diagHanjaDirect() {
+  const val = document.getElementById('diag-hanja').value.trim();
+  if (!val || [...val].length < 2) { alert('한자를 2글자 이상 입력해주세요.'); return; }
+  if (typeof Rt === 'undefined') { alert('한자 DB가 로드되지 않았습니다. 새로고침 해주세요.'); return; }
+  _diagHanjaState = [...val].map((c, i) => {
+    const d = Rt[c];
+    if (!d) return { h: c, s: null, o: null, reading: c, cands: [] };
+    return { h: c, s: d.s, o: d.o, reading: d.e, cands: _diagGetCandidates(d.e, i===0) };
+  });
+  _diagRenderSlots();
+}
+
+const OCOL_D = {'木':'#2d6a4f','火':'#c0392b','土':'#8b5e0a','金':'#4a4a6a','水':'#2a7f7f'};
+const OEMO_D2 = {'木':'🌿','火':'🔥','土':'⛰','金':'⚡','水':'💧'};
+
+function _diagRenderSlots() {
+  const el = document.getElementById('diag-hanja-slots');
+  if (!_diagHanjaState.length) { el.style.display='none'; return; }
+  el.style.display = 'flex';
+  el.style.gap = '8px';
+  el.style.flexWrap = 'wrap';
+  el.innerHTML = _diagHanjaState.map((item, i) => {
+    const label = i===0 ? '성(姓)' : '이름'+i;
+    const color = item.o ? OCOL_D[item.o] : '#888';
+    return `<div style="text-align:center;cursor:pointer;" onclick="diagOpenPicker(${i})">
+      <div style="font-size:10px;color:var(--ink3);margin-bottom:3px;">${label}</div>
+      <div style="width:52px;height:56px;border:1.5px solid ${item.h?'rgba(123,174,90,0.5)':'rgba(123,174,90,0.2)'};
+           background:${item.h?'rgba(123,174,90,0.06)':'#f9f9f6'};display:flex;flex-direction:column;
+           align-items:center;justify-content:center;border-radius:4px;transition:all 0.15s;">
+        <span style="font-family:var(--serif);font-size:22px;font-weight:700;color:${color};">${item.h||'+'}</span>
+        ${item.s ? `<span style="font-size:9px;color:var(--ink3);">${item.s}획</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _diagSyncInput() {
+  const val = _diagHanjaState.map(x => x.h || '').join('');
+  document.getElementById('diag-hanja').value = val;
+}
+
+function diagOpenPicker(idx) {
+  const item = _diagHanjaState[idx];
+  if (!item) return;
+  _diagPickerIdx = idx;
+  const isSurname = (idx === 0);
+  document.getElementById('diag-picker-title').textContent =
+    isSurname ? `"${item.reading}" 성(姓) 한자 선택` : `"${item.reading}" 이름 한자 선택`;
+  const cands = item.cands.length ? item.cands : _diagGetCandidates(item.reading, isSurname);
+  const grid = document.getElementById('diag-picker-grid');
+  if (!cands.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3);font-size:13px;">해당 음의 한자를 찾을 수 없습니다</div>';
+  } else {
+    grid.innerHTML = cands.map(c => {
+      const color = OCOL_D[c.o] || '#888';
+      const sel = item.h === c.h;
+      return `<div onclick="diagSelectHanja('${c.h}')" style="
+          border:${sel?'2px solid var(--green)':'1.5px solid rgba(123,174,90,0.2)'};
+          border-radius:6px;padding:8px 4px;text-align:center;cursor:pointer;
+          background:${sel?'rgba(123,174,90,0.1)':'rgba(255,255,255,0.8)'};
+          transition:all 0.15s;">
+        <div style="font-family:var(--serif);font-size:22px;font-weight:700;line-height:1.2;color:${color};">${c.h}</div>
+        <div style="font-size:10px;color:${color};margin-top:2px;">${OEMO_D2[c.o]||''} ${c.o||''}<br>${c.s}획</div>
+      </div>`;
+    }).join('');
+  }
+  const picker = document.getElementById('diag-hanja-picker');
+  picker.style.display = 'flex';
+}
+
+function diagSelectHanja(h) {
+  if (_diagPickerIdx === null || typeof Rt === 'undefined') return;
+  const d = Rt[h];
+  if (!d) return;
+  _diagHanjaState[_diagPickerIdx] = {
+    ..._diagHanjaState[_diagPickerIdx], h, s: d.s, o: d.o
+  };
+  document.getElementById('diag-hanja-picker').style.display = 'none';
+  _diagPickerIdx = null;
+  _diagRenderSlots();
+  _diagSyncInput();
+}
+
+function diagClosePicker(e) {
+  if (!e || e.target === document.getElementById('diag-hanja-picker')) {
+    document.getElementById('diag-hanja-picker').style.display = 'none';
+    _diagPickerIdx = null;
+  }
+}
 
 function runSuriDiag() { runDiag(); }
 function runHanjaDiag() { runDiag(); }
@@ -1928,5 +2110,16 @@ for (let i = 0; i < 5; i++) addSpRow();
 // 이후 5분 간격으로 새 항목 추가
 setInterval(addSpRow, 290000 + Math.random() * 20000);
 </script>
+<!-- 한자 피커 모달 -->
+<div id="diag-hanja-picker" onclick="diagClosePicker(event)" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(26,20,10,0.55);align-items:flex-end;justify-content:center;">
+  <div style="background:#fff;border-top-left-radius:16px;border-top-right-radius:16px;padding:24px 18px 36px;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;animation:sheetUp 0.28s cubic-bezier(0.22,1,0.36,1);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div id="diag-picker-title" style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink);">한자 선택</div>
+      <button onclick="diagClosePicker()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink3);padding:4px 8px;">✕</button>
+    </div>
+    <div id="diag-picker-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;"></div>
+  </div>
+</div>
+
 </body>
 </html>
