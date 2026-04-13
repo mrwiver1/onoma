@@ -40,13 +40,13 @@ body::before {
 nav {
   position:fixed; top:0; left:0; right:0; z-index:100;
   display:flex; align-items:center; justify-content:space-between;
-  padding:0 5%; height:96px;
+  padding:0 5%; height:68px;
   background:rgba(250,250,246,0.97); backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(123,174,90,0.2);
 }
-.nav-logo { text-decoration:none; display:flex; align-items:center; gap:18px; }
-.nav-logo img { height:80px; width:auto; display:block; }
-.nav-logo-text { font-family:var(--serif); font-size:20px; font-weight:700; color:var(--green-dark); letter-spacing:0.06em; border-left:2px solid rgba(123,174,90,0.35); padding-left:18px; }
+.nav-logo { text-decoration:none; display:flex; align-items:center; gap:12px; }
+.nav-logo img { height:48px; width:auto; display:block; }
+.nav-logo-text { font-family:var(--serif); font-size:16px; font-weight:600; color:var(--green-dark); letter-spacing:0.06em; border-left:1.5px solid rgba(123,174,90,0.3); padding-left:12px; }
 .nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
 .nav-links a { font-size:14px; font-weight:600; color:var(--ink2); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--green-dark); }
@@ -454,18 +454,23 @@ img { display:block; }
 .suri-name.bad  { color:#c0392b; }
 .suri-desc { font-size:10px; color:var(--ink3); line-height:1.5; }
 /* 주역괘 */
-.gua-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
-.gua-item { background:#fff; border:1px solid rgba(123,174,90,0.12); border-left:3px solid; padding:12px; }
-.gua-item.good { border-left-color:#1a6fb5; }
-.gua-item.mid  { border-left-color:#c47c00; }
-.gua-item.bad  { border-left-color:#c0392b; }
-.gua-label { font-size:9px; letter-spacing:0.12em; color:var(--ink3); margin-bottom:4px; }
-.gua-sym { font-size:20px; line-height:1; margin-bottom:4px; }
-.gua-name { font-size:12px; font-weight:600; margin-bottom:2px; }
-.gua-name.good { color:#1a6fb5; }
-.gua-name.mid  { color:#c47c00; }
-.gua-name.bad  { color:#c0392b; }
-.gua-meaning { font-size:10px; color:var(--ink3); line-height:1.5; }
+.gua-section-title { font-size:11px; letter-spacing:0.12em; color:var(--green-dark); font-weight:600; margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid rgba(123,174,90,0.15); }
+.gua-cards { display:flex; flex-direction:column; gap:10px; margin-bottom:4px; }
+.gua-card { display:flex; align-items:flex-start; gap:14px; background:#fff; border:1px solid rgba(123,174,90,0.12); border-left:4px solid; padding:14px 16px; }
+.gua-card.good { border-left-color:#1a6fb5; }
+.gua-card.mid  { border-left-color:#c47c00; }
+.gua-card.bad  { border-left-color:#c0392b; }
+.gua-card-sym { font-size:28px; line-height:1; flex-shrink:0; margin-top:2px; }
+.gua-card-info { flex:1; }
+.gua-card-top { display:flex; align-items:baseline; gap:8px; margin-bottom:4px; }
+.gua-card-label { font-size:10px; color:var(--ink3); letter-spacing:0.1em; }
+.gua-card-name { font-size:14px; font-weight:700; }
+.gua-card-name.good { color:#1a6fb5; }
+.gua-card-name.mid  { color:#c47c00; }
+.gua-card-name.bad  { color:#c0392b; }
+.gua-card-hanja { font-size:11px; color:var(--ink3); }
+.gua-card-meaning { font-size:12px; font-weight:500; color:var(--ink2); margin-bottom:4px; }
+.gua-card-desc { font-size:11px; color:var(--ink3); line-height:1.7; }
 /* 오행 칩 */
 .ohang-chip-diag { display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:5px 12px; border-radius:2px; font-weight:500; margin:0 2px; }
 .ohang-chip-diag.木 { background:#E8F5E8; color:#2d6a4f; border:1px solid rgba(45,106,79,0.3); }
@@ -652,6 +657,8 @@ img { display:block; }
           <div id="fortune-grid" style="display:none;margin-bottom:20px;"></div>
           <!-- 수리 사격 그리드 -->
           <div id="suri-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;"></div>
+          <!-- 주역괘 (full-width) -->
+          <div id="gua-display" style="margin-bottom:20px;"></div>
           <!-- 오행 흐름 -->
           <div id="ohang-row" style="margin-bottom:14px;"></div>
           <!-- 사주 오행 분석 -->
@@ -1366,7 +1373,7 @@ const GUA_FORTUNE = {
 
 /* 수리 l값 → 운세 점수 변환 */
 function suriToScore(l) {
-  const map = {1:1.5, 2:2.5, 3:3, 4:4, 5:4.5};
+  const map = {1:2, 2:2.5, 3:3, 4:4, 5:4.5};
   return map[l] || 3;
 }
 
@@ -1374,32 +1381,40 @@ function suriToScore(l) {
 function calcFortuneStars(hangulSuri, hanjaSuri, guaObj) {
   const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {l:3};
 
-  // 수리 점수 (한글 우선, 없으면 한자)
+  // 판정에 사용할 수리 (한글 우선)
   const hs = hangulSuri || hanjaSuri;
-  const jungScore  = suriToScore(sI(hs.jung).l);   // 정격 → 종합
-  const hyungScore = suriToScore(sI(hs.hyung).l);  // 형격 → 직업
-  const yiScore    = suriToScore(sI(hs.yi).l);     // 이격 → 관계
-  const wonScore   = suriToScore(sI(hs.won).l);    // 원격 → 이름기운
+  const jungScore  = suriToScore(sI(hs.jung).l);
+  const hyungScore = suriToScore(sI(hs.hyung).l);
+  const yiScore    = suriToScore(sI(hs.yi).l);
 
-  // 주역괘 점수 (정격괘 → 종합, 이격괘 → 관계, 원격괘 → 재물/건강)
-  const getGuaF = (gua) => gua && GUA_FORTUNE[gua.name] ? GUA_FORTUNE[gua.name] : null;
-  const jungGua = guaObj ? getGuaF(guaObj.정격) : null;
-  const yiGua   = guaObj ? getGuaF(guaObj.이격) : null;
-  const wonGua  = guaObj ? getGuaF(guaObj.원격) : null;
+  // 주역괘 점수 — 3개 괘 모두 활용
+  const getF = (gua) => gua && GUA_FORTUNE[gua.name] ? GUA_FORTUNE[gua.name] : null;
+  const wonF  = guaObj ? getF(guaObj.원격) : null;
+  const yiF   = guaObj ? getF(guaObj.이격) : null;
+  const jungF = guaObj ? getF(guaObj.정격) : null;
 
-  // 각 운세 = 수리 점수(60%) + 괘 점수(40%)
-  function mix(suriVal, guaVal, key) {
-    if (!guaVal) return suriVal;
-    return suriVal * 0.6 + guaVal[key] * 0.4;
+  // 괘 점수 평균 (있는 것만)
+  function guaAvg(key) {
+    const vals = [wonF, yiF, jungF].filter(Boolean).map(f => f[key]);
+    if (!vals.length) return null;
+    return vals.reduce((a,b) => a+b, 0) / vals.length;
+  }
+
+  // 각 운세 = 주역괘 평균(70%) + 수리(30%)
+  // 괘가 없으면 수리 100%
+  function calc(suriVal, guaKey) {
+    const gAvg = guaAvg(guaKey);
+    if (gAvg === null) return suriVal;
+    return suriVal * 0.3 + gAvg * 0.7;
   }
 
   return {
-    재물: Math.min(5, mix(wonScore,  wonGua,  '재')),
-    직업: Math.min(5, mix(hyungScore,jungGua, '직')),
-    건강: Math.min(5, mix(wonScore,  wonGua,  '건')),
-    가정: Math.min(5, mix(yiScore,   yiGua,   '가')),
-    연애: Math.min(5, mix(yiScore,   yiGua,   '연')),
-    종합: Math.min(5, mix(jungScore, jungGua, '종')),
+    재물: Math.min(5, calc(jungScore, '재')),
+    직업: Math.min(5, calc(hyungScore,'직')),
+    건강: Math.min(5, calc(jungScore, '건')),
+    가정: Math.min(5, calc(yiScore,   '가')),
+    연애: Math.min(5, calc(yiScore,   '연')),
+    종합: Math.min(5, calc(jungScore, '종')),
   };
 }
 
@@ -1452,9 +1467,19 @@ function getDeficientOhang(dist) {
   return Object.entries(dist).filter(([o,n]) => n===0).map(([o]) => o);
 }
 
-/* 이름 오행이 부족 오행을 보완하는지 */
-function nameCompensates(nameOhang, deficient) {
-  return deficient.every(o => nameOhang.includes(o));
+/* 이름 오행이 부족 오행을 보완하는지 — 한글 초성 + 한자 자원 오행 모두 포함 */
+function nameCompensates(nameOhang, deficient, hanjaName) {
+  if (!deficient.length) return true;
+  // 한글 초성 오행
+  const ohangSet = new Set(nameOhang.filter(o => o !== '?'));
+  // 한자 자원 오행 (db의 o 필드)
+  if (hanjaName && typeof Rt !== 'undefined') {
+    [...hanjaName].forEach(c => {
+      const d = Rt[c];
+      if (d && d.o) ohangSet.add(d.o);
+    });
+  }
+  return deficient.every(o => ohangSet.has(o));
 }
 
 /* 한자 수리 계산 */
@@ -1529,7 +1554,7 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
   // ⑤ 사주 부족 오행
   const deficient   = sajuDist ? getDeficientOhang(sajuDist) : [];
   const sajuDeficit = deficient.length > 0;
-  const nameCompens = nameCompensates(hangulOhang, deficient);
+  const nameCompens = nameCompensates(hangulOhang, deficient, suri._hanjaStr || null);
 
   // ── 판정 ──
 
@@ -1697,7 +1722,7 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
     return html;
   }
 
-  function renderGuaRow(guaObj, label) {
+  function renderGuaSection(guaObj, label) {
     if (!guaObj) return '';
     const items = [
       {k:'원격', g:guaObj.원격},
@@ -1705,51 +1730,56 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
       {k:'정격', g:guaObj.정격},
     ].filter(x => x.g);
     if (!items.length) return '';
-    let html = `<div class="suri-section-title">${label}</div><div class="gua-row">`;
+    let html = `<div class="gua-section-title">${label}</div><div class="gua-cards">`;
     items.forEach(({k,g}) => {
       const isHyungG = HYUNG_GUA_LIST.includes(g.name);
       const cls = isHyungG ? 'bad' : 'good';
-      html += `<div class="gua-item ${cls}">
-        <div class="gua-label">${k}</div>
-        <div class="gua-sym">${g.sym||''}</div>
-        <div class="gua-name ${cls}">${g.name}${isHyungG?' ⚠️':''}</div>
-        <div class="gua-meaning">${g.meaning||''}</div>
+      html += `<div class="gua-card ${cls}">
+        <div class="gua-card-sym">${g.sym||''}</div>
+        <div class="gua-card-info">
+          <div class="gua-card-top">
+            <span class="gua-card-label">${k}</span>
+            <span class="gua-card-name ${cls}">${g.name}${isHyungG?' ⚠️':''}</span>
+            <span class="gua-card-hanja">${g.hanja||''}</span>
+          </div>
+          <div class="gua-card-meaning">${g.meaning||''}</div>
+          <div class="gua-card-desc">${g.desc||''}</div>
+        </div>
       </div>`;
     });
     html += '</div>';
     return html;
   }
 
-  // ── 수리 사격 + 주역 렌더 ──
+  // ── 수리 사격 렌더 (괘 제외) ──
   const age = suri._age || 0;
   let gridHTML = '';
 
-  // 한글 수리 + 주역
   if (hangulSuri) {
     gridHTML += renderSuriGrid(hangulSuri, '✍️ 한글 이름 수리', suri._phase, age);
-    // 한글 주역괘
-    try {
-      const hGua = calcGua(hangulSuri.won, hangulSuri.hyung, hangulSuri.yi, hangulSuri.jung);
-      gridHTML += renderGuaRow(hGua, '☯ 한글 이름 주역괘');
-    } catch(e) {}
   } else if (suri._mode !== 'hanja') {
     gridHTML += renderSuriGrid(suri, '✍️ 한글 이름 수리', suri._phase, age);
-    try {
-      const hGua = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
-      gridHTML += renderGuaRow(hGua, '☯ 한글 이름 주역괘');
-    } catch(e) {}
   }
-
-  // 한자 수리 + 주역
   if (suri._mode === 'hanja') {
     gridHTML += renderSuriGrid(suri, '📖 한자 이름 수리', suri._phase, age);
+  }
+  document.getElementById('suri-grid').innerHTML = gridHTML;
+
+  // ── 주역괘 (full-width 별도 영역) ──
+  const guaEl = document.getElementById('gua-display');
+  let guaHTML = '';
+  try {
+    const hSuriG = hangulSuri || suri;
+    const hGua = calcGua(hSuriG.won, hSuriG.hyung, hSuriG.yi, hSuriG.jung);
+    guaHTML += renderGuaSection(hGua, '☯ 한글 이름 주역괘');
+  } catch(e) {}
+  if (suri._mode === 'hanja') {
     try {
       const jGua = calcGua(suri.won, suri.hyung, suri.yi, suri.jung);
-      gridHTML += renderGuaRow(jGua, '☯ 한자 이름 주역괘');
+      guaHTML += `<div style="margin-top:16px;">` + renderGuaSection(jGua, '☯ 한자 이름 주역괘') + `</div>`;
     } catch(e) {}
   }
-
-  document.getElementById('suri-grid').innerHTML = gridHTML;
+  guaEl.innerHTML = guaHTML;
 
   // 오행 (한글 초성 기준)
   let ohangHtml = '<div style="font-size:11px;color:var(--ink3);margin-bottom:6px;">오행 (한글 초성 기준)</div>';
@@ -1779,7 +1809,7 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
       <div style="font-size:11px;letter-spacing:0.1em;color:var(--green-dark);margin-bottom:8px;">사주 오행 분포</div>
       <div style="margin-bottom:6px;">${distHtml}</div>
       ${deficient.length
-        ? `<div style="font-size:12px;color:#8B2A20;">부족 오행: ${deficient.map(o=>ONAME_D[o]).join(', ')} — 이름 보완 ${nameCompensates(hangulOhang,deficient)?'✅':'❌'}</div>`
+        ? `<div style="font-size:12px;color:#8B2A20;">부족 오행: ${deficient.map(o=>ONAME_D[o]).join(', ')} — 이름 보완 ${nameCompensates(hangulOhang,deficient,suri._hanjaStr||null)?'✅':'❌'}</div>`
         : '<div style="font-size:12px;color:var(--green-dark);">✅ 오행 균형 양호</div>'}`;
     sajuEl.style.display = 'block';
   } else {
@@ -1867,6 +1897,7 @@ function runDiag() {
     suri = calcHanjaSuriLanding(hanja);
     if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다. 한글만으로 진단해보세요.'); return; }
     suri._mode = 'hanja';
+    suri._hanjaStr = hanja;
     displayName = `${hangul}(${hanja})`;
   } else {
     suri = calcHangulSuri(hangul);
