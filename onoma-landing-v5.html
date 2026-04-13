@@ -469,8 +469,8 @@ img { display:block; }
 .gua-card-name.mid  { color:#c47c00; }
 .gua-card-name.bad  { color:#c0392b; }
 .gua-card-hanja { font-size:11px; color:var(--ink3); }
-.gua-card-meaning { font-size:12px; font-weight:500; color:var(--ink2); margin-bottom:4px; }
-.gua-card-desc { font-size:11px; color:var(--ink3); line-height:1.7; }
+.gua-card-meaning { font-size:13px; font-weight:600; color:var(--ink2); margin-bottom:6px; }
+.gua-card-desc { font-size:12px; color:var(--ink3); line-height:1.75; }
 /* 오행 칩 */
 .ohang-chip-diag { display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:5px 12px; border-radius:2px; font-weight:500; margin:0 2px; }
 .ohang-chip-diag.木 { background:#E8F5E8; color:#2d6a4f; border:1px solid rgba(45,106,79,0.3); }
@@ -665,10 +665,11 @@ img { display:block; }
           <div id="saju-row" style="display:none;margin-bottom:18px;background:var(--green-mist);border:1px solid rgba(123,174,90,0.15);padding:16px 18px;border-radius:2px;"></div>
           <!-- 운세 포인트 -->
           <ul class="result-points" id="result-points"></ul>
-          <!-- 블러 박스 -->
-          <div class="result-blur-box">
-            <div class="result-blur-text">심층 수리 해석 및 삶의 흐름과의 정합성 상세 분석은 전문 상담을 통해 확인하실 수 있습니다. 오행 배열의 상생·상극 관계, 발음 에너지 흐름, 현재 삶의 사이클과의 충돌 지점 등 세밀한 분석이 포함되어 있습니다.</div>
-            <div class="result-blur-overlay"></div>
+          <!-- 판정 결과 재강조 (블러 제거) -->
+          <div id="result-grade-repeat" style="margin-bottom:16px;padding:20px 24px;background:var(--green-mist);border:1px solid rgba(123,174,90,0.2);text-align:center;">
+            <div style="font-size:12px;color:var(--ink3);margin-bottom:8px;letter-spacing:0.1em;">이 이름의 최종 판정</div>
+            <div id="result-grade-repeat-badge" style="font-size:26px;font-weight:700;font-family:var(--serif);"></div>
+            <div id="result-grade-repeat-msg" style="font-size:13px;color:var(--ink3);margin-top:8px;line-height:1.7;"></div>
           </div>
           <p style="font-size:12px;color:var(--ink-faint);line-height:1.8;margin-top:8px;">※ 1차 진단은 참고용입니다. 실제 판단은 이름 구조와 삶의 흐름을 함께 봐야 정확해집니다.</p>
         </div>
@@ -679,11 +680,26 @@ img { display:block; }
         </div>
         <!-- 퍼널 CTA -->
         <div class="funnel-cta">
-          <div class="funnel-label">지금 이 결과를 어떻게 활용하실 건가요?</div>
+          <div class="funnel-label" style="font-size:22px;font-weight:700;letter-spacing:-0.01em;">지금 이 결과를 어떻게 활용하실 건가요?</div>
           <div class="funnel-cards">
-            <div class="funnel-card"><div class="funnel-tier">무료</div><div class="funnel-name">카카오 채널로<br>간단 문의</div><div class="funnel-price">간단 질문 가능</div></div>
-            <div class="funnel-card featured"><div class="funnel-tier">가장 많이 선택</div><div class="funnel-name">이름 검토<br>상담 신청</div><div class="funnel-price">3~5만원 · 빠른 결과</div><div style="font-size:10px;color:var(--green-dark);margin-top:6px;line-height:1.5;">진입 부담 낮고<br>개명 여부 판단까지 가능</div></div>
-            <div class="funnel-card"><div class="funnel-tier">심층 분석</div><div class="funnel-name">인생통찰<br>리포트</div><div class="funnel-price">5만원 · 반복 패턴 분석</div></div>
+            <div class="funnel-card">
+              <div class="funnel-tier" style="font-size:15px;font-weight:700;">무료</div>
+              <div class="funnel-name">카카오 채널로<br>간단 문의</div>
+              <div class="funnel-price">간단 질문 가능</div>
+            </div>
+            <div class="funnel-card featured">
+              <div class="funnel-tier" style="font-size:15px;font-weight:700;">가장 많이 선택</div>
+              <div class="funnel-name">이름 검토<br>상담 신청</div>
+              <div class="funnel-price">3~5만원 · 빠른 결과</div>
+              <div style="font-size:11px;color:var(--green-dark);margin-top:6px;line-height:1.5;">진입 부담 낮고<br>개명 여부 판단까지 가능</div>
+            </div>
+            <div class="funnel-card">
+              <div class="funnel-tier" style="font-size:15px;font-weight:700;">심층 분석</div>
+              <div class="funnel-name">인생통찰<br>리포트</div>
+              <div style="font-size:12px;color:var(--ink3);text-decoration:line-through;margin-top:4px;">정상가 99,000원</div>
+              <div class="funnel-price" style="color:#c0392b;font-weight:700;">런칭 이벤트 49,000원</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px;">한정 특가</div>
+            </div>
           </div>
           <div class="funnel-btn-row">
             <a class="btn-primary" href="https://pf.kakao.com/_onoma" target="_blank">카카오 채널로 상담 신청하기</a>
@@ -1467,18 +1483,10 @@ function getDeficientOhang(dist) {
   return Object.entries(dist).filter(([o,n]) => n===0).map(([o]) => o);
 }
 
-/* 이름 오행이 부족 오행을 보완하는지 — 한글 초성 + 한자 자원 오행 모두 포함 */
-function nameCompensates(nameOhang, deficient, hanjaName) {
+/* 이름 오행이 부족 오행을 보완하는지 — 한글 초성 기준만 사용 */
+function nameCompensates(nameOhang, deficient) {
   if (!deficient.length) return true;
-  // 한글 초성 오행
   const ohangSet = new Set(nameOhang.filter(o => o !== '?'));
-  // 한자 자원 오행 (db의 o 필드)
-  if (hanjaName && typeof Rt !== 'undefined') {
-    [...hanjaName].forEach(c => {
-      const d = Rt[c];
-      if (d && d.o) ohangSet.add(d.o);
-    });
-  }
   return deficient.every(o => ohangSet.has(o));
 }
 
@@ -1554,7 +1562,7 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
   // ⑤ 사주 부족 오행
   const deficient   = sajuDist ? getDeficientOhang(sajuDist) : [];
   const sajuDeficit = deficient.length > 0;
-  const nameCompens = nameCompensates(hangulOhang, deficient, suri._hanjaStr || null);
+  const nameCompens = nameCompensates(hangulOhang, deficient);
 
   // ── 판정 ──
 
@@ -1809,7 +1817,7 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
       <div style="font-size:11px;letter-spacing:0.1em;color:var(--green-dark);margin-bottom:8px;">사주 오행 분포</div>
       <div style="margin-bottom:6px;">${distHtml}</div>
       ${deficient.length
-        ? `<div style="font-size:12px;color:#8B2A20;">부족 오행: ${deficient.map(o=>ONAME_D[o]).join(', ')} — 이름 보완 ${nameCompensates(hangulOhang,deficient,suri._hanjaStr||null)?'✅':'❌'}</div>`
+        ? `<div style="font-size:12px;color:#8B2A20;">부족 오행: ${deficient.map(o=>ONAME_D[o]).join(', ')} — 이름 보완 ${nameCompensates(hangulOhang,deficient)?'✅':'❌'}</div>`
         : '<div style="font-size:12px;color:var(--green-dark);">✅ 오행 균형 양호</div>'}`;
     sajuEl.style.display = 'block';
   } else {
@@ -1837,6 +1845,25 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
   ].join('');
 
   document.getElementById('urgency-text').innerHTML = getUrgencyMsg(gradeObj);
+
+  // 판정 결과 재강조
+  const repeatBadge = document.getElementById('result-grade-repeat-badge');
+  const repeatMsg = document.getElementById('result-grade-repeat-msg');
+  if (repeatBadge) {
+    const colorMap = {stable:'var(--green-dark)', caution:'#c47c00', review:'#c0392b'};
+    repeatBadge.style.color = colorMap[gradeObj.cls] || 'var(--green-dark)';
+    repeatBadge.textContent = gradeObj.grade;
+  }
+  if (repeatMsg) {
+    const msgMap = {
+      '개명 권유': '이름 구조에서 심각한 문제가 감지되었습니다. 개명을 진지하게 검토해보세요.',
+      '개명 고려': '이름에 보완이 필요한 구조가 확인되었습니다. 전문 상담으로 정확히 확인해보세요.',
+      '상담 요망': '수리는 무난하나 주역괘에서 주의 신호가 나타났습니다.',
+      '애매 — 상담 권장': '이름이 삶의 흐름과 완전히 조화롭지 않을 수 있습니다.',
+      '개명 불필요': '현재 이름의 수리 구조는 전반적으로 안정적입니다. 개명이 필요하지 않습니다.',
+    };
+    repeatMsg.textContent = msgMap[gradeObj.grade] || '';
+  }
   document.getElementById('result-box').style.display = 'block';
   setTimeout(()=>document.getElementById('result-box').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
