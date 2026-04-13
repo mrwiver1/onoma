@@ -664,7 +664,6 @@ img { display:block; }
           <!-- 오행 흐름 -->
           <div id="ohang-row" style="margin-bottom:14px;"></div>
           <!-- 사주 오행 분석 -->
-          <div id="saju-row" style="display:none;margin-bottom:18px;background:var(--green-mist);border:1px solid rgba(123,174,90,0.15);padding:16px 18px;border-radius:2px;"></div>
           <!-- 운세 포인트 -->
           <ul class="result-points" id="result-points"></ul>
           <!-- 판정 결과 재강조 (블러 제거) -->
@@ -2076,21 +2075,7 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
 
   // 사주 오행
   const sajuEl = document.getElementById('saju-row');
-  if (sajuDist) {
-    const deficient = getDeficientOhang(sajuDist);
-    const distHtml = Object.entries(sajuDist).map(([o,n])=>
-      `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:12px;${n===0?'color:#8B2A20;font-weight:600;':''}">${OEMO_D[o]} ${ONAME_D[o]}: ${n}개${n===0?' ⚠️':''}</span>`
-    ).join('');
-    sajuEl.innerHTML = `
-      <div style="font-size:11px;letter-spacing:0.1em;color:var(--green-dark);margin-bottom:8px;">사주 오행 분포</div>
-      <div style="margin-bottom:6px;">${distHtml}</div>
-      ${deficient.length
-        ? `<div style="font-size:12px;color:#8B2A20;">부족 오행: ${deficient.map(o=>ONAME_D[o]).join(', ')} — 이름 보완 ${nameCompensates(hangulOhang,deficient)?'✅':'❌'}</div>`
-        : '<div style="font-size:12px;color:var(--green-dark);">✅ 오행 균형 양호</div>'}`;
-    sajuEl.style.display = 'block';
-  } else {
-    sajuEl.style.display = 'none';
-  }
+  if (sajuEl) sajuEl.style.display = 'none';
 
   // 주역괘
   let guaHtml = '';
