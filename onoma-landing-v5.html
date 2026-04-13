@@ -1529,20 +1529,16 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
   const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3,d:''};
   const isHyung = n => sI(n).l <= 1;
 
-  // 현재 나이/구간 (suri에 저장됨)
-  const age   = suri._age || 99;
-  const phase = suri._phase || 'jung';
+  // 현재 나이/구간
+  const age = suri._age || 99;
 
   // 나이 기반으로 앞으로 영향 줄 구간만 체크
-  // 원격(0~20), 형격(21~40), 이격(41~55), 정격(56~, 평생)
-  const checkWon   = age <= 20;   // 원격은 20세 이하만
-  const checkHyung = age <= 40;   // 형격은 40세 이하만
-  const checkYi    = age <= 55;   // 이격은 55세 이하만
-  const checkJung  = true;        // 정격은 항상 (평생 영향)
+  const checkHyung = age <= 40;
+  const checkYi    = age <= 55;
 
-  const hS = hangulSuri || suri; // 판정에 사용할 한글 수리
+  const hS = hangulSuri || suri;
 
-  // ① 정격 흉수 (핵심 — 평생 영향, 항상 체크)
+  // ① 정격 흉수 (평생 영향, 항상 체크)
   const jungHyung_h = isHyung(hS.jung);
   const jungHyung_j = (suri._mode==='hanja') ? isHyung(suri.jung) : false;
   const jungHyung   = jungHyung_h || jungHyung_j;
@@ -1559,17 +1555,12 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
   // ④ 흉괘
   const guaHyung = isHyungGua(guaObj);
 
-  // ⑤ 사주 부족 오행
-  const deficient   = sajuDist ? getDeficientOhang(sajuDist) : [];
-  const sajuDeficit = deficient.length > 0;
-  const nameCompens = nameCompensates(hangulOhang, deficient);
+  // ── 판정 (사주 부족 오행은 판정에서 제외 — 참고 표시만) ──
 
-  // ── 판정 ──
-
-  // 개명 권유: 오행 상극 + 정격 흉수 + 사주 부족
-  if (ohangSanggeuk && jungHyung && sajuDeficit) {
+  // 개명 권유: 오행 상극 + 정격 흉수
+  if (ohangSanggeuk && jungHyung) {
     return { grade:'개명 권유', cls:'review', level:4,
-      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk, deficient) };
+      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk) };
   }
   // 개명 권유: 흉괘 단독
   if (guaHyung) {
@@ -1578,25 +1569,16 @@ function judgeGrade(suri, hangulSuri, guaObj, sajuDist, hangulOhang) {
     return { grade:'개명 권유', cls:'review', level:4,
       reasons: [`흉괘 발견 (${guaNames.join(', ')})`] };
   }
-  // 개명 권유: 오행 상극 + 정격 흉수
-  if (ohangSanggeuk && jungHyung) {
-    return { grade:'개명 권유', cls:'review', level:4,
-      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk, []) };
-  }
   // 개명 고려: 정격 흉수 OR 오행 상극 OR 현재 구간 이후 형·이격 흉수
   if (jungHyung || ohangSanggeuk || subHyung) {
     return { grade:'개명 고려', cls:'caution', level:3,
-      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk, []) };
+      reasons: buildReasons(jungHyung_h, hS, jungHyung_j, suri, ohangSanggeuk) };
   }
-  // 애매 — 상담: 사주 부족 오행 미보완
-  if (sajuDeficit && !nameCompens) {
-    return { grade:'애매 — 상담 권장', cls:'caution', level:2,
-      reasons: [`사주 부족 오행(${deficient.map(o=>ONAME_D[o]).join('·')}) 미보완`] };
-  }
+  // 개명 불필요
   return { grade:'개명 불필요', cls:'stable', level:1, reasons:[] };
 }
 
-function buildReasons(jungH_hangul, hSuri, jungH_hanja, hanjaSuri, sanggeuk, deficient, subHyungInfo) {
+function buildReasons(jungH_hangul, hSuri, jungH_hanja, hanjaSuri, sanggeuk) {
   const r = [];
   const sI = n => (typeof SURI !== 'undefined' && SURI[n]) ? SURI[n] : {n:'특수수',l:3};
   if (jungH_hangul && hSuri) r.push(`한글 정격 ${hSuri.jung}수(${sI(hSuri.jung).n}) → 흉수`);
@@ -1604,7 +1586,6 @@ function buildReasons(jungH_hangul, hSuri, jungH_hanja, hanjaSuri, sanggeuk, def
   if (hSuri && sI(hSuri.hyung).l <= 1) r.push(`형격 ${hSuri.hyung}수(${sI(hSuri.hyung).n}) → 흉수`);
   if (hSuri && sI(hSuri.yi).l <= 1) r.push(`이격 ${hSuri.yi}수(${sI(hSuri.yi).n}) → 흉수`);
   if (sanggeuk) r.push('이름 오행 상극');
-  if (deficient && deficient.length) r.push(`사주 부족 오행: ${deficient.map(o=>ONAME_D[o]).join('·')}`);
   return r;
 }
 
