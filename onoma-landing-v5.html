@@ -1513,7 +1513,11 @@ function calcFortuneStars(hangulSuri, hanjaSuri, guaObj, age) {
   }
 
   // 주역 점수 — GUA_FORTUNE × 나이 가중치 (원격=1~30, 이격=30~55, 정격=55+)
-  const getF  = g => g && GUA_FORTUNE[g.name] ? GUA_FORTUNE[g.name] : null;
+  const getF  = g => {
+    if (!g) return null;
+    if (g._avgFortune) return g._avgFortune; // 한글+한자 평균
+    return GUA_FORTUNE[g.name] || null;
+  };
   const wonF  = guaObj ? getF(guaObj.원격) : null;
   const yiF   = guaObj ? getF(guaObj.이격) : null;
   const jungF = guaObj ? getF(guaObj.정격) : null;
@@ -1910,8 +1914,33 @@ function renderDiagResult(name, suri, sajuResult, hangulName) {
   const fortuneEl = document.getElementById('fortune-grid');
   try {
     const hSuriF = hangulSuri || suri;
+    // 한글 수리 기반 괘
     const hGuaF = (() => { try { return calcGua(hSuriF.won, hSuriF.hyung, hSuriF.yi, hSuriF.jung); } catch(e) { return null; } })();
-    const stars = calcFortuneStars(hangulSuri, suri._mode==='hanja' ? suri : null, hGuaF, suri._age || 35);
+    // 한자 수리 기반 괘 (있으면)
+    const jGuaF = (suri._mode === 'hanja') ? (() => { try { return calcGua(suri.won, suri.hyung, suri.yi, suri.jung); } catch(e) { return null; } })() : null;
+
+    // 한글/한자 괘가 모두 있으면 평균 괘 객체 생성
+    let finalGuaF = hGuaF;
+    if (hGuaF && jGuaF) {
+      // 괘별 GUA_FORTUNE 점수를 평균 내어 합성 객체 생성
+      const avgGuaObj = {};
+      ['원격','이격','정격'].forEach(k => {
+        const hF = hGuaF[k] && GUA_FORTUNE[hGuaF[k].name] ? GUA_FORTUNE[hGuaF[k].name] : null;
+        const jF = jGuaF[k] && GUA_FORTUNE[jGuaF[k].name] ? GUA_FORTUNE[jGuaF[k].name] : null;
+        if (hF && jF) {
+          // 두 괘의 GUA_FORTUNE 평균을 가진 가상 괘 객체
+          const avgF = {};
+          ['재','직','건','가','연','종'].forEach(key => { avgF[key] = (hF[key] + jF[key]) / 2; });
+          // 기존 괘 구조 유지하되 name에 평균값 주입
+          avgGuaObj[k] = {...hGuaF[k], _avgFortune: avgF};
+        } else {
+          avgGuaObj[k] = hGuaF[k]; // 한글만 있으면 한글 사용
+        }
+      });
+      finalGuaF = avgGuaObj;
+    }
+
+    const stars = calcFortuneStars(hangulSuri, suri._mode==='hanja' ? suri : null, finalGuaF, suri._age || 35);
     const labels = {재물:'💰 재물운', 직업:'💼 직업운', 건강:'🌿 건강운', 가정:'🏠 가정운', 연애:'❤️ 연애운', 종합:'⭐ 종합운'};
     fortuneEl.innerHTML =
       `<div style="grid-column:1/-1;font-size:11px;letter-spacing:0.12em;color:var(--green-dark);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(123,174,90,0.15);">수리·주역 기반 운세 분석</div>` +
