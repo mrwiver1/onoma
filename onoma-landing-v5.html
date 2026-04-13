@@ -618,19 +618,21 @@ img { display:block; }
         <!-- 한자 이름 + 피커 -->
         <div class="form-group" style="margin-bottom:14px;">
           <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--green-dark);font-weight:400;">✓ 입력 시 더 정확한 수리 계산</span></label>
-          <!-- 한글로 한자 찾기 -->
-          <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <input class="form-input" id="diag-hanja-search" type="text" placeholder="한글 이름 입력 후 찾기 (예: 이정운)" style="flex:1;">
-            <button type="button" onclick="diagHanjaSearch()" style="padding:10px 14px;background:var(--green-pale);border:1px solid rgba(123,174,90,0.4);color:var(--green-dark);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">한자 찾기</button>
+          <!-- 한자 이름 없음 체크 -->
+          <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;font-size:13px;color:var(--ink3);">
+            <input type="checkbox" id="diag-no-hanja" onchange="toggleHanjaInput()" style="width:16px;height:16px;accent-color:var(--green-dark);cursor:pointer;">
+            한자 이름 없음 (한글 기준으로만 진단)
+          </label>
+          <!-- 한자 찾기 영역 -->
+          <div id="diag-hanja-area">
+            <div style="display:flex;gap:8px;margin-bottom:8px;">
+              <input class="form-input" id="diag-hanja-search" type="text" placeholder="한글 이름 입력 후 찾기 (예: 이정운)" style="flex:1;">
+              <button type="button" onclick="diagHanjaSearch()" style="padding:10px 14px;background:var(--green-pale);border:1px solid rgba(123,174,90,0.4);color:var(--green-dark);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">한자 찾기</button>
+            </div>
+            <div id="diag-hanja-slots" style="display:none;margin-bottom:8px;"></div>
+            <input type="hidden" id="diag-hanja">
+            <div style="font-size:11px;color:var(--ink3);">한글 이름으로 한자를 찾은 후 글자를 클릭해 변경할 수 있어요</div>
           </div>
-          <!-- 슬롯 (한자 클릭해서 변경) -->
-          <div id="diag-hanja-slots" style="display:none;margin-bottom:8px;"></div>
-          <!-- 직접 입력 -->
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input class="form-input" id="diag-hanja" type="text" placeholder="또는 한자 직접 입력 (예: 李定芸)" maxlength="5" style="flex:1;">
-            <button type="button" onclick="diagHanjaDirect()" style="padding:10px 14px;background:var(--green-pale);border:1px solid rgba(123,174,90,0.4);color:var(--green-dark);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">적용</button>
-          </div>
-          <div style="font-size:11px;color:var(--ink3);margin-top:5px;">한자를 클릭하면 다른 한자로 변경할 수 있어요</div>
         </div>
         <!-- 고민 -->
         <div class="form-group" style="margin-bottom:20px;">
@@ -1885,9 +1887,9 @@ function runDiag() {
   const day    = document.getElementById('diag-day').value;
   const gender = document.getElementById('diag-gender').value;
   const hangul = document.getElementById('diag-hangul').value.trim();
-  const hanja  = document.getElementById('diag-hanja').value.trim();
+  const noHanja = document.getElementById('diag-no-hanja').checked;
+  const hanja  = noHanja ? '' : document.getElementById('diag-hanja').value.trim();
 
-  // 필수값 검증
   if (!year || !month || !day) {
     alert('생년월일을 선택해주세요. (정확한 나이 기반 판정에 필요합니다)'); return;
   }
@@ -1901,7 +1903,7 @@ function runDiag() {
   let suri = null;
   let displayName = '';
 
-  if (hanja && hanja.length >= 2) {
+  if (!noHanja && hanja && hanja.length >= 2) {
     suri = calcHanjaSuriLanding(hanja);
     if (!suri) { alert('DB에 없는 한자가 포함되어 있습니다. 한글만으로 진단해보세요.'); return; }
     suri._mode = 'hanja';
@@ -1914,7 +1916,6 @@ function runDiag() {
     displayName = hangul;
   }
 
-  // 나이 계산
   const age = calcAge(+year, +month, +day);
   suri._age = age;
   suri._phase = getSuriPhase(age);
@@ -1989,6 +1990,19 @@ function _diagGetCandidates(reading, isSurname) {
     const bp = DIAG_NAME_PREFERRED.has(b.h) ? 0:1;
     return ap - bp || a.s - b.s;
   });
+}
+
+function toggleHanjaInput() {
+  const noHanja = document.getElementById('diag-no-hanja').checked;
+  const area = document.getElementById('diag-hanja-area');
+  area.style.display = noHanja ? 'none' : 'block';
+  if (noHanja) {
+    document.getElementById('diag-hanja').value = '';
+    document.getElementById('diag-hanja-search').value = '';
+    document.getElementById('diag-hanja-slots').style.display = 'none';
+    document.getElementById('diag-hanja-slots').innerHTML = '';
+    _diagHanjaState = [];
+  }
 }
 
 function diagHanjaSearch() {
