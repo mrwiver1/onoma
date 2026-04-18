@@ -779,13 +779,19 @@ img { display:block; }
 
 
 /* ── 인생 전략 리포트 — 전폭 독립 블록 ── */
+/* outer: section-inner와 동일한 폭 제한 */
+.svc-featured-outer {
+  max-width: 1100px;
+  margin: 16px auto 0;
+  padding: 0 5%;
+}
 .service-card--featured-wrap {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--dark-section-bg);
-  border-top: 1px solid rgba(191,164,106,0.15);
-  max-height: 420px;
+  border: 1px solid rgba(191,164,106,0.15);
   overflow: hidden;
+  height: 420px;
 }
 .svc-featured-img {
   position: relative;
@@ -962,13 +968,19 @@ img { display:block; }
 
 
 /* ── 인생 전략 리포트 — 전폭 독립 블록 ── */
+/* outer: section-inner와 동일한 폭 제한 */
+.svc-featured-outer {
+  max-width: 1100px;
+  margin: 16px auto 0;
+  padding: 0 5%;
+}
 .service-card--featured-wrap {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--dark-section-bg);
-  border-top: 1px solid rgba(191,164,106,0.15);
-  max-height: 420px;
+  border: 1px solid rgba(191,164,106,0.15);
   overflow: hidden;
+  height: 420px;
 }
 .svc-featured-img {
   position: relative;
