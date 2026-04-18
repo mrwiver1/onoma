@@ -778,73 +778,88 @@ img { display:block; }
 .svc-sub-label { font-size:14px; color:var(--ink3); font-family:var(--sans); font-weight:300; }
 
 
-/* ── 인생 전략 리포트 featured 카드 ── */
-.service-card--featured {
-  grid-column: 1 / -1;
-  background: var(--dark-section-bg);
-  border-color: rgba(191,164,106,0.2);
+/* ── 인생 전략 리포트 — 전폭 독립 블록 ── */
+.service-card--featured-wrap {
   display: grid;
-  grid-template-columns: 38% 62%;
-  gap: 0;
-  padding: 0 !important;
-  overflow: hidden;
-  align-items: stretch;
-}
-.service-card--featured .svc-img {
-  position: relative;
+  grid-template-columns: 42% 58%;
+  background: var(--dark-section-bg);
+  border-top: 1px solid rgba(191,164,106,0.15);
   min-height: 420px;
-  margin: 0;
   overflow: hidden;
 }
-.service-card--featured .svc-img img {
+.svc-featured-img {
+  position: relative;
+  overflow: hidden;
+}
+.svc-featured-img img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
 }
-.service-card--featured .service-tag {
+.svc-featured-body {
+  padding: 52px 64px 52px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.svc-featured-body .service-tag {
   color: var(--gold);
-  background: rgba(191,164,106,0.12);
-  border-color: rgba(191,164,106,0.25);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(191,164,106,0.4);
+  padding: 0 0 5px 0;
 }
-.service-card--featured h3 {
+.svc-featured-body h3 {
   color: var(--dark-section-text);
-  font-size: 20px;
+  font-size: 22px;
   word-break: keep-all;
-  line-height: 1.5;
+  line-height: 1.4;
+  margin-bottom: 16px;
 }
-.service-card--featured .svc-sub-label {
-  color: rgba(232,240,222,0.55);
+.svc-featured-body .svc-sub-label {
+  color: rgba(232,240,222,0.45);
+  font-size: 14px;
+  font-family: var(--sans);
+  font-weight: 300;
 }
-.service-card--featured p {
-  color: rgba(232,240,222,0.6);
+.svc-featured-body p {
+  color: rgba(232,240,222,0.65);
   word-break: keep-all;
   font-size: 14px;
+  line-height: 1.95;
+  font-weight: 300;
 }
-.service-card--featured .service-points li {
-  color: rgba(232,240,222,0.55);
+.svc-featured-body .service-points li {
+  color: rgba(232,240,222,0.5);
   border-color: rgba(255,255,255,0.06);
 }
-.service-card--featured .service-points li::before {
+.svc-featured-body .service-points li::before {
   background: var(--gold);
   opacity: 0.5;
 }
-.service-card--featured .btn-primary {
+.svc-featured-body .btn-primary {
   background: var(--gold);
   color: var(--dark-section-bg);
   box-shadow: none;
+  align-self: flex-start;
+  margin-top: 8px;
 }
-.service-card--featured .btn-primary:hover {
+.svc-featured-body .btn-primary:hover {
   background: #d4b878;
 }
-.svc-featured-body { padding: 44px 48px 44px 52px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
 @media (max-width: 768px) {
-  .service-card--featured {
+  .service-card--featured-wrap {
     grid-template-columns: 1fr;
   }
-  .service-card--featured .svc-img {
-    min-height: 200px;
+  .svc-featured-img {
+    min-height: 220px;
+    position: relative;
+  }
+  .svc-featured-body {
+    padding: 36px 24px;
   }
 }
 
@@ -941,4 +956,91 @@ img { display:block; }
 @media (max-width:768px) {
   .choice-grid { grid-template-columns:1fr; }
   .service-premium { grid-template-columns:1fr; padding:40px 24px; gap:32px; }
+}
+
+
+
+/* ── 인생 전략 리포트 — 전폭 독립 블록 ── */
+.service-card--featured-wrap {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  background: var(--dark-section-bg);
+  border-top: 1px solid rgba(191,164,106,0.15);
+  min-height: 420px;
+  overflow: hidden;
+}
+.svc-featured-img {
+  position: relative;
+  overflow: hidden;
+}
+.svc-featured-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+.svc-featured-body {
+  padding: 52px 64px 52px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.svc-featured-body .service-tag {
+  color: var(--gold);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(191,164,106,0.4);
+  padding: 0 0 5px 0;
+}
+.svc-featured-body h3 {
+  color: var(--dark-section-text);
+  font-size: 22px;
+  word-break: keep-all;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+.svc-featured-body .svc-sub-label {
+  color: rgba(232,240,222,0.45);
+  font-size: 14px;
+  font-family: var(--sans);
+  font-weight: 300;
+}
+.svc-featured-body p {
+  color: rgba(232,240,222,0.65);
+  word-break: keep-all;
+  font-size: 14px;
+  line-height: 1.95;
+  font-weight: 300;
+}
+.svc-featured-body .service-points li {
+  color: rgba(232,240,222,0.5);
+  border-color: rgba(255,255,255,0.06);
+}
+.svc-featured-body .service-points li::before {
+  background: var(--gold);
+  opacity: 0.5;
+}
+.svc-featured-body .btn-primary {
+  background: var(--gold);
+  color: var(--dark-section-bg);
+  box-shadow: none;
+  align-self: flex-start;
+  margin-top: 8px;
+}
+.svc-featured-body .btn-primary:hover {
+  background: #d4b878;
+}
+@media (max-width: 768px) {
+  .service-card--featured-wrap {
+    grid-template-columns: 1fr;
+  }
+  .svc-featured-img {
+    min-height: 220px;
+    position: relative;
+  }
+  .svc-featured-body {
+    padding: 36px 24px;
+  }
 }
