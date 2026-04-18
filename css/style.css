@@ -781,15 +781,16 @@ img { display:block; }
 /* ── 인생 전략 리포트 — 전폭 독립 블록 ── */
 .service-card--featured-wrap {
   display: grid;
-  grid-template-columns: 42% 58%;
+  grid-template-columns: 1fr 1fr;
   background: var(--dark-section-bg);
   border-top: 1px solid rgba(191,164,106,0.15);
-  min-height: 420px;
+  max-height: 420px;
   overflow: hidden;
 }
 .svc-featured-img {
   position: relative;
   overflow: hidden;
+  height: 420px;
 }
 .svc-featured-img img {
   position: absolute;
@@ -963,15 +964,16 @@ img { display:block; }
 /* ── 인생 전략 리포트 — 전폭 독립 블록 ── */
 .service-card--featured-wrap {
   display: grid;
-  grid-template-columns: 42% 58%;
+  grid-template-columns: 1fr 1fr;
   background: var(--dark-section-bg);
   border-top: 1px solid rgba(191,164,106,0.15);
-  min-height: 420px;
+  max-height: 420px;
   overflow: hidden;
 }
 .svc-featured-img {
   position: relative;
   overflow: hidden;
+  height: 420px;
 }
 .svc-featured-img img {
   position: absolute;
