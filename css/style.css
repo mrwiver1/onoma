@@ -1574,3 +1574,229 @@ footer {
 .realtime-ticker--mid .ticker-item em {
   color: var(--gold);
 }
+
+/* ══════════════════════════════
+   가격 안내 섹션
+══════════════════════════════ */
+#pricing { padding: 100px 0; background: var(--bg); }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* 기본 카드 */
+.pricing-card {
+  background: #fff;
+  border: 1px solid rgba(196,162,74,0.15);
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  transition: box-shadow 0.25s;
+}
+.pricing-card:hover {
+  box-shadow: 0 6px 32px rgba(28,28,20,0.07);
+}
+.pricing-tag {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(196,162,74,0.2);
+  padding-bottom: 12px;
+}
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.pricing-amount {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.pricing-unit {
+  font-size: 14px;
+  color: var(--ink3);
+  font-weight: 300;
+}
+.pricing-vat {
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-bottom: 20px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+.pricing-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex: 1;
+}
+.pricing-list li {
+  font-size: 13px;
+  color: var(--ink3);
+  font-weight: 300;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.6;
+}
+.pricing-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.6;
+}
+.pricing-cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--green-dark);
+  color: #FAF7F2;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background 0.2s;
+  text-align: center;
+  text-decoration: none;
+  margin-top: auto;
+}
+.pricing-cta:hover { background: var(--ink); }
+.pricing-cta--gold {
+  background: var(--gold) !important;
+  color: var(--green-dark) !important;
+  font-weight: 600;
+}
+.pricing-cta--gold:hover { background: #d4b878 !important; }
+
+/* 작명·개명 — 3단계 티어 */
+.pricing-card--wide {
+  grid-column: 1 / -1;
+}
+.pricing-tiers {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.pricing-tier {
+  background: var(--bg);
+  border: 1px solid rgba(196,162,74,0.12);
+  padding: 20px;
+  position: relative;
+}
+.pricing-tier--mid {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+}
+.pricing-tier--mid .pricing-tier-name,
+.pricing-tier--mid .pricing-tier-price,
+.pricing-tier--mid .pricing-list li {
+  color: rgba(232,240,222,0.85) !important;
+}
+.pricing-tier--mid .pricing-list li::before { background: var(--gold); }
+.pricing-tier-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--green-dark);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3px 12px;
+  white-space: nowrap;
+}
+.pricing-tier-name {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.pricing-tier-price {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+.pricing-tier-price span {
+  font-size: 13px;
+  color: var(--ink3);
+}
+
+/* 인생 전략 리포트 */
+.pricing-card--report {
+  background: var(--dark-section-bg);
+  border-color: rgba(191,164,106,0.2);
+}
+.pricing-card--report .pricing-tag { color: var(--gold); border-color: rgba(191,164,106,0.2); }
+.pricing-card--report .pricing-amount { color: var(--dark-section-text); }
+.pricing-card--report .pricing-unit { color: rgba(232,240,222,0.5); }
+.pricing-card--report .pricing-vat { color: rgba(232,240,222,0.4); }
+.pricing-card--report .pricing-list li { color: rgba(232,240,222,0.55); }
+.pricing-card--report .pricing-list li::before { background: var(--gold); }
+.pricing-special-badge {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--gold);
+  background: rgba(191,164,106,0.1);
+  border: 1px solid rgba(191,164,106,0.25);
+  padding: 4px 12px;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.pricing-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+.pricing-price--strike .pricing-amount {
+  font-size: 18px;
+  color: rgba(232,240,222,0.25);
+  text-decoration: line-through;
+}
+.pricing-price--strike .pricing-unit {
+  color: rgba(232,240,222,0.2);
+  font-size: 12px;
+}
+.pricing-amount--sale {
+  color: var(--gold) !important;
+  font-size: 40px !important;
+}
+
+/* 비즈니스 네이밍 */
+.pricing-card--biz {
+  border-left: 3px solid var(--gold);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card--wide { grid-column: 1; }
+  .pricing-tiers { grid-template-columns: 1fr; }
+}
