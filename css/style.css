@@ -319,20 +319,162 @@ section { position:relative; z-index:1; }
 .review-cta-btns { display:flex; gap:10px; flex-wrap:wrap; }
 
 /* 인생통찰 */
-#insight { padding:100px 0; background:#fff; }
-.insight-inner { max-width:880px; margin:0 auto; }
-.insight-intro { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; margin-bottom:48px; }
-.insight-badge { display:inline-flex; align-items:center; gap:8px; background:var(--gold-pale); border:1px solid rgba(196,162,74,0.28); padding:6px 14px; font-size:11px; color:var(--green-dark); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:16px; }
-.insight-compare { background:var(--bg2); border:1px solid rgba(196,162,74,0.13); padding:24px; }
-.compare-row { display:flex; gap:12px; }
-.compare-label { font-size:11px; letter-spacing:0.08em; color:var(--ink3); min-width:80px; flex-shrink:0; padding-top:2px; }
-.compare-value { font-size:13px; color:var(--ink); line-height:1.6; }
-.compare-row + .compare-row { margin-top:14px; padding-top:14px; border-top:1px solid rgba(196,162,74,0.1); }
-.insight-arrow { text-align:center; font-size:24px; color:var(--gold-dark); margin:6px 0; }
-.insight-points-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(196,162,74,0.1); margin-bottom:36px; }
-.insight-point { background:#fff; padding:24px; }
-.insight-point h4 { font-family:var(--serif); font-size:15px; font-weight:400; color:var(--ink); margin-bottom:6px; }
-.insight-point p { font-size:12px; color:var(--ink3); line-height:1.8; }
+/* ── 인생통찰 섹션 리디자인 ── */
+#insight { padding: 0; background: var(--dark-section-bg); }
+.insight-hero {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0;
+  min-height: 560px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 5%;
+}
+.insight-hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 64px;
+  border-right: 1px solid rgba(191,164,106,0.12);
+}
+.insight-headline {
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.8vw, 48px);
+  font-weight: 300;
+  color: var(--dark-section-text);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 16px 0 24px;
+}
+.insight-headline em {
+  font-style: normal;
+  color: var(--gold);
+  display: block;
+}
+.insight-lead {
+  font-size: 15px;
+  color: rgba(232,240,222,0.55);
+  line-height: 2;
+  font-weight: 300;
+  margin-bottom: 36px;
+}
+.insight-cta {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--dark-section-bg);
+  background: var(--gold);
+  padding: 16px 32px;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background 0.2s;
+}
+.insight-cta:hover { background: #d4b878; }
+
+/* 오른쪽 */
+.insight-hero-right {
+  padding-left: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+}
+
+/* 비교 카드 */
+.insight-diff-card {
+  border: 1px solid rgba(191,164,106,0.18);
+  background: rgba(255,255,255,0.03);
+}
+.insight-diff-row {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.insight-diff-row--main {
+  background: rgba(191,164,106,0.06);
+  border-top: 1px solid rgba(191,164,106,0.15);
+}
+.insight-diff-label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+  font-weight: 500;
+}
+.insight-diff-row--main .insight-diff-label { opacity: 1; }
+.insight-diff-desc {
+  font-size: 13.5px;
+  color: rgba(232,240,222,0.5);
+  line-height: 1.7;
+  font-weight: 300;
+}
+.insight-diff-row--main .insight-diff-desc { color: rgba(232,240,222,0.8); }
+.insight-diff-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+  border-top: 1px solid rgba(191,164,106,0.1);
+  border-bottom: 1px solid rgba(191,164,106,0.1);
+  background: rgba(191,164,106,0.04);
+}
+.insight-diff-divider span {
+  font-size: 11px;
+  color: rgba(191,164,106,0.5);
+  letter-spacing: 0.06em;
+  padding: 8px 0;
+  white-space: nowrap;
+}
+.insight-diff-divider::before,
+.insight-diff-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(191,164,106,0.15);
+}
+
+/* 4 pillars */
+.insight-pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(191,164,106,0.1);
+}
+.insight-pillar {
+  background: var(--dark-section-bg);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.insight-pillar-num {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(191,164,106,0.4);
+  font-family: var(--serif);
+}
+.insight-pillar strong {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--dark-section-text);
+}
+.insight-pillar p {
+  font-size: 12px;
+  color: rgba(232,240,222,0.4);
+  line-height: 1.6;
+  font-weight: 300;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .insight-hero { grid-template-columns: 1fr; padding: 60px 5%; }
+  .insight-hero-left { padding-right: 0; border-right: none; border-bottom: 1px solid rgba(191,164,106,0.12); padding-bottom: 48px; margin-bottom: 48px; }
+  .insight-hero-right { padding-left: 0; }
+}
 
 /* FAQ */
 #faq { padding:100px 0; background:var(--bg2); }
@@ -412,14 +554,13 @@ section { position:relative; z-index:1; }
 /* 반응형 */
 @media(max-width:900px) {
   .nav-links { display:none; }
-  .about-grid, .director-grid, .insight-intro { grid-template-columns:1fr; gap:40px; }
+  .about-grid, .director-grid { grid-template-columns:1fr; gap:40px; }
   .blog-grid { grid-template-columns:1fr; }
   .director-photo { aspect-ratio:1/1; max-width:300px; }
   .services-grid { grid-template-columns:1fr; }
   .service-card.featured { grid-column:auto; }
   .why-grid, .target-grid { grid-template-columns:1fr; }
   .reviews-grid { grid-template-columns:1fr; }
-  .insight-points-grid { grid-template-columns:1fr 1fr; }
   .form-row { grid-template-columns:1fr; }
   
   .funnel-cards { grid-template-columns:1fr; }
@@ -430,7 +571,6 @@ section { position:relative; z-index:1; }
   .btn-primary, .btn-outline { text-align:center; }
   .diag-tabs { overflow-x:auto; }
   .diag-tab { white-space:nowrap; }
-  .insight-points-grid { grid-template-columns:1fr; }
   .cta-btn-row { flex-direction:column; align-items:center; }
 }
 
