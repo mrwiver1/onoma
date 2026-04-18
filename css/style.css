@@ -357,20 +357,9 @@ section { position:relative; z-index:1; }
 .cta-note { font-size:14px; color:var(--ink3); line-height:1.9; max-width:440px; margin:0 auto; font-style:italic; font-family:var(--serif); }
 
 /* 푸터 */
-footer { background:#2A3D1A; border-top:none; padding:52px 5% 32px; }
-.footer-inner { max-width:1100px; margin:0 auto; display:flex; align-items:flex-start; justify-content:space-between; gap:40px; flex-wrap:wrap; }
-.footer-brand { font-family:var(--serif); font-size:18px; color:#E8F0DE; letter-spacing:0.08em; margin-bottom:10px; font-weight:500; }
-.footer-sub { font-size:14px; color:rgba(200,221,168,0.78); line-height:2; font-weight:300; }
-.footer-links { list-style:none; display:flex; flex-direction:column; gap:12px; }
-.footer-links a { font-size:14px; color:rgba(200,221,168,0.78); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; font-weight:400; }
-.footer-links a:hover { color:#E8F0DE; }
 /* 소셜 아이콘 */
-.footer-social { display:flex; gap:10px; margin-top:16px; }
-.footer-social a { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; text-decoration:none; background:rgba(200,221,168,0.12); border:1px solid rgba(200,221,168,0.2); }
-.footer-social a:hover { background:rgba(200,221,168,0.22); transform:translateY(-2px); }
-.footer-social svg { width:18px; height:18px; fill:rgba(200,221,168,0.75); }
 /* 사업자 정보 */
-.footer-biz { font-size:12px; color:rgba(200,221,168,0.55); line-height:2; margin-top:28px; padding-top:20px; border-top:1px solid rgba(200,221,168,0.12); max-width:1100px; margin-left:auto; margin-right:auto; font-weight:300; }
+
 
 /* 소셜 프루프 — 밝은 배경으로 복원 (경계 강조) */
 #sp-stream {
@@ -1056,5 +1045,259 @@ img { display:block; }
   }
   .svc-featured-body {
     padding: 36px 24px;
+  }
+}
+/* ── 인생 전략 리포트 전환 push 요소 ── */
+.svc-featured-push {
+  margin: 16px 0 20px;
+  padding: 16px 20px;
+  background: rgba(191,164,106,0.08);
+  border: 1px solid rgba(191,164,106,0.2);
+  border-left: 3px solid var(--gold);
+}
+.svc-push-price {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.svc-push-price-left,
+.svc-push-price-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.svc-push-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(232,240,222,0.4);
+  font-weight: 400;
+}
+.svc-push-original {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: rgba(232,240,222,0.3);
+  text-decoration: line-through;
+}
+.svc-push-arrow {
+  font-size: 16px;
+  color: var(--gold);
+  opacity: 0.6;
+  margin-top: 10px;
+}
+.svc-push-sale {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.svc-push-badge {
+  font-size: 11px;
+  color: rgba(232,240,222,0.55);
+  letter-spacing: 0.04em;
+  padding-top: 10px;
+  border-top: 1px solid rgba(191,164,106,0.1);
+}
+.svc-push-badge strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+.svc-featured-btn {
+  align-self: flex-start;
+  background: var(--gold) !important;
+  color: var(--dark-section-bg) !important;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.svc-featured-btn:hover {
+  background: #d4b878 !important;
+}
+.svc-push-footnote {
+  font-size: 11px !important;
+  color: rgba(232,240,222,0.3) !important;
+  letter-spacing: 0.06em;
+  margin-top: 10px !important;
+  margin-bottom: 0 !important;
+}
+
+/* ══════════════════════════════
+   FOOTER — 리디자인
+══════════════════════════════ */
+footer {
+  background: #1C2914;
+}
+.footer-main {
+  padding: 64px 5% 52px;
+  border-top: 1px solid rgba(191,164,106,0.15);
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.4fr;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+/* 브랜드 컬럼 */
+.footer-logo {
+  height: 52px;
+  width: auto;
+  display: block;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+.footer-tagline {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: rgba(232,240,222,0.7);
+  line-height: 1.7;
+  margin-bottom: 6px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+.footer-loc {
+  font-size: 12px;
+  color: rgba(232,240,222,0.35);
+  line-height: 1.9;
+  font-weight: 300;
+  margin-bottom: 24px;
+}
+
+/* 소셜 */
+.footer-social {
+  display: flex;
+  gap: 8px;
+}
+.footer-social a {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(191,164,106,0.2);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.footer-social a:hover {
+  border-color: rgba(191,164,106,0.5);
+  background: rgba(191,164,106,0.08);
+}
+.footer-social svg {
+  width: 15px;
+  height: 15px;
+  fill: rgba(232,240,222,0.45);
+}
+
+/* 네비 컬럼 */
+.footer-nav-title {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.footer-nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer-nav-list a {
+  font-size: 13px;
+  color: rgba(232,240,222,0.5);
+  text-decoration: none;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.footer-nav-list a:hover {
+  color: rgba(232,240,222,0.9);
+}
+
+/* CTA 컬럼 */
+.footer-cta-col .footer-nav-title {
+  margin-bottom: 14px;
+}
+.footer-cta-desc {
+  font-size: 13px;
+  color: rgba(232,240,222,0.45);
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 18px;
+}
+.footer-cta-btn {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--green-dark);
+  background: var(--gold);
+  padding: 11px 18px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.footer-cta-btn:hover {
+  background: #d4b878;
+}
+
+/* 사업자 정보 */
+.footer-biz {
+  background: #151e0e;
+  padding: 18px 5%;
+}
+.footer-biz-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.footer-biz-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.footer-biz-left span,
+.footer-biz-left a {
+  font-size: 11px;
+  color: rgba(232,240,222,0.3);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.footer-biz-left a:hover {
+  color: rgba(232,240,222,0.6);
+}
+.footer-biz-div {
+  opacity: 0.2;
+}
+.footer-biz-corp {
+  font-size: 11px;
+  color: rgba(232,240,222,0.2);
+  letter-spacing: 0.02em;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+@media (max-width: 900px) {
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+  .footer-brand-col {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 540px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
   }
 }
