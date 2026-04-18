@@ -791,12 +791,12 @@ img { display:block; }
   background: var(--dark-section-bg);
   border: 1px solid rgba(191,164,106,0.15);
   overflow: hidden;
-  height: 420px;
+  min-height: 420px;
 }
 .svc-featured-img {
   position: relative;
   overflow: hidden;
-  height: 420px;
+  min-height: 420px;
 }
 .svc-featured-img img {
   position: absolute;
@@ -980,12 +980,12 @@ img { display:block; }
   background: var(--dark-section-bg);
   border: 1px solid rgba(191,164,106,0.15);
   overflow: hidden;
-  height: 420px;
+  min-height: 420px;
 }
 .svc-featured-img {
   position: relative;
   overflow: hidden;
-  height: 420px;
+  min-height: 420px;
 }
 .svc-featured-img img {
   position: absolute;
