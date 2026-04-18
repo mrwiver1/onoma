@@ -573,7 +573,7 @@ img { display:block; }
 /* ── 히어로 ── */
 #hero {
   background: #1F2A18;
-  padding-top: 0;
+  padding-top: 68px;
 }
 .hero-grid {
   display: grid;
@@ -1324,7 +1324,7 @@ footer {
   white-space: nowrap;
   position: relative;
   z-index: 99;
-  margin-top: 68px; /* nav 높이만큼 */
+  margin-top: 0;
 }
 .ticker-track {
   display: inline-flex;
@@ -1418,3 +1418,17 @@ footer {
 }
 .toast-in  { animation: toastIn  0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
 .toast-out { animation: toastOut 0.5s ease forwards; }
+
+/* 중간 티커 — 밝은 배경에 맞게 */
+.realtime-ticker--mid {
+  margin-top: 0;
+  background: var(--bg2);
+  border-top: 1px solid rgba(191,164,106,0.15);
+  border-bottom: 1px solid rgba(191,164,106,0.15);
+}
+.realtime-ticker--mid .ticker-item {
+  color: var(--ink3);
+}
+.realtime-ticker--mid .ticker-item em {
+  color: var(--gold-dark);
+}
