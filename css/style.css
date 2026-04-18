@@ -1144,7 +1144,7 @@ footer {
 
 /* 브랜드 컬럼 */
 .footer-logo {
-  height: 52px;
+  height: 156px;
   width: auto;
   display: block;
   margin-bottom: 20px;
@@ -1210,14 +1210,14 @@ footer {
 }
 .footer-nav-list a {
   font-size: 13px;
-  color: rgba(232,240,222,0.5);
+  color: rgba(232,240,222,0.78);
   text-decoration: none;
-  font-weight: 300;
-  letter-spacing: 0.02em;
+  font-weight: 500;
+  letter-spacing: 0.03em;
   transition: color 0.2s;
 }
 .footer-nav-list a:hover {
-  color: rgba(232,240,222,0.9);
+  color: #fff;
 }
 
 /* CTA 컬럼 */
@@ -1226,7 +1226,7 @@ footer {
 }
 .footer-cta-desc {
   font-size: 13px;
-  color: rgba(232,240,222,0.45);
+  color: rgba(232,240,222,0.65);
   line-height: 1.8;
   font-weight: 300;
   margin-bottom: 18px;
@@ -1300,4 +1300,15 @@ footer {
   .footer-inner {
     grid-template-columns: 1fr;
   }
+}
+
+.footer-biz-email {
+  color: rgba(232,240,222,0.35);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-biz-email:hover {
+  color: rgba(232,240,222,0.65);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
