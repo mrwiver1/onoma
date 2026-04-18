@@ -139,6 +139,115 @@ section { position:relative; z-index:1; }
 .service-card.featured::before { height:3px; width:100%; transform:scaleX(1); }
 .service-card.featured h3 { font-size:22px; }
 
+/* 작명소 불신 강조 블록 */
+.naming-doubt-block {
+  margin-top:28px;
+  border-top:1px solid rgba(123,174,90,0.15);
+  padding-top:24px;
+}
+.naming-doubt-label {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:#8B2A20;
+  font-weight:600;
+  margin-bottom:14px;
+}
+.naming-doubt-label::before {
+  content:'';
+  display:inline-block;
+  width:6px; height:6px;
+  background:#C0392B;
+  border-radius:50%;
+  animation:blink 1.6s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100%{opacity:1;} 50%{opacity:0.3;}
+}
+.naming-pain-box {
+  background:#FFF8F7;
+  border:1px solid rgba(192,57,43,0.18);
+  border-left:3px solid #C0392B;
+  padding:16px 20px;
+  margin-bottom:16px;
+}
+.naming-pain-box ul {
+  list-style:none;
+  margin:0;
+}
+.naming-pain-box ul li {
+  font-size:13px;
+  color:#5C2020;
+  padding:5px 0;
+  border:none;
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  line-height:1.7;
+}
+.naming-pain-box ul li::before {
+  content:'—';
+  color:#C0392B;
+  flex-shrink:0;
+  font-size:11px;
+  margin-top:2px;
+}
+.naming-diff-box {
+  background:linear-gradient(135deg, #EAF3DC, #F4F9ED);
+  border:1px solid rgba(123,174,90,0.3);
+  border-left:3px solid var(--green);
+  padding:16px 20px;
+  margin-bottom:20px;
+}
+.naming-diff-title {
+  font-size:11px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--green-dark);
+  font-weight:600;
+  margin-bottom:11px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.naming-diff-title::before {
+  content:'✦';
+  font-size:10px;
+  color:var(--green);
+}
+.naming-diff-box ul {
+  list-style:none;
+  margin:0;
+}
+.naming-diff-box ul li {
+  font-size:13px;
+  color:var(--ink2);
+  padding:4px 0;
+  border:none;
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  line-height:1.7;
+}
+.naming-diff-box ul li::before {
+  content:'✔';
+  color:var(--green);
+  flex-shrink:0;
+  font-size:11px;
+  margin-top:2px;
+}
+.naming-diff-conclusion {
+  font-size:12px;
+  color:var(--green-dark);
+  font-weight:500;
+  letter-spacing:0.03em;
+  line-height:1.7;
+  padding-top:4px;
+}
+
 /* 진단 */
 #diagnosis { padding:100px 0; background:var(--green-mist); }
 .diag-container { max-width:700px; margin:0 auto; }
@@ -861,6 +970,27 @@ img { display:block; }
           <li>신생아 이름 작명</li><li>성인 개명 상담 및 작명</li>
           <li>타 작명소 이름 재검토</li><li>개명 후보 비교 분석</li>
         </ul>
+        <div class="naming-doubt-block">
+          <div class="naming-doubt-label">이런 경험, 있으신가요?</div>
+          <div class="naming-pain-box">
+            <ul>
+              <li>이름을 받았는데 왜 좋은지 설명이 전혀 없었다</li>
+              <li>여러 개 중에 "하나 고르세요"라는 말만 들었다</li>
+              <li>다른 곳에 물어보니 나쁜 이름이라고 한다</li>
+              <li>누구 말을 믿어야 할지 혼란스럽다</li>
+            </ul>
+          </div>
+          <div class="naming-diff-box">
+            <div class="naming-diff-title">오노마는 다르게 합니다</div>
+            <ul>
+              <li>이름이 만들어진 기준과 논리를 직접 설명합니다</li>
+              <li>왜 이 이름이 맞는지 · 부족한지 근거를 보여줍니다</li>
+              <li>후보 이름들을 비교해 어떤 차이가 있는지 분석합니다</li>
+            </ul>
+            <div style="height:10px;"></div>
+            <p class="naming-diff-conclusion">단순 추천이 아닌, 이름을 <strong>이해하고 선택</strong>할 수 있도록 만드는 서비스입니다.</p>
+          </div>
+        </div>
         <button class="btn-primary" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">이름 검토·작명 상담 문의</button>
       </div>
       <div class="service-card" style="border-color:rgba(123,174,90,0.35);background:linear-gradient(135deg,#f7fbf2,#fff);">
