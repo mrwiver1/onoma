@@ -29,33 +29,55 @@
 <!-- HERO -->
 <section id="hero">
   <div class="hero-grid">
-    <!-- 왼쪽: 텍스트 -->
+    <!-- 왼쪽: 헤드라인 + CTA + 서비스 리스트 -->
     <div class="hero-content reveal">
-      <div class="hero-eyebrow">ONOMA COUNSELING · ὄνομα · 이름의 해석</div>
+      <div class="hero-eyebrow">ONOMA COUNSELING · 이름의 해석</div>
       <h1 class="hero-headline">
-        지금 이 이름,<br>
-        <em style="font-size:0.82em; white-space:nowrap;">계속 써도 괜찮을까요?</em>
+        당신의 이름,<br>
+        <em>제대로 해석해보신 적<br>있나요?</em>
       </h1>
       <div class="hero-divider"></div>
-      <p class="hero-hook">
-        혼자 오래 고민해 오셨다면<br>
-        이제 함께 살펴볼 수 있습니다
-      </p>
-      <p class="hero-sub">이유 없이 같은 관계 문제가 반복되거나, 중요한 선택 앞에서 늘 흔들린다면 — 이름 구조에서 그 원인을 찾을 수 있습니다.</p>
+      <p class="hero-sub">반복되는 문제의 이유를<br>이름의 구조에서 읽어냅니다.</p>
       <div class="hero-cta-row">
-        <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">내 이름, 지금 무료로 확인하기</button>
-        <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">서비스 전체 보기 →</button>
+        <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">진단 시작하기</button>
+        <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">서비스 보기 →</button>
       </div>
-      <div class="hero-badges">
-        <span class="hero-badge">전국·해외 온라인 상담 가능</span>
-        <span class="hero-badge">이름풀이 · 작명 · 개명 · 인생상담</span>
+      <div class="hero-svc-list">
+        <div class="hero-svc-item" onclick="document.querySelectorAll('.service-card')[1].scrollIntoView({behavior:'smooth',block:'center'})">
+          <div class="hero-svc-left">
+            <span class="hero-svc-num">01</span>
+            <span class="hero-svc-ttl">지금 이 이름, 계속 써도 괜찮을까요?</span>
+          </div>
+          <span class="hero-svc-arr">→</span>
+        </div>
+        <div class="hero-svc-item" onclick="document.querySelectorAll('.service-card')[2].scrollIntoView({behavior:'smooth',block:'center'})">
+          <div class="hero-svc-left">
+            <span class="hero-svc-num">02</span>
+            <span class="hero-svc-ttl">아이의 이름, 처음부터 제대로 짓고 싶다면</span>
+          </div>
+          <span class="hero-svc-arr">→</span>
+        </div>
+        <div class="hero-svc-item" onclick="document.querySelectorAll('.service-card')[0].scrollIntoView({behavior:'smooth',block:'center'})">
+          <div class="hero-svc-left">
+            <span class="hero-svc-num">03</span>
+            <span class="hero-svc-ttl">왜 저한테 이런 일들이 자꾸 생길까요?</span>
+          </div>
+          <span class="hero-svc-arr">→</span>
+        </div>
+        <div class="hero-svc-item" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">
+          <div class="hero-svc-left">
+            <span class="hero-svc-num">04</span>
+            <span class="hero-svc-ttl">지금 상호와 브랜드, 정말 만족하고 계신가요?</span>
+          </div>
+          <span class="hero-svc-arr">→</span>
+        </div>
       </div>
     </div>
-    <!-- 오른쪽: 원장 사진 -->
+    <!-- 오른쪽: 원장 사진 꽉 채움 -->
     <div class="hero-photo">
       <img src="images/onoma-director.png" alt="이지윤 원장">
       <div class="hero-photo-badge">
-        <strong>이지윤 원장</strong><br>성명학 분석 · 작명 전문가
+        <strong>이지윤 원장</strong><br>성명학 분석 · 작명 전문가<br>21년 경력
       </div>
     </div>
   </div>
