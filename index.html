@@ -28,48 +28,34 @@
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-banner-img">
-    <img src="images/onoma-director.png" alt="이지윤 원장" style="object-position:center top;">
-    <div class="hero-banner-overlay"></div>
-  </div>
-  <div class="section-inner">
-    <div class="hero-eyebrow">ONOMA COUNSELING · ὄνομα · 그리스어로 '이름'</div>
-    <h1 class="hero-headline">
-      지금 이 이름,<br>
-      <em><span class="hl">계속 써도 괜찮을까요?</span></em>
-    </h1>
-    <p class="hero-hook">
-      이유 없이 같은 관계 문제가 반복된다<br>
-      돈이 모이지 않고 계속 새는 느낌이 든다<br>
-      중요한 선택 앞에서 늘 흔들린다
-    </p>
-    <p class="hero-sub"><strong style="color:var(--ink2);">이 상태를 오래 방치할수록 문제는 패턴이 됩니다.</strong><br>먼저 이름 구조부터 확인해보세요.</p>
-    <div class="hero-badges">
-      <span class="hero-badge">전국·해외 온라인 상담 가능</span>
-      <span class="hero-badge">이지윤의 힐링네임 운영 기반</span>
-      <span class="hero-badge">이름풀이 · 작명 · 개명 · 인생상담</span>
-    </div>
-    <div class="hero-cta-row">
-      <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">내 이름, 지금 무료로 확인하기</button>
-      <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">서비스 전체 보기 →</button>
-    </div>
-
-    <!-- 프리미엄: 비즈니스 네이밍 -->
-    <div class="service-premium">
-      <div class="service-premium__left">
-        <span class="service-premium__badge">PREMIUM · 비즈니스 네이밍</span>
-        <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
-        <p class="service-premium__price">100만원 이상 · 상호 / CI · BI 패키지</p>
-        <button class="btn-premium" onclick="openPortfolio()">포트폴리오 보기</button>
+  <div class="hero-grid">
+    <!-- 왼쪽: 텍스트 -->
+    <div class="hero-content reveal">
+      <div class="hero-eyebrow">ONOMA COUNSELING · ὄνομα · 이름의 해석</div>
+      <h1 class="hero-headline">
+        지금 이 이름,<br>
+        <em>계속 써도 괜찮을까요?</em>
+      </h1>
+      <div class="hero-divider"></div>
+      <p class="hero-hook">
+        혼자 오래 고민해 오셨다면<br>
+        이제 함께 살펴볼 수 있습니다
+      </p>
+      <p class="hero-sub">이유 없이 같은 관계 문제가 반복되거나, 중요한 선택 앞에서 늘 흔들린다면 — 이름 구조에서 그 원인을 찾을 수 있습니다.</p>
+      <div class="hero-cta-row">
+        <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">내 이름, 지금 무료로 확인하기</button>
+        <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">서비스 전체 보기 →</button>
       </div>
-      <div class="service-premium__right">
-        <p>이름이 좋아야 사업이 바로 섭니다. 어감만 좋은 이름이 아니라 — 업의 방향성과 구조를 함께 읽고, 오래 써도 흔들리지 않는 이름을 설계합니다.</p>
-        <ul class="service-points service-points--light">
-          <li>상호 작명 및 브랜드 네이밍</li>
-          <li>콘셉트·방향성 해석 및 전략 설계</li>
-          <li>이름 후보 구조 분석 및 비교</li>
-          <li>CI · BI 패키지 연계 가능</li>
-        </ul>
+      <div class="hero-badges">
+        <span class="hero-badge">전국·해외 온라인 상담 가능</span>
+        <span class="hero-badge">이름풀이 · 작명 · 개명 · 인생상담</span>
+      </div>
+    </div>
+    <!-- 오른쪽: 원장 사진 -->
+    <div class="hero-photo">
+      <img src="images/onoma-director.png" alt="이지윤 원장">
+      <div class="hero-photo-badge">
+        <strong>이지윤 원장</strong><br>성명학 분석 · 작명 전문가
       </div>
     </div>
   </div>
@@ -265,24 +251,6 @@
 
     </div>
 
-    <!-- 프리미엄: 비즈니스 네이밍 -->
-    <div class="service-premium">
-      <div class="service-premium__left">
-        <span class="service-premium__badge">PREMIUM · 비즈니스 네이밍</span>
-        <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
-        <p class="service-premium__price">100만원 이상 · 상호 / CI · BI 패키지</p>
-        <button class="btn-premium" onclick="openPortfolio()">포트폴리오 보기</button>
-      </div>
-      <div class="service-premium__right">
-        <p>이름이 좋아야 사업이 바로 섭니다. 어감만 좋은 이름이 아니라 — 업의 방향성과 구조를 함께 읽고, 오래 써도 흔들리지 않는 이름을 설계합니다.</p>
-        <ul class="service-points service-points--light">
-          <li>상호 작명 및 브랜드 네이밍</li>
-          <li>콘셉트·방향성 해석 및 전략 설계</li>
-          <li>이름 후보 구조 분석 및 비교</li>
-          <li>CI · BI 패키지 연계 가능</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -369,24 +337,6 @@
       </div>
     </div>
 
-    <!-- 프리미엄: 비즈니스 네이밍 -->
-    <div class="service-premium">
-      <div class="service-premium__left">
-        <span class="service-premium__badge">PREMIUM · 비즈니스 네이밍</span>
-        <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
-        <p class="service-premium__price">100만원 이상 · 상호 / CI · BI 패키지</p>
-        <button class="btn-premium" onclick="openPortfolio()">포트폴리오 보기</button>
-      </div>
-      <div class="service-premium__right">
-        <p>이름이 좋아야 사업이 바로 섭니다. 어감만 좋은 이름이 아니라 — 업의 방향성과 구조를 함께 읽고, 오래 써도 흔들리지 않는 이름을 설계합니다.</p>
-        <ul class="service-points service-points--light">
-          <li>상호 작명 및 브랜드 네이밍</li>
-          <li>콘셉트·방향성 해석 및 전략 설계</li>
-          <li>이름 후보 구조 분석 및 비교</li>
-          <li>CI · BI 패키지 연계 가능</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -476,7 +426,7 @@
     </div>
 
     <!-- 프리미엄: 비즈니스 네이밍 -->
-    <div class="service-premium">
+    <div class="service-premium reveal">
       <div class="service-premium__left">
         <span class="service-premium__badge">PREMIUM · 비즈니스 네이밍</span>
         <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
@@ -493,6 +443,7 @@
         </ul>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -560,24 +511,6 @@
 
     </div>
 
-    <!-- 프리미엄: 비즈니스 네이밍 -->
-    <div class="service-premium">
-      <div class="service-premium__left">
-        <span class="service-premium__badge">PREMIUM · 비즈니스 네이밍</span>
-        <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
-        <p class="service-premium__price">100만원 이상 · 상호 / CI · BI 패키지</p>
-        <button class="btn-premium" onclick="openPortfolio()">포트폴리오 보기</button>
-      </div>
-      <div class="service-premium__right">
-        <p>이름이 좋아야 사업이 바로 섭니다. 어감만 좋은 이름이 아니라 — 업의 방향성과 구조를 함께 읽고, 오래 써도 흔들리지 않는 이름을 설계합니다.</p>
-        <ul class="service-points service-points--light">
-          <li>상호 작명 및 브랜드 네이밍</li>
-          <li>콘셉트·방향성 해석 및 전략 설계</li>
-          <li>이름 후보 구조 분석 및 비교</li>
-          <li>CI · BI 패키지 연계 가능</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -729,24 +662,6 @@
       </div>
     </div>
 
-    <!-- 프리미엄: 비즈니스 네이밍 -->
-    <div class="service-premium">
-      <div class="service-premium__left">
-        <span class="service-premium__badge">PREMIUM · 비즈니스 네이밍</span>
-        <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
-        <p class="service-premium__price">100만원 이상 · 상호 / CI · BI 패키지</p>
-        <button class="btn-premium" onclick="openPortfolio()">포트폴리오 보기</button>
-      </div>
-      <div class="service-premium__right">
-        <p>이름이 좋아야 사업이 바로 섭니다. 어감만 좋은 이름이 아니라 — 업의 방향성과 구조를 함께 읽고, 오래 써도 흔들리지 않는 이름을 설계합니다.</p>
-        <ul class="service-points service-points--light">
-          <li>상호 작명 및 브랜드 네이밍</li>
-          <li>콘셉트·방향성 해석 및 전략 설계</li>
-          <li>이름 후보 구조 분석 및 비교</li>
-          <li>CI · BI 패키지 연계 가능</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
