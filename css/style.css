@@ -717,10 +717,9 @@ img { display:block; }
 .hero-photo img {
   width: 100%;
   height: 640px;
-  object-fit: contain;
-  object-position: center bottom;
+  object-fit: cover;
+  object-position: 60% 15%;
   display: block;
-  background: #e8e4de;
 }
 .hero-photo::before {
   content: '';
