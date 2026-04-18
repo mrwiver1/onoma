@@ -1,2238 +1,937 @@
-'use client';
-import { useState, useEffect } from "react";
-import { createClient } from '@supabase/supabase-js'
+/* ── Signal 섹션 ── */
+#signal { padding:72px 0; background:var(--dark-section-bg); }
+.signal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(200,221,168,0.12); margin:44px 0; }
+.signal-card { background:rgba(255,255,255,0.04); padding:36px 28px; text-align:center; transition:background 0.3s; }
+.signal-card:hover { background:rgba(255,255,255,0.08); }
+.signal-icon { font-size:28px; margin-bottom:14px; }
+.signal-card h3 { font-size:15px; font-weight:500; color:var(--dark-section-text); margin-bottom:10px; line-height:1.5; }
+.signal-card p { font-size:13px; color:var(--dark-section-sub); line-height:1.8; }
+.signal-bottom { background:rgba(255,255,255,0.05); border:1px solid rgba(200,221,168,0.18); border-left:3px solid var(--gold); padding:18px 24px; font-size:14px; color:var(--dark-section-sub); line-height:1.85; text-align:center; margin-bottom:28px; }
+.signal-bottom strong { color:var(--dark-section-text); }
+.signal-num { font-family:var(--serif); font-size:42px; font-weight:300; color:var(--gold); line-height:1; margin-bottom:8px; }
+.signal-label { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(200,221,168,0.6); margin-bottom:10px; }
+.signal-desc { font-size:13px; color:rgba(200,221,168,0.5); line-height:1.8; font-weight:400; }
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+/* ── hero headline hl ── */
+.hero-headline .hl { position:relative; display:inline; }
 
-async function saveReport(email, service, inputData, resultData) {
-  const reportId = `weros_${service}_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 6)}`
-  const { error } = await supabase.from('reports').insert({
-    report_id: reportId,
-    email: email.toLowerCase().trim(),
-    service: service,
-    input_json: inputData,
-    result_json: resultData,
-    paid: false
-  })
-  if (error) { console.error('저장 실패:', error); return null }
-  try {
-    localStorage.setItem('weros_report_id', reportId)
-    localStorage.setItem('weros_email', email.toLowerCase().trim())
-  } catch(e) {}
-  return reportId
+/* ── about / why 섹션 ── */
+#about { padding:100px 0; }
+.why-card { background:#fff; border:1px solid rgba(196,162,74,0.12); padding:32px 36px; margin-bottom:16px; }
+.why-num { font-family:var(--serif); font-size:36px; color:var(--gold); font-weight:300; margin-bottom:14px; opacity:0.7; }
+.why-card h3 { font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:10px; line-height:1.5; }
+.why-card p { font-size:14px; color:var(--ink3); line-height:1.9; }
+:root {
+  /* GPT 제안 팔레트 */
+  --green:       #4a7c35;
+  --green-light: #6a9e50;
+  --green-dark:  #2E3A23;
+  --green-pale:  #eaf0e0;
+  --green-mist:  #f0f4e8;
+  --gold:        #BFA46A;
+  --gold-dark:   #8a6e30;
+  --gold-pale:   #f5edd8;
+  --bg:          #F5F5F0;
+  --bg2:         #EDEAE2;
+  --ink:         #1a1a16;
+  --ink2:        #2e2e28;
+  --ink3:        #58584e;
+  --ink-faint:   #98988e;
+  --dark-section-bg:   #1F2A18;
+  --dark-section-text: #e8f0de;
+  --dark-section-sub:  #8aaa68;
+  --serif: 'Cormorant Garamond', 'Noto Serif KR', serif;
+  --sans:  'Noto Sans KR', sans-serif;
 }
-const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
-const BIZ_TYPE = "소상공인";
-
-const SYSTEM_PROMPT = `당신은 WEROS의 수석 브랜드 해부 전문가입니다. 미스터위버 × BRAND ANATOMY 시리즈의 필자로서, 브랜드 진단 리포트를 작성합니다.
-
-## 절대 원칙
-
-1. 각 챕터는 최소 800~1,200자 이상 작성. 절대 요약하거나 짧게 끊지 말 것. 분량이 부족하면 실패한 리포트다.
-2. 숫자와 데이터는 반드시 구체적으로 제시하되, "(WEROS AI 추정, 통계청·업계 데이터 기반)" 표기 필수
-3. 분석가 주석을 파트너 관점으로 작성 — 문제를 지적하되 "함께 해결하자"는 톤 유지. 분석가 주석은 반드시 2개 이상.
-4. 각 챕터 앞에 Decision Point 인용구 포함: > **Decision Point:** [이 챕터의 핵심 질문]
-5. 실제 기업 사례(스타벅스, 블루보틀, 성심당, 코닥, 노키아 등)를 브랜드 상황에 빗대어 구체적으로 활용
-6. Dark Side는 냉정하지만 건설적으로 — "이 구조가 성장을 막고 있다" 프레이밍
-7. 각 소제목 아래 최소 3~4개 문단 이상 작성. 단락을 짧게 끊지 말고 충분히 전개할 것.
-8. 비용 분석 시 구체적 수치로 환산해서 제시 (시급, 기회비용, 연간 손실액 등)
-9. 이 챕터만 요청받더라도 A4 2~3페이지 분량으로 충분히 작성할 것
-
-## 톤 & 문체
-
-- 따뜻하지만 전략적, 감성적이지만 데이터 기반
-- "당신"이라는 2인칭으로 독자에게 직접 말 걸기
-- 분석가 주석은 파트너·동료 관점 — 비판이 아닌 통찰
-- 핵심 인사이트는 인용구(> ) 형식으로 강조
-- 수치에는 반드시 "(WEROS AI 추정)" 표기
-
-## 출력 구조
-
-각 섹션 요청 시 해당 섹션만 작성.
-
-### EXECUTIVE_SUMMARY 요청 시:
-# EXECUTIVE SUMMARY — 3분 안에 읽는 핵심 진단
-**브랜드 건강도 종합 점수: XX/100**
-**3가지 핵심 진단:** 1. [문제1] 2. [문제2] 3. [문제3]
-**6개월 매출 시나리오:** 현재 유지 시 / 전략 실행 시 / 목표 달성 조건
-
-### OPENING 요청 시:
-# OPENING — 시장 현실: 당신이 서 있는 곳의 좌표
-(시장 규모·성장률·경쟁 강도, 경쟁자 비교표 포함, WEROS AI 추정 표기)
-
-### CH01 요청 시:
-# CH.01 — 브랜드 DNA: 지금까지의 결정들이 지금의 당신을 만들었다
-> **Decision Point:** [질문]
-(브랜드 히스토리와 핵심 결정 포인트 분석 — 결정이 만든 강점과 한계 동시 분석)
-
-### CH02 요청 시:
-# CH.02 — 성장을 막는 구조적 패턴
-> **Decision Point:** [질문]
-(매몰비용·손실회피·소유효과·뺄셈무시를 "심리"가 아닌 "구조적 패턴"으로 프레이밍. 각 패턴별 실제 사례와 비용 분석)
-
-### CH03 요청 시:
-# CH.03 — 경쟁 구도: 같아 보이지만 전혀 다른 싸움
-> **Decision Point:** [질문]
-(경쟁자 비교표 포함. 진짜 경쟁자 재정의. 이 브랜드만의 차별화 포인트)
-
-### CH04 요청 시:
-# CH.04 — Dark Side: 지금 성장을 막는 구조들
-> **Decision Point:** [질문]
-(에너지 비용·기회 비용·평판 비용·정체성 비용 분석. 냉정하지만 건설적.)
-
-### CH05 요청 시:
-# CH.05 — 전략 원칙: 이 브랜드가 가야 할 방향
-> **Decision Point:** [질문]
-(3~5가지 전략 원칙. 각 원칙마다 구체적 실행 방향과 분석가 주석)
-
-### REVENUE 요청 시:
-# REVENUE OPPORTUNITY — 수익 구조 시뮬레이션
-(현재 구조 분석 → 개선 시나리오 → Before/After 매출 시뮬레이션 표. 구체적 숫자로)
-
-### EXECUTION 요청 시:
-# EXECUTION GUIDE — 90일 실행 로드맵
-PHASE 1 (1~30일): 기반 정비 — 액션별 무엇을/어떻게/성공 기준
-PHASE 2 (31~60일): 방향 전환 — 액션별 무엇을/어떻게/측정 지표
-PHASE 3 (61~90일): 성과 확인 및 스케일업 — 계속/중단 판단 기준 포함
-철수 트리거: 이 방향이 틀렸다는 신호 3가지
-
-### EPILOGUE 요청 시:
-# EPILOGUE
-(감성적 마무리 + 브랜드 포지션 문장)
-**Brand Position:** [브랜드명]은 [기존 정의]가 아니라 '[새로운 포지션 한 줄]'이다.
-> *[핵심 인사이트 한 줄]* — WEROS
-
----
-**WEROS AI 분석 프레임워크**
-1. 행동경제학 4대 편향 적용 (매몰비용·손실회피·소유효과·뺄셈무시)
-2. 통계청·중기부·업계 리포트 기반 시장 데이터 추정
-3. WEROS 브랜드 해부 방법론 적용
-*이 리포트는 AI 분석과 WEROS 브랜드 전문가 컨설팅 방법론이 결합된 결과물입니다.*`;
-
-const CHAPTERS = [
-  { id: "EXECUTIVE_SUMMARY", label: "Executive Summary", icon: "◈", desc: "핵심 진단 + 매출 시나리오" },
-  { id: "OPENING", label: "시장 현실", icon: "○", desc: "당신이 서 있는 곳의 좌표" },
-  { id: "CH01", label: "브랜드 DNA", icon: "①", desc: "지금까지의 결정들" },
-  { id: "CH02", label: "구조적 패턴", icon: "②", desc: "성장을 막는 4가지 구조" },
-  { id: "CH03", label: "경쟁 구도", icon: "③", desc: "같아 보이지만 전혀 다른 싸움" },
-  { id: "CH04", label: "Dark Side", icon: "④", desc: "지금 성장을 막는 구조들" },
-  { id: "CH05", label: "전략 원칙", icon: "⑤", desc: "이 브랜드가 가야 할 방향" },
-  { id: "REVENUE", label: "수익 시뮬레이션", icon: "₩", desc: "Before/After 매출 분석" },
-  { id: "EXECUTION", label: "90일 로드맵", icon: "▶", desc: "Phase별 실행 가이드 + 철수 트리거" },
-  { id: "EPILOGUE", label: "에필로그", icon: "✦", desc: "브랜드 포지션 문장" },
-];
-
-const FORM_STEPS = [
-  {
-    title: "기본 브랜드 정보",
-    subtitle: "Step 1 / 3",
-    nextHint: "다음 단계에서는 재무 및 수익 구조(매출, 이익률, 운영 형태 등)를 입력합니다.",
-    fields: [
-      { name: "brandName", label: "브랜드명 / 상호명", placeholder: "예: 카페 아무개", required: true },
-      { name: "category", label: "업종 / 카테고리", placeholder: "예: 서울 마포구 30석 독립 카페", required: true },
-      { name: "history", label: "창업 시기 및 배경", placeholder: "예: 2021년 창업, 마케팅 회사 10년 근무 후" },
-      { name: "products", label: "주요 제품/서비스 및 가격대", placeholder: "예: 스페셜티 커피, 시그니처 디저트, 원두 판매" },
-      { name: "strengths", label: "브랜드 강점 (본인 생각)", placeholder: "예: 인테리어, 원두 품질, SNS 인지도" },
-      { name: "uniqueAbilities", label: "독보적 능력 3가지", placeholder: "고객이 '소름'이라고 표현한 부분, 타 업체 대비 당신만의 능력" },
-      { name: "painfulFailure", label: "가장 아픈 실패 경험", placeholder: "솔직하게 적을수록 리포트가 날카로워집니다" },
-    ],
-  },
-  {
-    title: "재무 및 수익 구조",
-    subtitle: "Step 2 / 3",
-    nextHint: "마지막 단계에서는 마케팅 채널과 현재 가장 큰 고민을 입력합니다.",
-    fields: [
-      { name: "revenue", label: "월 평균 매출 / 연 매출", placeholder: "예: 월 평균 300만원 / 연 3,600만원" },
-      { name: "profitRate", label: "이익률 및 평균 객단가", placeholder: "예: 이익률 70%, 객단가 15만원" },
-      { name: "operation", label: "직원 수 및 운영 형태", placeholder: "예: 1인 단독 운영, 자택 오피스" },
-      { name: "location", label: "사업장 위치 및 상권 특성", placeholder: "예: 경기도 김포시, 아파트 단지 밀집 지역" },
-      { name: "returnRate", label: "재방문율 추정 / 단골 비율", placeholder: "예: 재방문율 20%, 단골 비율 20%" },
-      { name: "operationRate", label: "운영 가동률", placeholder: "하루 중 실제 고객 응대에 쓰는 시간 비율 (예: 40%)" },
-      { name: "revenueGoal", label: "3개월 매출 목표", placeholder: "예: 월 400만원 달성" },
-    ],
-  },
-  {
-    title: "마케팅 및 고민",
-    subtitle: "Step 3 / 3",
-    nextHint: null,
-    fields: [
-      { name: "adBudget", label: "월 광고·홍보 비용", placeholder: "예: 0원 (무료 채널만 사용)" },
-      { name: "marketing", label: "현재 마케팅 채널 및 SNS", placeholder: "예: 네이버 플레이스, 지역 카페 주 1회 게시" },
-      { name: "target", label: "주요 타겟 고객", placeholder: "예: 30~50대 여성, 김포·일산·강서 거주" },
-      { name: "competitors", label: "주요 경쟁자", placeholder: "예: 철학관, 온라인 작명 앱, 타로업체" },
-      { name: "concerns", label: "현재 가장 큰 고민", placeholder: "예: 매출 정체, 재방문율 낮음, 브랜드 차별화 모호", required: true },
-      { name: "future", label: "사업을 얼마나 지속할 계획인가?", placeholder: "예: 평생 지속, 단 AI 등장으로 상담 영역 확장 검토 중" },
-      { name: "digitalSkill", label: "디지털 숙련도", placeholder: "블로그·영상 편집 직접 가능 여부 (예: 블로그 가능, 영상은 어려움)" },
-      { name: "userEmail", label: "이메일 주소", placeholder: "결과 수령에 사용됩니다. 예: hello@example.com", required: true },
-    ],
-  },
-];
-
-const DUMMY_DATA = {
-  brandName: "이지윤의 힐링네임",
-  category: "경기도 김포시 운양동 자택 오피스 기반 작명·이름풀이·인생상담 1인 전문점",
-  history: "2006년 광미명성학 수료 후 창업.",
-  products: "신생아 작명 30만원 / 개명 30만원 / 이름풀이 1시간 5만원",
-  strengths: "20년 경력, 네이버 플레이스 김포 1위 8년 유지",
-  uniqueAbilities: "1) 이름만 들으면 생년월일 없이 1분 내 즉석 이름풀이 가능",
-  painfulFailure: "코로나 시기 월 700만원 매출을 1년 반 유지했으나 이후 급락",
-  revenue: "월 평균 150~200만원",
-  profitRate: "이익률 97~100%",
-  operation: "1인 단독 운영",
-  location: "경기도 김포시 운양동",
-  returnRate: "재방문율 매우 낮음",
-  operationRate: "약 30~40%",
-  revenueGoal: "3개월 내 월 350만원 달성",
-  adBudget: "0원",
-  marketing: "네이버 플레이스 / 지역 카페 무료 게시",
-  target: "30~50대 여성, 신생아 부모",
-  competitors: "철학관, 온라인 작명소, 작명 앱",
-  concerns: "매출 정체 및 코로나 피크 회복 불가",
-  future: "평생 지속 예정",
-  digitalSkill: "네이버 블로그 직접 작성 가능",
-};
-
-const initialForm = {
-  brandName: "", category: "", history: "", products: "", strengths: "",
-  uniqueAbilities: "", painfulFailure: "", revenue: "", profitRate: "",
-  operation: "", location: "", returnRate: "", operationRate: "", revenueGoal: "",
-  adBudget: "", marketing: "", target: "", competitors: "", concerns: "",
-  future: "", digitalSkill: "", userEmail: "",
-};
-
-function generateChapterPrompt(chapterId, formData) {
-  const info = `
-브랜드명: ${formData.brandName}
-업종/카테고리: ${formData.category}
-창업 시기 및 배경: ${formData.history}
-주요 제품/서비스 및 가격: ${formData.products}
-브랜드 강점: ${formData.strengths}
-독보적 능력 3가지: ${formData.uniqueAbilities}
-가장 아픈 실패 경험: ${formData.painfulFailure}
-월 평균 매출: ${formData.revenue}
-이익률 및 객단가: ${formData.profitRate}
-직원 수 및 운영 형태: ${formData.operation}
-사업장 위치 및 상권: ${formData.location}
-재방문율 / 단골 비율: ${formData.returnRate}
-운영 가동률: ${formData.operationRate}
-3개월 매출 목표: ${formData.revenueGoal}
-월 광고비: ${formData.adBudget}
-현재 마케팅 채널: ${formData.marketing}
-주요 타겟 고객: ${formData.target}
-주요 경쟁자: ${formData.competitors}
-현재 가장 큰 고민: ${formData.concerns}
-사업 지속 계획: ${formData.future}
-디지털 숙련도: ${formData.digitalSkill}
-`.trim();
-  return `다음 브랜드 정보를 바탕으로 ${chapterId} 섹션만 작성해주세요. A4 2~3페이지 분량으로 충분히 깊고 길게 작성하세요. 절대 요약하지 마세요.\n\n${info}`;
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--ink); font-family:var(--sans); font-weight:300; line-height:1.8; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(196,162,74,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 70% at 90% 100%, rgba(58,96,24,0.07) 0%, transparent 55%);
 }
 
-function renderMarkdown(text) {
-  return text
-    .replace(/^# (.+)$/gm, '<h1 class="r-h1">$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2 class="r-h2">$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3 class="r-h3">$1</h3>')
-    .replace(/^> \*\*\[브랜드 해석\]\*\* (.+)$/gm, '<div class="r-brand-insight"><span class="r-insight-label">◈ 브랜드 해석</span><p>$1</p></div>')
-    .replace(/^> 📌 \*\*분석가 주석:\*\* (.+)$/gm, '<div class="r-analyst"><span class="r-analyst-label">📌 분석가 주석</span><p>$1</p></div>')
-    .replace(/^> \*\*Decision Point:\*\* (.+)$/gm, '<div class="r-decision"><span class="r-dp-label">Decision Point</span><p>$1</p></div>')
-    .replace(/^> (.+)$/gm, '<blockquote class="r-quote">$1</blockquote>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^---$/gm, '<hr class="r-hr"/>')
-    .replace(/^\- (.+)$/gm, '<li class="r-li">$1</li>')
-    .replace(/(<li class="r-li">.*<\/li>\n?)+/g, (m) => `<ul class="r-ul">${m}</ul>`)
-    .replace(/\n\n/g, '</p><p class="r-p">')
-    .replace(/^(?!<[hbuldip])(.+)$/gm, '<p class="r-p">$1</p>');
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 5%; height:68px;
+  background:rgba(250,250,246,0.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(196,162,74,0.18);
+}
+.nav-logo { text-decoration:none; display:flex; align-items:center; gap:12px; }
+.nav-logo img { height:48px; width:auto; display:block; }
+.nav-logo-text { font-family:var(--serif); font-size:16px; font-weight:600; color:var(--green-dark); letter-spacing:0.06em; border-left:1.5px solid rgba(196,162,74,0.28); padding-left:12px; }
+.nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
+.nav-links a { font-size:13px; font-weight:600; color:var(--ink2); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
+.nav-links a:hover { color:var(--gold-dark); }
+.nav-cta { font-size:13px; font-weight:600; padding:10px 24px; border:none; color:#fff; background:var(--green-dark); cursor:pointer; font-family:var(--sans); letter-spacing:0.08em; transition:all 0.25s; }
+.nav-cta:hover { background:var(--ink); }
+
+/* 공통 */
+section { position:relative; z-index:1; }
+.section-inner { max-width:1100px; margin:0 auto; padding:0 5%; }
+.section-label { font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold-dark); font-weight:500; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+.section-label::after { content:''; display:block; width:28px; height:1px; background:var(--green-dark); opacity:0.5; }
+.section-title { font-family:var(--serif); font-size:clamp(26px,3.8vw,44px); font-weight:300; line-height:1.4; color:var(--ink); margin-bottom:18px; letter-spacing:0.02em; }
+.section-title em { font-style:normal; color:var(--gold-dark); }
+.section-sub { font-size:15px; color:var(--ink3); line-height:1.9; font-weight:300; max-width:580px; }
+.green-line { width:40px; height:2px; background:var(--green-dark); opacity:0.5; margin:28px 0; }
+
+/* 히어로 3선택지 */
+.hero-choices { margin-top:28px; }
+.hero-choices-label { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink3); margin-bottom:14px; }
+.hero-choice-btns { display:flex; flex-direction:column; gap:10px; max-width:480px; }
+.hero-choice-btn { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.72); border:1px solid rgba(196,162,74,0.22); padding:14px 20px; cursor:pointer; font-family:var(--sans); font-size:14px; color:var(--ink2); font-weight:400; text-align:left; transition:all 0.2s; border-radius:2px; backdrop-filter:blur(4px); }
+.hero-choice-btn:hover { background:#fff; border-color:var(--gold-dark); color:var(--ink); box-shadow:0 2px 12px rgba(196,162,74,0.1); }
+.hero-choice-btn::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green-dark); flex-shrink:0; opacity:0.7; }
+.hero-choice-btn span { font-size:11px; color:var(--green-dark); margin-left:auto; flex-shrink:0; opacity:0.8; }
+.divider { border:none; border-top:1px solid rgba(196,162,74,0.13); }
+
+/* 버튼 */
+.btn-primary { display:inline-block; font-size:13px; font-weight:500; padding:16px 32px; background:var(--green-dark); color:#FAF7F2; border:none; cursor:pointer; font-family:var(--sans); letter-spacing:0.06em; transition:all 0.25s; box-shadow:0 2px 14px rgba(28,58,24,0.18); text-decoration:none; }
+.btn-primary:hover { background:var(--ink); box-shadow:0 4px 20px rgba(28,58,24,0.25); }
+.btn-outline { display:inline-block; font-size:13px; font-weight:400; padding:16px 32px; border:1px solid rgba(196,162,74,0.5); color:var(--green-dark); background:transparent; cursor:pointer; font-family:var(--sans); letter-spacing:0.06em; transition:all 0.25s; text-decoration:none; }
+.btn-outline:hover { background:var(--gold-pale); border-color:var(--gold-dark); }
+
+/* ABOUT */
+#about { padding:100px 0; }
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.about-text p { font-size:15px; color:var(--ink3); line-height:1.95; margin-bottom:18px; }
+.about-text p strong { color:var(--green-dark); font-weight:500; }
+.about-stat-box { background:#fff; border:1px solid rgba(196,162,74,0.18); border-top:3px solid var(--green); padding:40px; box-shadow:0 4px 24px rgba(196,162,74,0.08); }
+.stat-row { display:flex; align-items:baseline; gap:12px; padding:18px 0; border-bottom:1px solid rgba(196,162,74,0.1); }
+.stat-row:first-child { padding-top:0; }
+.stat-row:last-child { border-bottom:none; padding-bottom:0; }
+.stat-num { font-family:var(--serif); font-size:30px; color:var(--green-dark); font-weight:400; line-height:1; }
+.stat-label { font-size:13px; color:var(--ink3); }
+
+#about .section-title { font-size:clamp(22px, 3vw, 36px); white-space:nowrap; }
+#why { padding:100px 0; background:var(--bg2); }
+.why-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:rgba(196,162,74,0.13); margin-top:52px; }
+.why-card { background:#fff; padding:40px; transition:all 0.3s; }
+.why-card:hover { background:var(--bg2); box-shadow:0 4px 20px rgba(196,162,74,0.1); }
+.why-num { font-size:11px; color:var(--ink-faint); letter-spacing:0.2em; margin-bottom:18px; }
+.why-card h3 { font-family:var(--serif); font-size:17px; font-weight:400; color:var(--ink); margin-bottom:12px; line-height:1.55; }
+.why-card p { font-size:14px; color:var(--ink3); line-height:1.9; }
+
+/* 서비스 */
+#services { padding:100px 0; }
+.services-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:52px; }
+.service-card { background:#fff; border:1px solid rgba(196,162,74,0.15); padding:40px; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 2px 16px rgba(28,28,20,0.04); }
+.service-card::before { content:''; position:absolute; top:0; left:0; width:2px; height:100%; background:var(--gold); transform:scaleY(0); transform-origin:top; transition:transform 0.3s; }
+.service-card:hover { border-color:rgba(196,162,74,0.35); box-shadow:0 4px 28px rgba(28,28,20,0.08); }
+.service-card:hover::before { transform:scaleY(1); }
+.service-tag { display:inline-block; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-dark); background:var(--gold-pale); border:1px solid rgba(196,162,74,0.28); padding:4px 10px; margin-bottom:18px; }
+.service-card h3 { font-family:var(--serif); font-size:21px; font-weight:300; color:var(--ink); margin-bottom:12px; line-height:1.4; letter-spacing:0.01em; }
+.service-card p { font-size:14px; color:var(--ink3); line-height:1.9; margin-bottom:22px; }
+.service-points { list-style:none; margin-bottom:28px; }
+.service-points li { font-size:13px; color:var(--ink3); padding:6px 0; border-bottom:1px solid rgba(196,162,74,0.08); display:flex; align-items:center; gap:10px; }
+.service-points li::before { content:''; width:4px; height:1px; background:var(--green-dark); flex-shrink:0; }
+.service-cta { font-size:12px; color:var(--green-dark); letter-spacing:0.08em; text-decoration:none; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:none; border:none; font-family:var(--sans); transition:gap 0.2s; }
+.service-cta::after { content:'→'; }
+.service-cta:hover { gap:12px; }
+.service-card.featured { background:linear-gradient(135deg, #f8f3e8 0%, #faf7f2 100%); border-color:rgba(196,162,74,0.25); grid-column:1/-1; box-shadow:0 4px 24px rgba(196,162,74,0.13); }
+.service-card.featured::before { height:2px; width:100%; transform:scaleX(1); background:var(--gold); }
+.service-card.featured h3 { font-size:22px; }
+
+/* 작명소 불신 강조 블록 — 옵션 B */
+.naming-doubt-block {
+  margin-top:20px;
+  border-top:1px solid rgba(196,162,74,0.13);
+  padding-top:16px;
+}
+.naming-doubt-label {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:#8B2A20;
+  font-weight:600;
+  margin-bottom:10px;
+}
+.naming-doubt-label::before {
+  content:'';
+  display:inline-block;
+  width:6px; height:6px;
+  background:#C0392B;
+  border-radius:50%;
+  animation:ndBlink 1.6s ease-in-out infinite;
+}
+@keyframes ndBlink {
+  0%,100%{opacity:1;} 50%{opacity:0.3;}
+}
+.naming-chips {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-bottom:10px;
+}
+.naming-chip {
+  font-size:12px;
+  color:#5C2020;
+  background:#FFF8F7;
+  border:1px solid rgba(192,57,43,0.18);
+  border-radius:4px;
+  padding:8px 10px;
+  line-height:1.55;
+}
+.naming-diff-strip {
+  background:#EAF3DC;
+  border:1px solid rgba(196,162,74,0.22);
+  border-left:3px solid var(--green);
+  border-radius:0 4px 4px 0;
+  padding:12px 14px;
+  margin-bottom:24px;
+}
+.naming-diff-strip p {
+  font-size:12px;
+  color:var(--green-dark);
+  line-height:1.75;
+  margin:0;
+}
+.naming-diff-strip strong {
+  font-weight:600;
 }
 
+/* 진단 */
+#diagnosis { padding:64px 0 48px; background:var(--bg2); }
+.diag-container { max-width:700px; margin:0 auto; }
+.trust-bar { background:#fff; border:1px solid rgba(196,162,74,0.18); border-left:3px solid var(--green); padding:18px 22px; margin-bottom:28px; display:flex; align-items:flex-start; gap:14px; }
+.trust-bar-icon { color:var(--gold-dark); font-size:18px; flex-shrink:0; margin-top:2px; }
+.trust-bar p { font-size:13px; color:var(--ink3); line-height:1.8; }
+.trust-bar p strong { color:var(--ink2); }
+.diag-tabs { display:flex; border-bottom:1px solid rgba(196,162,74,0.13); margin-bottom:32px; }
+.diag-tab { font-size:13px; color:var(--ink3); padding:13px 22px; cursor:pointer; border:none; background:none; font-family:var(--sans); position:relative; bottom:-1px; transition:all 0.2s; letter-spacing:0.03em; border-bottom:2px solid transparent; }
+.diag-tab.active { color:var(--green-dark); border-bottom:2px solid var(--green); }
+.diag-tab:hover { color:var(--ink2); }
+.diag-form { display:none; }
+.diag-form.active { display:block; }
+.form-group { margin-bottom:18px; }
+.form-label { display:block; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--green-dark); margin-bottom:8px; }
+.form-input, .form-select, .form-textarea { width:100%; background:#fff; border:1px solid rgba(196,162,74,0.22); color:var(--ink); font-family:var(--sans); font-size:15px; font-weight:300; padding:13px 16px; outline:none; transition:all 0.2s; -webkit-appearance:none; box-shadow:inset 0 1px 4px rgba(44,50,32,0.04); }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--gold-dark); box-shadow:0 0 0 3px rgba(196,162,74,0.1); }
+.form-input::placeholder { color:var(--ink-faint); }
+.form-select option { background:#fff; }
+.form-textarea { resize:vertical; min-height:80px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.diag-submit { width:100%; margin-top:6px; padding:17px; font-size:14px; font-weight:500; letter-spacing:0.08em; background:var(--green-dark); color:#fff; border:none; cursor:pointer; font-family:var(--sans); transition:background 0.2s; box-shadow:0 2px 12px rgba(196,162,74,0.2); }
+.diag-submit:hover { background:var(--green-dark); }
+.diag-submit:disabled { background:var(--ink-faint); cursor:not-allowed; }
 
-// ─── 실시간 접수 전광판 ───
-function LiveTicker() {
-  const [items, setItems] = React.useState([]);
-  const [visible, setVisible] = React.useState(null);
+/* 결과 */
+#result-box { display:none; margin-top:36px; border:1px solid rgba(196,162,74,0.2); background:#fff; box-shadow:0 4px 24px rgba(44,50,32,0.08); }
+.result-header { padding:24px 28px 20px; border-bottom:1px solid rgba(196,162,74,0.1); }
+.result-title { font-family:var(--serif); font-size:16px; color:var(--ink3); font-weight:400; margin-bottom:14px; }
+.result-grade { display:inline-block; font-size:22px; font-weight:700; letter-spacing:0.06em; padding:14px 32px; border:2px solid; border-radius:2px; font-family:var(--serif); }
+.result-grade.stable { border-color:rgba(78,122,50,0.5); color:var(--green-dark); background:var(--gold-pale); }
+.result-grade.caution { border-color:rgba(180,130,40,0.5); color:#7A5C10; background:#FBF5E0; }
+.result-grade.review { border-color:rgba(180,70,60,0.4); color:#8B2A20; background:#FFF0EE; }
+/* 등급별 왼쪽 강조 바 */
+.result-grade-wrap { display:flex; align-items:center; gap:16px; margin-bottom:4px; }
+.result-grade-icon { font-size:32px; }
+.result-body { padding:28px; }
+.result-points { list-style:none; margin-bottom:24px; }
+.result-points li { font-size:14px; color:var(--ink3); padding:11px 0; border-bottom:1px solid rgba(196,162,74,0.07); display:flex; gap:12px; line-height:1.7; }
+.point-icon { font-size:15px; flex-shrink:0; margin-top:2px; }
+.result-blur-box { background:var(--bg2); border:1px solid rgba(196,162,74,0.1); padding:20px; margin-bottom:20px; position:relative; overflow:hidden; min-height:80px; }
+.result-blur-text { font-size:14px; color:var(--ink3); line-height:1.7; filter:blur(4px); user-select:none; }
+.result-blur-overlay { position:absolute; inset:0; background:linear-gradient(to bottom, transparent 0%, var(--bg2) 45%); }
+.urgency-block { background:var(--bg2); border-top:1px solid rgba(196,162,74,0.13); padding:24px 28px; }
+.urgency-text { font-size:14px; color:var(--ink3); line-height:1.9; margin-bottom:16px; }
+.urgency-warning { background:#fff; border:1px solid rgba(196,162,74,0.13); border-left:3px solid rgba(196,162,74,0.5); padding:14px 18px; font-size:13px; color:var(--ink3); line-height:1.8; }
+.urgency-warning strong { color:var(--ink2); }
+.funnel-cta { background:linear-gradient(135deg, #EAF3DC 0%, #F2F7EB 100%); border-top:1px solid rgba(196,162,74,0.18); padding:28px; }
+.funnel-label { font-size:11px; letter-spacing:0.15em; color:var(--ink3); text-transform:uppercase; text-align:center; margin-bottom:18px; }
+.funnel-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.funnel-card { background:#fff; border:1px solid rgba(196,162,74,0.13); padding:16px 12px; text-align:center; box-shadow:0 1px 6px rgba(44,50,32,0.05); }
+.funnel-card.featured { border:2px solid var(--green); background:var(--gold-pale); position:relative; }
+.funnel-card.featured::before { content:'추천'; position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--green-dark); color:#fff; font-size:10px; padding:3px 10px; letter-spacing:0.06em; white-space:nowrap; }
+.funnel-tier { font-size:10px; letter-spacing:0.1em; color:var(--ink3); text-transform:uppercase; margin-bottom:6px; }
+.funnel-card.featured .funnel-tier { color:var(--green-dark); }
+.funnel-name { font-size:13px; font-weight:500; color:var(--ink); margin-bottom:4px; line-height:1.4; }
+.funnel-price { font-size:11px; color:var(--ink3); }
+.funnel-card.featured .funnel-price { color:var(--green-dark); }
+.funnel-btn-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.funnel-note { text-align:center; font-size:12px; color:var(--ink3); margin-top:12px; }
 
-  const BUSINESSES = [
-    { icon: "☕", type: "카페 사장님" },
-    { icon: "🍜", type: "분식점 사장님" },
-    { icon: "💈", type: "미용실 사장님" },
-    { icon: "🍔", type: "배달 음식점 사장님" },
-    { icon: "🛒", type: "의류 매장 사장님" },
-    { icon: "🍞", type: "베이커리 사장님" },
-    { icon: "💅", type: "네일샵 사장님" },
-    { icon: "📚", type: "학원 원장님" },
-    { icon: "🍗", type: "치킨집 사장님" },
-    { icon: "🧖", type: "피부관리실 사장님" },
-    { icon: "🏋️", type: "헬스장 사장님" },
-    { icon: "🌸", type: "꽃집 사장님" },
-    { icon: "🍱", type: "한식당 사장님" },
-    { icon: "🧴", type: "화장품 매장 사장님" },
-  ];
+/* 블로그 카드 */
+.blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:36px; }
+.blog-card { background:#fff; border:1px solid rgba(196,162,74,0.13); padding:28px 24px; display:flex; flex-direction:column; gap:12px; transition:all 0.25s; cursor:pointer; }
+.blog-card:hover { border-color:rgba(196,162,74,0.38); box-shadow:0 4px 20px rgba(196,162,74,0.1); }
+.blog-card.open { border-color:rgba(196,162,74,0.5); box-shadow:0 4px 24px rgba(196,162,74,0.1); }
+.blog-tag { font-size:10px; letter-spacing:0.14em; color:var(--green-dark); background:var(--gold-pale); border:1px solid rgba(196,162,74,0.22); padding:3px 10px; display:inline-block; width:fit-content; }
+.blog-title { font-family:var(--serif); font-size:17px; font-weight:400; color:var(--ink); line-height:1.55; }
+.blog-desc { font-size:13px; color:var(--ink3); line-height:1.85; }
+.blog-more { font-size:12px; color:var(--green-dark); letter-spacing:0.08em; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s; margin-top:4px; user-select:none; }
+.blog-card.open .blog-more { color:var(--ink3); }
+.blog-expand { display:none; border-top:1px solid rgba(196,162,74,0.13); padding-top:16px; margin-top:4px; }
+.blog-expand p { font-size:13px; color:var(--ink3); line-height:1.9; margin-bottom:12px; }
+.blog-expand strong { color:var(--ink2); font-weight:500; }
+.blog-points { list-style:none; margin-bottom:16px; }
+.blog-points li { font-size:12px; color:var(--ink3); padding:5px 0; border-bottom:1px solid rgba(196,162,74,0.08); display:flex; align-items:flex-start; gap:8px; line-height:1.6; }
+.blog-points li::before { content:''; width:4px; height:1px; background:var(--green-dark); flex-shrink:0; margin-top:9px; }
+.blog-full-link { font-size:12px; color:var(--green-dark); letter-spacing:0.06em; text-decoration:none; display:inline-flex; align-items:center; gap:4px; border-bottom:1px solid rgba(196,162,74,0.28); padding-bottom:1px; }
 
-  const ACTIONS = [
-    "이 무료 분석을 시작했습니다",
-    "이 무료 분석을 완료했습니다",
-    "이 전체 리포트를 다운로드했습니다",
-    "이 매출 분석을 진행 중입니다",
-    "이 분석 결과를 확인했습니다",
-    "이 전체 리포트를 결제했습니다",
-  ];
+/* 원장 */
+#director { padding:100px 0; }
+.director-grid { display:grid; grid-template-columns:340px 1fr; gap:72px; align-items:start; }
+.director-photo { background:var(--bg2); border:1px solid rgba(196,162,74,0.18); aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; }
+.director-photo-placeholder { text-align:center; }
+.initial { font-family:var(--serif); font-size:68px; color:rgba(196,162,74,0.38); display:block; }
+.director-photo-placeholder p { font-size:12px; color:var(--ink-faint); letter-spacing:0.1em; margin-top:10px; }
+.director-info h3 { font-family:var(--serif); font-size:26px; font-weight:400; color:var(--ink); margin-bottom:6px; }
+.director-role { font-size:12px; color:var(--gold-dark); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:28px; }
+.director-phil { font-size:15px; color:var(--ink2); line-height:1.95; margin-bottom:28px; border-left:3px solid var(--green); padding-left:22px; font-family:var(--serif); font-style:italic; }
+.director-specs { list-style:none; }
+.director-specs li { font-size:13px; color:var(--ink3); padding:10px 0; border-bottom:1px solid rgba(196,162,74,0.1); display:flex; gap:16px; }
+.spec-label { color:var(--gold-dark); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; min-width:90px; flex-shrink:0; display:flex; align-items:flex-start; padding-top:2px; }
 
-  const TIME_LABELS = ["방금 전", "1분 전", "2분 전", "3분 전", "5분 전", "7분 전", "12분 전", "18분 전", "23분 전", "31분 전", "45분 전", "58분 전"];
+/* 대상 */
+#target { padding:100px 0; background:var(--bg2); }
+.target-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(196,162,74,0.13); margin-top:52px; }
+.target-item { background:#fff; padding:32px; transition:all 0.3s; }
+.target-item:hover { background:var(--gold-pale); }
+.target-num { font-size:11px; color:var(--ink-faint); letter-spacing:0.2em; margin-bottom:14px; }
+.target-item p { font-size:14px; color:var(--ink3); line-height:1.9; }
 
-  const makeItem = () => {
-    const biz = BUSINESSES[Math.floor(Math.random() * BUSINESSES.length)];
-    const action = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
-    const time = TIME_LABELS[Math.floor(Math.random() * TIME_LABELS.length)];
-    return { id: Date.now() + Math.random(), icon: biz.icon, msg: biz.type + action, time };
-  };
+/* 후기 */
+#reviews { padding:100px 0; }
+.reviews-header-bar { display:inline-flex; align-items:center; gap:10px; background:var(--gold-pale); border:1px solid rgba(196,162,74,0.18); padding:8px 18px; margin-bottom:32px; font-size:12px; color:var(--ink3); }
+.reviews-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.review-card { background:#fff; border:1px solid rgba(196,162,74,0.13); border-top:3px solid var(--gold-pale); padding:32px; box-shadow:0 2px 14px rgba(44,50,32,0.05); }
+.review-type { font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--green-dark); margin-bottom:14px; }
+.review-text { font-family:var(--serif); font-size:15px; color:var(--ink2); line-height:1.9; font-weight:300; margin-bottom:20px; }
+.review-text::before { content:'"'; color:var(--gold-dark); font-size:26px; line-height:0; vertical-align:-9px; margin-right:3px; }
+.review-text::after  { content:'"'; color:var(--gold-dark); font-size:26px; line-height:0; vertical-align:-9px; margin-left:3px; }
+.review-meta { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-faint); }
+.review-dot { width:5px; height:5px; border-radius:50%; background:var(--green-dark); flex-shrink:0; }
+.review-divider { grid-column:1/-1; display:flex; align-items:center; gap:16px; padding:8px 0; }
+.review-divider-line { flex:1; height:1px; background:rgba(196,162,74,0.13); }
+.review-divider-label { font-size:10px; letter-spacing:0.18em; color:var(--green-dark); text-transform:uppercase; white-space:nowrap; }
+.review-cta-bar { grid-column:1/-1; margin-top:8px; background:var(--bg2); border:1px solid rgba(196,162,74,0.18); padding:28px 36px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+.review-cta-text { font-family:var(--serif); font-size:17px; color:var(--ink); line-height:1.55; }
+.review-cta-text span { color:var(--green-dark); }
+.review-cta-btns { display:flex; gap:10px; flex-wrap:wrap; }
 
-  React.useEffect(() => {
-    const initial = Array.from({ length: 8 }, makeItem);
-    setItems(initial);
-    const firstTimer = setTimeout(() => {
-      setVisible(initial[0]);
-      setTimeout(() => setVisible(null), 4500);
-    }, 3000);
-    let timeoutId;
-    const scheduleNext = () => {
-      const delay = (Math.floor(Math.random() * 10) + 12) * 1000;
-      timeoutId = setTimeout(() => {
-        const newItem = makeItem();
-        setItems(prev => [newItem, ...prev.slice(0, 9)]);
-        setVisible(newItem);
-        setTimeout(() => setVisible(null), 4500);
-        scheduleNext();
-      }, delay);
-    };
-    scheduleNext();
-    return () => { clearTimeout(firstTimer); clearTimeout(timeoutId); };
-  }, []);
+/* 인생통찰 */
+#insight { padding:100px 0; background:#fff; }
+.insight-inner { max-width:880px; margin:0 auto; }
+.insight-intro { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; margin-bottom:48px; }
+.insight-badge { display:inline-flex; align-items:center; gap:8px; background:var(--gold-pale); border:1px solid rgba(196,162,74,0.28); padding:6px 14px; font-size:11px; color:var(--green-dark); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:16px; }
+.insight-compare { background:var(--bg2); border:1px solid rgba(196,162,74,0.13); padding:24px; }
+.compare-row { display:flex; gap:12px; }
+.compare-label { font-size:11px; letter-spacing:0.08em; color:var(--ink3); min-width:80px; flex-shrink:0; padding-top:2px; }
+.compare-value { font-size:13px; color:var(--ink); line-height:1.6; }
+.compare-row + .compare-row { margin-top:14px; padding-top:14px; border-top:1px solid rgba(196,162,74,0.1); }
+.insight-arrow { text-align:center; font-size:24px; color:var(--gold-dark); margin:6px 0; }
+.insight-points-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(196,162,74,0.1); margin-bottom:36px; }
+.insight-point { background:#fff; padding:24px; }
+.insight-point h4 { font-family:var(--serif); font-size:15px; font-weight:400; color:var(--ink); margin-bottom:6px; }
+.insight-point p { font-size:12px; color:var(--ink3); line-height:1.8; }
 
-  return (
-    <div style={{ background: "#fff", borderTop: "1px solid #e8e0d5", borderBottom: "1px solid #e8e0d5" }}>
-      {/* 흐르는 띠 */}
-      <div style={{ background: "#1a1208", padding: "11px 0", overflow: "hidden" }}>
-        <div style={{ display: "flex", animation: "tickerMove 40s linear infinite", whiteSpace: "nowrap" }}>
-          {[...items, ...items].map((item, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "0 28px", fontSize: "12px", color: "#c8b89a", flexShrink: 0 }}>
-              <span style={{ fontSize: "14px" }}>{item.icon}</span>
-              {item.msg}
-              <span style={{ color: "#5a4a38", fontSize: "11px" }}>{item.time}</span>
-              <span style={{ color: "#3a2a18", margin: "0 4px" }}>·</span>
-            </span>
-          ))}
-        </div>
-        <style>{`@keyframes tickerMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
-      </div>
+/* FAQ */
+#faq { padding:100px 0; background:var(--bg2); }
+.faq-list { max-width:700px; margin-top:48px; }
+.faq-item { border-bottom:1px solid rgba(196,162,74,0.13); }
+.faq-question { width:100%; text-align:left; background:none; border:none; color:var(--ink); font-family:var(--sans); font-size:15px; font-weight:400; padding:22px 0; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:20px; letter-spacing:0.02em; }
+.faq-icon { width:20px; height:20px; border:1px solid rgba(196,162,74,0.28); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; color:var(--green-dark); transition:all 0.2s; }
+.faq-item.open .faq-icon { background:var(--green-dark); color:#fff; border-color:var(--gold-dark); }
+.faq-answer { font-size:14px; color:var(--ink3); line-height:1.9; max-height:0; overflow:hidden; transition:max-height 0.35s ease, padding 0.35s ease; }
+.faq-item.open .faq-answer { max-height:200px; padding-bottom:22px; }
 
-      {/* 누적 수치 바 */}
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "14px 48px", display: "flex", gap: "0", alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ fontSize: "11px", color: "#8a7a65", letterSpacing: "1px", marginRight: "20px", flexShrink: 0 }}>지금까지</div>
-        {[
-          { icon: "✔", text: "27개 매장이 분석을 완료했습니다" },
-          { icon: "✔", text: "평균 입력 시간 6분" },
-          { icon: "✔", text: "최근 24시간 내 3건 진행 중" },
-        ].map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "24px", padding: "4px 0" }}>
-            <span style={{ fontSize: "12px", color: "#8a6a40", fontWeight: "700" }}>{item.icon}</span>
-            <span style={{ fontSize: "13px", color: "#3a2a18", fontWeight: i === 0 ? "600" : "400" }}>{item.text}</span>
-          </div>
-        ))}
-      </div>
+/* 최종 CTA */
+#cta-final { padding:100px 0; text-align:center; background:#fff; position:relative; overflow:hidden; }
+#cta-final::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 60% at 50% 50%, rgba(196,162,74,0.09) 0%, transparent 70%); pointer-events:none; }
+.cta-final-inner { position:relative; z-index:1; }
+.cta-final-inner .section-label { justify-content:center; }
+.cta-final-inner .section-label::after { display:none; }
+.cta-final-inner .section-label::before { content:''; display:block; width:28px; height:1px; background:var(--green-dark); opacity:0.5; }
+.cta-final-inner .section-title { max-width:600px; margin:0 auto 14px; }
+.cta-final-inner .section-sub { max-width:460px; margin:0 auto 40px; text-align:center; }
+.cta-btn-row { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:36px; }
+.cta-note { font-size:14px; color:var(--ink3); line-height:1.9; max-width:440px; margin:0 auto; font-style:italic; font-family:var(--serif); }
 
-      {/* 팝업 알림 — 좌하단 고정 */}
-      {visible && (
-        <div style={{ position: "fixed", bottom: "80px", left: "20px", zIndex: 300, background: "#fff", border: "1px solid #e0d4c0", borderLeft: "4px solid #c87040", borderRadius: "0 8px 8px 0", padding: "13px 16px", boxShadow: "0 8px 28px rgba(26,18,8,0.18)", maxWidth: "300px", animation: "popIn 0.3s ease" }}>
-          <style>{`@keyframes popIn { from { transform: translateX(-16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
-            <span style={{ fontSize: "18px", flexShrink: 0 }}>{visible.icon}</span>
-            <div>
-              <div style={{ fontSize: "12px", color: "#1a1208", lineHeight: "1.6", fontWeight: "600" }}>{visible.msg}</div>
-              <div style={{ fontSize: "11px", color: "#9a8a7a", marginTop: "3px" }}>{visible.time}</div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+/* 푸터 */
+footer { background:#2A3D1A; border-top:none; padding:52px 5% 32px; }
+.footer-inner { max-width:1100px; margin:0 auto; display:flex; align-items:flex-start; justify-content:space-between; gap:40px; flex-wrap:wrap; }
+.footer-brand { font-family:var(--serif); font-size:18px; color:#E8F0DE; letter-spacing:0.08em; margin-bottom:10px; font-weight:500; }
+.footer-sub { font-size:14px; color:rgba(200,221,168,0.78); line-height:2; font-weight:300; }
+.footer-links { list-style:none; display:flex; flex-direction:column; gap:12px; }
+.footer-links a { font-size:14px; color:rgba(200,221,168,0.78); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; font-weight:400; }
+.footer-links a:hover { color:#E8F0DE; }
+/* 소셜 아이콘 */
+.footer-social { display:flex; gap:10px; margin-top:16px; }
+.footer-social a { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; text-decoration:none; background:rgba(200,221,168,0.12); border:1px solid rgba(200,221,168,0.2); }
+.footer-social a:hover { background:rgba(200,221,168,0.22); transform:translateY(-2px); }
+.footer-social svg { width:18px; height:18px; fill:rgba(200,221,168,0.75); }
+/* 사업자 정보 */
+.footer-biz { font-size:12px; color:rgba(200,221,168,0.55); line-height:2; margin-top:28px; padding-top:20px; border-top:1px solid rgba(200,221,168,0.12); max-width:1100px; margin-left:auto; margin-right:auto; font-weight:300; }
+
+/* 소셜 프루프 — 밝은 배경으로 복원 (경계 강조) */
+#sp-stream {
+  background:#fff;
+  border:1px solid rgba(90,144,32,0.2);
+  border-bottom:none;
+  max-width:100%;
+  margin:0;
+  overflow:hidden;
+  max-height:220px;
+}
+#sp-stream-wrap {
+  padding:20px 5% 0;
+  background:var(--bg2);
+  border-top:2px solid rgba(90,144,32,0.25);
+}
+.sp-stream-label {
+  font-size:13px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--green-dark); font-weight:500; margin-bottom:12px; display:flex;
+  align-items:center; gap:8px;
+}
+.sp-stream-label::before {
+  content:''; width:7px; height:7px; border-radius:50%;
+  background:var(--green-dark); animation:spPulse 1.8s ease infinite;
+}
+#sp-list { display:flex; flex-direction:column; }
+.sp-row {
+  display:flex; align-items:center;
+  background:rgba(232,238,216,0.6);
+  border-top:1px solid rgba(196,162,74,0.1);
+  padding:8px 16px;
+  animation:spSlideIn 0.35s cubic-bezier(0.34,1.2,0.64,1) both;
+}
+.sp-row:first-child { border-top:none; }
+@keyframes spSlideIn { from{transform:translateY(100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
+.sp-avatar { width:24px; height:24px; border-radius:50%; background:rgba(196,162,74,0.13); border:1px solid rgba(196,162,74,0.28); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--green-dark); flex-shrink:0; margin-right:10px; font-family:var(--serif); }
+.sp-text { flex:1; font-size:12px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sp-text strong { color:var(--ink2); font-weight:500; }
+.sp-time { font-size:10px; color:var(--ink-faint); margin-left:12px; flex-shrink:0; }
+.sp-dot { width:5px; height:5px; border-radius:50%; background:var(--green-dark); margin-left:8px; flex-shrink:0; animation:spPulse 1.8s ease infinite; }
+@keyframes spPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(0.55);} }
+
+/* 애니메이션 */
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+.reveal { opacity:0; transform:translateY(22px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.spinner { width:18px; height:18px; border:2px solid rgba(196,162,74,0.18); border-top-color:var(--gold-dark); border-radius:50%; animation:spin 0.8s linear infinite; display:inline-block; vertical-align:middle; margin-right:8px; }
+@keyframes spin { to{transform:rotate(360deg);} }
+
+/* 반응형 */
+@media(max-width:900px) {
+  .nav-links { display:none; }
+  .about-grid, .director-grid, .insight-intro { grid-template-columns:1fr; gap:40px; }
+  .blog-grid { grid-template-columns:1fr; }
+  .director-photo { aspect-ratio:1/1; max-width:300px; }
+  .services-grid { grid-template-columns:1fr; }
+  .service-card.featured { grid-column:auto; }
+  .why-grid, .target-grid { grid-template-columns:1fr; }
+  .reviews-grid { grid-template-columns:1fr; }
+  .insight-points-grid { grid-template-columns:1fr 1fr; }
+  .form-row { grid-template-columns:1fr; }
+  
+  .funnel-cards { grid-template-columns:1fr; }
+  .review-cta-bar { flex-direction:column; text-align:center; }
+}
+@media(max-width:600px) {
+  .hero-cta-row { flex-direction:column; }
+  .btn-primary, .btn-outline { text-align:center; }
+  .diag-tabs { overflow-x:auto; }
+  .diag-tab { white-space:nowrap; }
+  .insight-points-grid { grid-template-columns:1fr; }
+  .cta-btn-row { flex-direction:column; align-items:center; }
 }
 
-export default function WerosSMEDiagnosis() {
-  const [step, setStep] = useState(-1);
-  const [formData, setFormData] = useState(initialForm);
-  const [error, setError] = useState("");
-  const [chapters, setChapters] = useState({});
-  const [generatingAll, setGeneratingAll] = useState(false);
-  const [isTestMode, setIsTestMode] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  const [reportId, setReportId] = useState('');
-  const [reportLink, setReportLink] = useState('');
-  const [emailSent, setEmailSent] = useState(false);
-  const [sampleChapter, setSampleChapter] = useState(0);
-  const [sampleModal, setSampleModal] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'test') setIsTestMode(true);
-    const encoded = params.get('data');
-    if (encoded) {
-      try {
-        const decoded = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(encoded)))));
-        if (decoded.formData) setFormData(decoded.formData);
-        setStep(4);
-      } catch {}
-    }
-  }, []);
-
-  useEffect(() => {
-    if (sampleModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [sampleModal]);
-
-  const sendToOperator = async () => {
-    const payload = { bizType: BIZ_TYPE, formData };
-    const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
-    const link = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
-    try {
-      await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          service_id: "service_efyhv3m",
-          template_id: "template_1j9jh1s",
-          user_id: "XtQjgmwTBrg29gJnf",
-          template_params: {
-            to_email: "mrwiver1@gmail.com",
-            brand_name: formData.brandName,
-            category: `[소상공인] ${formData.category}`,
-            concerns: formData.concerns,
-            data_link: link,
-            message: `[소상공인] 브랜드명: ${formData.brandName}\n업종: ${formData.category}\n고민: ${formData.concerns}\n\n자동 로드 링크:\n${link}`,
-          },
-        }),
-      });
-    } catch (e) { console.error("EmailJS 오류:", e); }
-    setStep(5);
-  };
-
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-  const formStep = step - 1;
-
-  const validateStep = () => {
-    const currentStepData = FORM_STEPS[formStep];
-    if (!currentStepData) return true;
-    const required = currentStepData.fields.filter(f => f.required);
-    for (const f of required) {
-      if (!formData[f.name]?.trim()) { setError(`"${f.label}"은 필수 입력입니다.`); return false; }
-    }
-    setError(""); return true;
-  };
-
-  const handleNext = () => {
-    if (!validateStep()) return;
-    if (step < 3) { setStep(s => s + 1); }
-    else {
-      setChapters({});
-      if (isTestMode) sendToOperator(); else setStep(4);
-    }
-  };
-  const handlePrev = () => { setError(""); setStep(s => s - 1); };
-  const handleReset = () => { setStep(-1); setChapters({}); setFormData(initialForm); setError(""); };
-
-  const sendReportEmail = async (email, brandName, link, id) => {
-    try {
-      await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          service_id: "service_efyhv3m",
-          template_id: "template_1j9jh1s",
-          user_id: "XtQjgmwTBrg29gJnf",
-          template_params: {
-            to_email: email,
-            brand_name: brandName,
-            category: "소상공인 매출 진단 리포트",
-            concerns: "리포트가 생성되었습니다",
-            data_link: link,
-            message: `안녕하세요. ${brandName} 대표님,\n\nWEROS 소상공인 매출 진단 리포트가 생성되었습니다.\n\n아래 링크에서 언제든지 다시 확인하실 수 있습니다.\n${link}\n\n리포트 ID: ${id}\n\n감사합니다.\nWEROS 팀`,
-          },
-        }),
-      });
-      setEmailSent(true);
-    } catch(e) { console.error("이메일 발송 실패:", e); }
-  };
-
-  const generateChapter = async (chapterId) => {
-    setChapters(prev => ({ ...prev, [chapterId]: { status: 'loading', content: '' } }));
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || "",
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-          model: ANTHROPIC_MODEL, max_tokens: 4000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: generateChapterPrompt(chapterId, formData) }]
-        }),
-      });
-      const data = await response.json();
-      const content = data.content?.map(c => c.text || "").join("\n") || "";
-      setChapters(prev => ({ ...prev, [chapterId]: { status: 'done', content } }));
-      if (chapterId === 'EXECUTIVE_SUMMARY') {
-        const savedId = await saveReport(formData.userEmail, 'brand', formData, { [chapterId]: content });
-        if (savedId) {
-          setReportId(savedId);
-          const link = `${window.location.origin}/report/${savedId}`;
-          setReportLink(link);
-          // 이메일 발송
-          sendReportEmail(formData.userEmail, formData.brandName, link, savedId);
-        }
-      }
-    } catch {
-      setChapters(prev => ({ ...prev, [chapterId]: { status: 'error', content: '생성 중 오류가 발생했습니다.' } }));
-    }
-  };
-
-  const generateAll = async () => {
-    setGeneratingAll(true);
-    for (const ch of CHAPTERS) await generateChapter(ch.id);
-    setGeneratingAll(false);
-  };
-
-  const fillDummyChapters = () => {
-    const dummy = {};
-
-    const chapterContents = {
-      EXECUTIVE_SUMMARY: `> **[브랜드 해석]** 이 브랜드는 현재 "매출은 나오지만 구조가 없는 상태"입니다. 이 상태에서는 대표 의존과 재방문 부재가 반복됩니다.
-
-### [현재 상태]
-월 매출 150~200만원 유지 중이나 재방문율이 극히 낮고, 신규 고객 유입이 대표 개인 네트워크에 의존하는 구조입니다.
-
-### [핵심 문제 TOP 3]
-1. 재구매 구조 전무 — 고객이 한 번 쓰고 끝나는 구조
-2. 대표 의존도 과잉 — 대표 부재 시 영업 사실상 중단
-3. 가격 정당성 부재 — 왜 이 가격인지 고객이 납득 못 함
-
-### [브랜드 건강도 점수]
-
-<div class="r-score-grid">
-  <div class="r-score-card"><div class="r-score-label">브랜드 명확성</div><div class="r-score-value">52점</div></div>
-  <div class="r-score-card"><div class="r-score-label">차별화 수준</div><div class="r-score-value">61점</div></div>
-  <div class="r-score-card"><div class="r-score-label">전환 구조</div><div class="r-score-value">38점</div></div>
-</div>
-
-### [6개월 매출 시나리오]
-
-<div class="r-before-after">
-  <div class="r-before"><div class="r-ba-label">현재 유지 시</div>월 150~200만원 정체<br/>영업이익 ~148만원<br/>구조 변화 없음</div>
-  <div class="r-after"><div class="r-ba-label">전략 실행 시</div>월 350만원 목표<br/>영업이익 ~320만원<br/>재구매 구조 완성</div>
-</div>`,
-
-      OPENING: `> **[브랜드 해석]** 이 브랜드는 현재 "시장 내 포지션이 불명확한 구조"입니다. 이 상태에서는 경쟁 없이도 스스로 가격 경쟁에 뛰어드는 행동이 반복됩니다.
-
-### [현재 상태]
-소상공인 서비스 시장은 진입 장벽이 낮아 경쟁이 심화되고 있습니다. 차별화 없이는 가격 인하 압력을 피할 수 없습니다.
-
-### [시장 경쟁 구도]
-
-<div class="r-chart">
-  <div class="r-chart-title">경쟁자별 강점 비교</div>
-  <div class="r-bar-row"><div class="r-bar-label">대형 플랫폼</div><div class="r-bar-track"><div class="r-bar-fill" style="width:88%"></div></div><div class="r-bar-value">88%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">온라인 앱</div><div class="r-bar-track"><div class="r-bar-fill" style="width:72%"></div></div><div class="r-bar-value">72%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">동네 경쟁자</div><div class="r-bar-track"><div class="r-bar-fill" style="width:55%"></div></div><div class="r-bar-value">55%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">우리 브랜드</div><div class="r-bar-track"><div class="r-bar-fill" style="width:61%"></div></div><div class="r-bar-value">61%</div></div>
-</div>
-
-### [핵심 문제 TOP 3]
-1. 포지션 미정의 — 고객이 "왜 여기여야 하는지" 모름
-2. 가격 경쟁 함정 — 차별화 없이 가격으로만 경쟁
-3. 디지털 채널 부재 — 온라인 유입 구조 없음`,
-
-      CH01: `> **[브랜드 해석]** 이 브랜드는 현재 "창업 이유가 전략에 녹아 있지 않은 구조"입니다. 이 상태에서는 경쟁력이 대표 개인에만 머무릅니다.
-
-### [현재 상태]
-20년 경력이라는 강력한 자산이 있으나, 이것이 브랜드 메시지로 전달되지 않고 있습니다.
-
-### [브랜드 역량 스펙트럼]
-
-<div class="r-chart">
-  <div class="r-chart-title">핵심 역량 진단</div>
-  <div class="r-bar-row"><div class="r-bar-label">전문 경력</div><div class="r-bar-track"><div class="r-bar-fill" style="width:92%"></div></div><div class="r-bar-value">92%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">고객 신뢰</div><div class="r-bar-track"><div class="r-bar-fill" style="width:78%"></div></div><div class="r-bar-value">78%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">온라인 인지도</div><div class="r-bar-track"><div class="r-bar-fill" style="width:45%"></div></div><div class="r-bar-value">45%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">재구매 구조</div><div class="r-bar-track"><div class="r-bar-fill" style="width:12%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">12%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">브랜드 자립도</div><div class="r-bar-track"><div class="r-bar-fill" style="width:22%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">22%</div></div>
-</div>
-
-### [핵심 문제 TOP 3]
-1. 경력이 브랜드 메시지로 전환 안 됨
-2. 창업 이유가 현재 전략과 단절됨
-3. 강점이 고객 언어로 표현 안 됨
-
-### [지금 바로 해야 할 실행 3단계]
-**STEP 1.** 창업 이유 → 고객 가치로 번역
-- ❌ "20년 경력 전문가"
-- ✅ "20년간 3,000명의 이름을 지어온 사람이 당신 아이의 이름을 짓습니다"
-
-**STEP 2.** 강점을 숫자로 표현
-**STEP 3.** 브랜드 스토리를 네이버 플레이스 소개란에 적용
-
-### [BEFORE / AFTER]
-<div class="r-before-after">
-  <div class="r-before"><div class="r-ba-label">변경 전</div>고객: "여기 뭐가 달라요?"<br/>선택 기준: 가격</div>
-  <div class="r-after"><div class="r-ba-label">변경 후</div>고객: "여기여야 하는 이유 알겠다"<br/>선택 기준: 신뢰·전문성</div>
-</div>
-
-### [현재 점수]
-브랜드 명확성: 52점 · 차별화 수준: 61점 · 전환 구조: 38점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      CH02: `> **[브랜드 해석]** 이 브랜드는 현재 "성장을 막는 4가지 구조적 자물쇠"가 작동 중입니다.
-
-### [현재 상태]
-매출 정체의 원인은 노력 부족이 아니라 구조적 병목입니다.
-
-### [성장을 막는 구조 진단]
-
-<div class="r-chart">
-  <div class="r-chart-title">구조적 병목 긴급도</div>
-  <div class="r-bar-row"><div class="r-bar-label">재구매 부재</div><div class="r-bar-track"><div class="r-bar-fill" style="width:95%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">긴급</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">대표 의존</div><div class="r-bar-track"><div class="r-bar-fill" style="width:88%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">긴급</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">온라인 부재</div><div class="r-bar-track"><div class="r-bar-fill" style="width:72%; background:#f59e0b"></div></div><div class="r-bar-value" style="color:#f59e0b">중간</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">가격 정당성</div><div class="r-bar-track"><div class="r-bar-fill" style="width:65%; background:#f59e0b"></div></div><div class="r-bar-value" style="color:#f59e0b">중간</div></div>
-</div>
-
-### [핵심 문제 TOP 3]
-1. 매몰비용 오류 — "지금도 되니까" 가 변화를 막음
-2. 손실 회피 편향 — 가격 인상 두려움
-3. 디지털 전환 지연 — 온라인 채널 미개발
-
-### [지금 바로 해야 할 실행 3단계]
-**STEP 1.** 병목 1순위(재구매) 해결
-- ❌ 한 번 쓰고 끝나는 단발 서비스
-- ✅ 패키지 설계 (작명+이름풀이+1년 후 상담 세트)
-
-**STEP 2.** 대표 의존 분산 — 콘텐츠 자산화
-**STEP 3.** 네이버 블로그 주 1회 발행 시작
-
-### [BEFORE / AFTER]
-<div class="r-before-after">
-  <div class="r-before"><div class="r-ba-label">변경 전</div>신규 고객만 의존<br/>월 매출 변동성 큼</div>
-  <div class="r-after"><div class="r-ba-label">변경 후</div>재구매+신규 이중 구조<br/>월 매출 안정화</div>
-</div>
-
-### [현재 점수]
-브랜드 명확성: 52점 · 차별화 수준: 58점 · 전환 구조: 38점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      CH03: `> **[브랜드 해석]** 이 브랜드는 현재 "경쟁자와 같은 링 위에서 싸우는 구조"입니다.
-
-### [현재 상태]
-진짜 경쟁자는 옆 철학관이 아니라 온라인 작명 앱과 대형 플랫폼입니다.
-
-### [경쟁 포지셔닝 맵]
-
-<div class="r-chart">
-  <div class="r-chart-title">가격 vs 전문성 포지셔닝</div>
-  <div style="position:relative;width:100%;padding-bottom:50%;background:#fff;border:1px solid #e0d4c0;border-radius:4px;margin:8px 0">
-    <div style="position:absolute;inset:0;padding:16px">
-      <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:9px;color:#a09080">고가</div>
-      <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:9px;color:#a09080">저가</div>
-      <div style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#a09080">전문화</div>
-      <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#a09080">범용</div>
-      <div style="position:absolute;top:50%;left:20px;right:20px;height:1px;background:#e0d4c0"></div>
-      <div style="position:absolute;left:50%;top:20px;bottom:20px;width:1px;background:#e0d4c0"></div>
-      <div style="position:absolute;left:30%;top:25%;text-align:center">
-        <div style="width:14px;height:14px;border-radius:50%;background:#8a6a40;margin:0 auto 3px;box-shadow:0 0 0 4px rgba(138,106,64,0.2)"></div>
-        <div style="font-size:9px;color:#8a6a40;font-weight:700">우리 브랜드</div>
-      </div>
-      <div style="position:absolute;left:65%;top:30%;text-align:center">
-        <div style="width:10px;height:10px;border-radius:50%;background:#c0b0a0;margin:0 auto 3px"></div>
-        <div style="font-size:9px;color:#7a6a55">철학관</div>
-      </div>
-      <div style="position:absolute;left:60%;top:65%;text-align:center">
-        <div style="width:10px;height:10px;border-radius:50%;background:#c0b0a0;margin:0 auto 3px"></div>
-        <div style="font-size:9px;color:#7a6a55">작명앱</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-### [핵심 문제 TOP 3]
-1. 포지션 공백 미활용 — "전문+합리가" 자리가 비어 있음
-2. 온라인 경쟁자 간과 — 앱과 싸워야 하는데 오프라인만 봄
-3. 차별화 메시지 부재
-
-### [현재 점수]
-브랜드 명확성: 52점 · 차별화 수준: 61점 · 전환 구조: 38점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      CH04: `> **[브랜드 해석]** 이 브랜드는 현재 "성공 전략이 동시에 성장의 천장이 되는 구조"입니다.
-
-### [현재 상태]
-네이버 플레이스 1위라는 강점이 오히려 디지털 전환을 막고 있습니다.
-
-### [Dark Side 진단]
-
-<div class="r-chart">
-  <div class="r-chart-title">성공 전략의 이면 비용</div>
-  <div class="r-bar-row"><div class="r-bar-label">플레이스 의존</div><div class="r-bar-track"><div class="r-bar-fill" style="width:85%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">위험</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">대표 번아웃</div><div class="r-bar-track"><div class="r-bar-fill" style="width:72%; background:#f59e0b"></div></div><div class="r-bar-value" style="color:#f59e0b">주의</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">가격 인상 불가</div><div class="r-bar-track"><div class="r-bar-fill" style="width:68%; background:#f59e0b"></div></div><div class="r-bar-value" style="color:#f59e0b">주의</div></div>
-</div>
-
-### [핵심 문제 TOP 3]
-1. 플레이스 알고리즘 변경 시 매출 직격
-2. 1인 운영 한계 — 성장 가능 용량 도달
-3. 저가 이미지 고착 — 가격 올리면 이탈 두려움
-
-### [지금 바로 해야 할 실행 3단계]
-**STEP 1.** 플레이스 의존도 분산 — 블로그/카카오 채널 병행
-**STEP 2.** 상담 시간 구조화 — 시간당 생산성 향상
-**STEP 3.** 프리미엄 패키지 1개 출시 테스트
-
-### [BEFORE / AFTER]
-<div class="r-before-after">
-  <div class="r-before"><div class="r-ba-label">변경 전</div>플레이스 1채널 의존<br/>리스크 집중</div>
-  <div class="r-after"><div class="r-ba-label">변경 후</div>3채널 분산<br/>리스크 분산</div>
-</div>
-
-### [현재 점수]
-브랜드 명확성: 52점 · 차별화 수준: 58점 · 전환 구조: 38점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      CH05: `> **[브랜드 해석]** 이 브랜드는 현재 "전략 방향은 있으나 실행 구조가 없는 상태"입니다.
-
-### [현재 상태]
-강점은 명확하나 이를 매출로 연결하는 구조가 없습니다.
-
-### [전략 원칙 적용 체크]
-
-<div class="r-chart">
-  <div class="r-chart-title">전략 실행 준비도</div>
-  <div class="r-bar-row"><div class="r-bar-label">전문성 자산</div><div class="r-bar-track"><div class="r-bar-fill" style="width:90%"></div></div><div class="r-bar-value">90%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">고객 신뢰 자산</div><div class="r-bar-track"><div class="r-bar-fill" style="width:75%"></div></div><div class="r-bar-value">75%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">상품 구조</div><div class="r-bar-track"><div class="r-bar-fill" style="width:30%; background:#f59e0b"></div></div><div class="r-bar-value" style="color:#f59e0b">30%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">재구매 설계</div><div class="r-bar-track"><div class="r-bar-fill" style="width:10%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">10%</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">디지털 채널</div><div class="r-bar-track"><div class="r-bar-fill" style="width:20%; background:#dc2626"></div></div><div class="r-bar-value" style="color:#dc2626">20%</div></div>
-</div>
-
-### [핵심 문제 TOP 3]
-1. 상품 구조 단순 — 단발 서비스만 존재
-2. 업셀 경로 없음 — 더 비싼 것을 살 방법이 없음
-3. 콘텐츠 자산 미구축
-
-### [현재 점수]
-브랜드 명확성: 62점 · 차별화 수준: 68점 · 전환 구조: 45점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      REVENUE: `> **[브랜드 해석]** 이 브랜드는 현재 "수익 구조가 단순해서 성장 한계가 명확한 상태"입니다.
-
-### [현재 수익 구조 분석]
-
-<div class="r-chart">
-  <div class="r-chart-title">월 매출 시나리오 비교</div>
-  <div class="r-score-grid">
-    <div class="r-score-card"><div class="r-score-label">현재 유지</div><div class="r-score-value" style="font-size:16px">150만</div><div style="font-size:10px;color:#dc2626;margin-top:4px">영업이익 ~148만</div></div>
-    <div class="r-score-card" style="border-top-color:#8a6a40"><div class="r-score-label">전략 실행</div><div class="r-score-value" style="font-size:16px">280만</div><div style="font-size:10px;color:#8a6a40;margin-top:4px">영업이익 ~270만</div></div>
-    <div class="r-score-card" style="border-top-color:#4a7a50;background:#f0fdf4"><div class="r-score-label">목표 달성</div><div class="r-score-value" style="font-size:16px">350만</div><div style="font-size:10px;color:#4a7a50;margin-top:4px">영업이익 ~338만</div></div>
-  </div>
-</div>
-
-### [수익 레버 분석]
-<div class="r-chart">
-  <div class="r-chart-title">매출 증대 레버별 기여도</div>
-  <div class="r-bar-row"><div class="r-bar-label">가격 15% 인상</div><div class="r-bar-track"><div class="r-bar-fill" style="width:75%"></div></div><div class="r-bar-value">+23만</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">패키지 판매</div><div class="r-bar-track"><div class="r-bar-fill" style="width:85%"></div></div><div class="r-bar-value">+45만</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">재방문 10% ↑</div><div class="r-bar-track"><div class="r-bar-fill" style="width:60%"></div></div><div class="r-bar-value">+18만</div></div>
-  <div class="r-bar-row"><div class="r-bar-label">블로그 유입</div><div class="r-bar-track"><div class="r-bar-fill" style="width:50%"></div></div><div class="r-bar-value">+24만</div></div>
-</div>
-
-### [현재 점수]
-브랜드 명확성: 62점 · 차별화 수준: 68점 · 전환 구조: 45점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      EXECUTION: `> **[브랜드 해석]** 이 브랜드는 현재 "실행 로드맵만 있으면 바로 움직일 수 있는 상태"입니다.
-
-### [90일 실행 로드맵]
-
-<div class="r-step-block">
-  <div class="r-step-num">PHASE 1 · 1~30일 · 기반 정비</div>
-  <ul class="r-checklist">
-    <li>네이버 플레이스 소개란 전면 개편 (전문성 강조)</li>
-    <li>패키지 상품 1개 설계 및 가격 책정</li>
-    <li>블로그 첫 글 발행 (작명 후기 or 전문 칼럼)</li>
-  </ul>
-</div>
-
-<div class="r-step-block">
-  <div class="r-step-num">PHASE 2 · 31~60일 · 방향 전환</div>
-  <ul class="r-checklist">
-    <li>패키지 상품 출시 및 기존 고객 대상 안내</li>
-    <li>블로그 주 1회 발행 루틴 확립</li>
-    <li>카카오 채널 개설 및 상담 예약 연결</li>
-  </ul>
-</div>
-
-<div class="r-step-block">
-  <div class="r-step-num">PHASE 3 · 61~90일 · 성과 확인</div>
-  <ul class="r-checklist">
-    <li>월 매출 280만원 달성 여부 확인</li>
-    <li>블로그 유입 고객 비율 측정</li>
-    <li>패키지 전환율 확인 후 가격 조정</li>
-  </ul>
-</div>
-
-### [철수 트리거]
-30일 후 블로그 유입 0명 → 키워드 전략 재검토
-패키지 전환율 5% 미만 → 구성 재설계
-
-### [현재 점수]
-브랜드 명확성: 72점 · 차별화 수준: 75점 · 전환 구조: 68점
-(100점 기준 / WEROS AI 추정, 업계 벤치마크 기반)`,
-
-      EPILOGUE: `> **[브랜드 해석]** 이 브랜드는 현재 "강점은 있으나 세상에 아직 제대로 말하지 못한 상태"입니다.
-
-### [브랜드 포지션 문장]
-
-> "20년간 3,000명의 이름을 지어온 전문가가 당신 아이의 첫 번째 선물을 만듭니다."
-
-이 한 줄이 모든 마케팅의 출발점입니다.
-
-### [최종 실행 우선순위 TOP 3]
-
-1. **가장 먼저 해야 할 것:** 네이버 플레이스 소개란에 위 포지션 문장 적용
-→ 이유: 가장 많은 고객이 보는 접점이기 때문 (CH.03 포지션 문제 해결)
-
-2. **두 번째:** 패키지 상품 1개 출시
-→ 이유: 단발 구조를 재구매 구조로 전환하는 핵심 레버 (CH.02 구조 문제 해결)
-
-3. **세 번째:** 블로그 주 1회 발행 시작
-→ 이유: 대표 의존 구조를 콘텐츠 자산으로 분산 (CH.04 Dark Side 해결)
-
-→ 이 3가지가 끝나면, 월 매출 280만원 달성 구조가 완성됩니다.
-→ 고객이 이 리포트에서 딱 하나만 실행한다면, **플레이스 소개란 개편**이 그 하나입니다.`
-    };
-
-    CHAPTERS.forEach(ch => {
-      dummy[ch.id] = {
-        status: 'done',
-        content: chapterContents[ch.id] || `> **[브랜드 해석]** 이것은 **${ch.label}** 챕터의 레이아웃 테스트 콘텐츠입니다.\n\n### [현재 상태]\nPDF 레이아웃 확인용 더미 데이터입니다.\n\n### [핵심 문제 TOP 3]\n1. 첫 번째 테스트 문제\n2. 두 번째 테스트 문제\n3. 세 번째 테스트 문제`
-      };
-    });
-    setChapters(dummy);
-  };
-
-
-
-  const doneCount = Object.values(chapters).filter(c => c.status === 'done').length;
-
-  const styles = {
-    root: { minHeight: "100vh", background: "#f5f0ea", fontFamily: "'Georgia', 'Times New Roman', serif" },
-    header: { borderBottom: "1px solid #d8cfc4", padding: "20px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#ffffff", position: "sticky", top: 0, zIndex: 100 },
-    logo: { fontSize: "24px", fontWeight: "700", letterSpacing: "6px", color: "#8a6a40" },
-    logoSub: { fontSize: "10px", letterSpacing: "3px", color: "#b0a090", textTransform: "uppercase", marginLeft: "12px" },
-    container: { maxWidth: "720px", margin: "0 auto", padding: "60px 40px" },
-    textarea: { width: "100%", background: "#ffffff", border: "1px solid #d8cfc4", color: "#1a1208", padding: "12px 14px", fontSize: "15px", fontFamily: "'Georgia', serif", resize: "vertical", outline: "none", lineHeight: "1.6", boxSizing: "border-box", transition: "border-color 0.2s" },
-    btn: { background: "#8a6a40", color: "#ffffff", border: "none", padding: "16px 32px", fontSize: "12px", letterSpacing: "3px", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Georgia', serif", fontWeight: "700" },
-    btnGhost: { background: "transparent", color: "#8a7a65", border: "1px solid #d8cfc4", padding: "16px 32px", fontSize: "12px", letterSpacing: "3px", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Georgia', serif" },
-  };
-
-  // ═══════════════════════════════════════
-  // 샘플 리포트 모달
-  // ═══════════════════════════════════════
-  const SampleReportModal = () => (
-    <div
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(10,8,4,0.82)',
-        zIndex: 2000,
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        overflowY: 'auto',
-        padding: '24px 16px 80px',
-      }}
-      onClick={(e) => e.target === e.currentTarget && setSampleModal(false)}
-    >
-      <div style={{
-        background: '#fdf8f2',
-        maxWidth: '780px',
-        width: '100%',
-        position: 'relative',
-        boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
-        marginTop: '16px',
-      }}>
-        {/* SAMPLE 워터마크 */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          zIndex: 3,
-          pointerEvents: 'none',
-          overflow: 'hidden',
-        }}>
-          {[0,1,2,3,4,5,6,7].map(i => (
-            <div key={i} style={{
-              position: 'absolute',
-              fontSize: '88px',
-              fontWeight: '900',
-              color: 'rgba(138,106,64,0.07)',
-              letterSpacing: '12px',
-              transform: 'rotate(-32deg)',
-              userSelect: 'none',
-              fontFamily: "'Georgia', serif",
-              whiteSpace: 'nowrap',
-              top: `${i * 220 - 80}px`,
-              left: '-60px',
-            }}>SAMPLE&nbsp;&nbsp;&nbsp;SAMPLE&nbsp;&nbsp;&nbsp;SAMPLE</div>
-          ))}
-        </div>
-
-        {/* 상단 헤더 */}
-        <div style={{
-          position: 'sticky', top: 0, zIndex: 10,
-          background: '#1a1208',
-          padding: '14px 24px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <span style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase' }}>
-              WEROS · 소상공인 매출 진단 리포트
-            </span>
-            <span style={{
-              fontSize: '9px', letterSpacing: '2px', color: '#c87040',
-              border: '1px solid #c87040', padding: '2px 8px',
-              textTransform: 'uppercase', fontWeight: '700'
-            }}>SAMPLE</span>
-          </div>
-          <button
-            onClick={() => setSampleModal(false)}
-            style={{
-              background: 'transparent', border: '1px solid #3a3025',
-              color: '#a09080', cursor: 'pointer',
-              width: '32px', height: '32px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '18px', lineHeight: 1,
-              fontFamily: 'sans-serif',
-              flexShrink: 0,
-            }}
-          >✕</button>
-        </div>
-
-        {/* 리포트 콘텐츠 */}
-        <div style={{ position: 'relative', zIndex: 2 }}>
-
-          {/* 표지 */}
-          <div style={{ background: '#1a1208', padding: '40px 40px 32px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div>
-                <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>
-                  WEROS Brand Anatomy · 소상공인 매출 진단
-                </div>
-                <div style={{ fontSize: '30px', color: '#fdf8f2', fontFamily: "'Georgia', serif", fontWeight: '400', marginBottom: '8px', lineHeight: '1.2' }}>
-                  김포치킨
-                </div>
-                <div style={{ fontSize: '12px', color: '#a09080', lineHeight: '1.8' }}>
-                  경기도 김포시 구래동 · 치킨 전문점 · 홀+배달 운영<br/>
-                  창업 4년차 · 직원 2명
-                </div>
-              </div>
-              <div style={{ textAlign: 'right', fontFamily: "'Georgia', serif", fontSize: '11px', color: '#8a6a40', fontStyle: 'italic' }}>
-                See Both Sides<br/>of Your Brand
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px' }}>
-              {[
-                ['월 매출', '800만원'],
-                ['이익률', '18~22%'],
-                ['배달 의존도', '87%'],
-                ['단골 비율', '11%'],
-              ].map(([k, v], i) => (
-                <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,184,154,0.15)', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '9px', color: '#8a6a40', letterSpacing: '1px', marginBottom: '4px' }}>{k}</div>
-                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#c8b89a', fontFamily: "'Georgia', serif" }}>{v}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* PROLOGUE */}
-          <div style={{ padding: '32px 40px', borderBottom: '1px solid #e0d4c0' }}>
-            <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>PROLOGUE</div>
-            <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '16px', lineHeight: '1.4' }}>
-              김포치킨, 이 브랜드가 지금 여기 있는 이유
-            </h2>
-            <p style={{ fontSize: '14px', color: '#3a2a18', lineHeight: '1.9', marginBottom: '14px' }}>
-              당신의 브랜드는 월 800만원 매출을 올리면서도 통장에 남는 게 없다는 고민을 안고 있다. 배달 플랫폼 수수료 12~15%, 식자재 원가 35~40%, 임대료와 인건비를 제하면 실질 순이익은 100만원 안팎이다. 매출은 있는데 돈이 안 남는 구조, 이것이 이 브랜드의 현실이다.
-            </p>
-            <p style={{ fontSize: '14px', color: '#3a2a18', lineHeight: '1.9', marginBottom: '14px' }}>
-              배달앱에 87% 의존하면서도 수수료 구조의 불합리함을 알면서 벗어나지 못하고 있다. 네이버 플레이스 평점 4.3점, 후기 230개라는 탄탄한 자산을 가지고도 홀 매출은 전체의 13%에 불과하다. 단골이 없다는 것, 재방문을 유도하는 장치가 하나도 없다는 것 — 이것이 이 브랜드가 성장하지 못하는 핵심 구조다.
-            </p>
-            <div style={{ background: '#f0ebe0', borderLeft: '3px solid #c87040', padding: '14px 18px', fontSize: '13px', color: '#3a2a18', lineHeight: '1.7', fontStyle: 'italic' }}>
-              "배달로 번 돈을 배달앱에 다시 갖다 주는 구조에서 벗어나려면, 홀 고객을 단골로 만드는 시스템이 먼저다."
-            </div>
-          </div>
-
-          {/* 핵심 진단 요약 */}
-          <div style={{ padding: '32px 40px', borderBottom: '1px solid #e0d4c0' }}>
-            <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>EXECUTIVE SUMMARY</div>
-            <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '20px' }}>핵심 진단 요약</h2>
-            <div style={{ background: '#1a1208', padding: '20px 24px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#8a6a40', textTransform: 'uppercase' }}>브랜드 건강도 종합 점수</div>
-                <div style={{ fontSize: '28px', fontWeight: '700', color: '#c8b89a', fontFamily: "'Georgia', serif" }}>
-                  58<span style={{ fontSize: '14px', color: '#8a6a40' }}>/100</span>
-                </div>
-              </div>
-              <div style={{ height: '6px', background: 'rgba(200,184,154,0.15)', borderRadius: '3px', marginBottom: '8px' }}>
-                <div style={{ height: '100%', width: '58%', background: 'linear-gradient(90deg, #c87040, #c8b89a)', borderRadius: '3px' }} />
-              </div>
-              <div style={{ fontSize: '11px', color: '#a09080' }}>맛 경쟁력과 배달 인지도는 강하나, 수익 구조와 재방문 설계 개선 시급</div>
-            </div>
-            <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#5a4a38', textTransform: 'uppercase', marginBottom: '10px' }}>3가지 핵심 진단</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-              {[
-                { num: '01', text: '배달 의존도 87% — 수수료로 수익 구조 붕괴', color: '#c87040', detail: '배달앱 수수료 12~15% + 포장재 + 라이더 대기시간 포함 시 실질 마진 10% 미만 (WEROS AI 추정)' },
-                { num: '02', text: '홀 고객 재방문 유도 구조 전무', color: '#8a6a40', detail: '멤버십·쿠폰·단골 혜택 없음. 신규 고객 유치 비용이 기존 고객 유지 비용의 5배 (업계 평균 기준)' },
-                { num: '03', text: '점심 시간대 매출 공백 — 가동률 40% 낭비', color: '#a09080', detail: '오후 4시~11시 피크 집중, 11시~3시 사실상 유휴 상태. 월 기회비용 약 120만원 추정 (WEROS AI 추정)' },
-              ].map((item) => (
-                <div key={item.num} style={{ background: '#fff', border: '1px solid #e0d4c0', borderLeft: `4px solid ${item.color}`, padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '10px', fontWeight: '700', color: item.color, fontFamily: "'Georgia', serif", flexShrink: 0 }}>{item.num}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#1a1208' }}>{item.text}</span>
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#5a4a38', lineHeight: '1.6', paddingLeft: '22px' }}>{item.detail}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#5a4a38', textTransform: 'uppercase', marginBottom: '10px' }}>6개월 매출 시나리오</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-              {[
-                { label: '현재 유지', val: '월 800만', profit: '순이익 ~80만', sub: '구조 변화 없을 시', borderColor: '#a09080', bg: '#fff', textColor: '#1a1208' },
-                { label: '전략 실행', val: '월 1,200만', profit: '순이익 ~200만', sub: '3개월 후 목표', borderColor: '#8a6a40', bg: '#fdf8f2', textColor: '#1a1208' },
-                { label: '목표 달성', val: '월 1,800만', profit: '순이익 ~400만', sub: '6개월 목표', borderColor: '#c8b89a', bg: '#1a1208', textColor: '#c8b89a' },
-              ].map((s, i) => (
-                <div key={i} style={{ background: s.bg, border: '1px solid #e0d4c0', borderTop: `3px solid ${s.borderColor}`, padding: '14px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '9px', color: s.borderColor, marginBottom: '4px', letterSpacing: '1px' }}>{s.label}</div>
-                  <div style={{ fontSize: '17px', fontWeight: '700', color: s.textColor, fontFamily: "'Georgia', serif" }}>{s.val}</div>
-                  <div style={{ fontSize: '11px', color: i === 2 ? '#8a6a40' : '#c87040', margin: '4px 0', fontWeight: '600' }}>{s.profit}</div>
-                  <div style={{ fontSize: '9px', color: s.borderColor }}>{s.sub}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: '10px', fontSize: '10px', color: '#a09080', fontStyle: 'italic' }}>
-              ※ 모든 수치는 WEROS AI 추정 (통계청·중기부·외식업 데이터 기반)
-            </div>
-          </div>
-
-          {/* OPENING */}
-          <div style={{ padding: '32px 40px', borderBottom: '1px solid #e0d4c0' }}>
-            <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>OPENING</div>
-            <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '16px' }}>
-              시장 현실: 당신이 서 있는 곳의 좌표
-            </h2>
-            <p style={{ fontSize: '14px', color: '#3a2a18', lineHeight: '1.9', marginBottom: '16px' }}>
-              국내 치킨 시장 규모는 연간 약 8조원으로 외식업 중 가장 큰 단일 카테고리다. 하지만 브랜드 치킨 가맹점 3만 2천개, 개인 치킨집 1만 8천개가 경쟁하는 극도로 포화된 시장이다. 배달앱 3사(배민·쿠팡이츠·요기요)의 수수료가 2022년 이후 평균 12~15%로 고정되면서 소규모 업체의 마진 압박이 구조적으로 심화되고 있다.
-            </p>
-            <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#5a4a38', textTransform: 'uppercase', marginBottom: '10px' }}>경쟁 구도 분석</div>
-              <div style={{ overflow: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
-                  <thead>
-                    <tr style={{ background: '#1a1208' }}>
-                      {['경쟁자', '핵심 전략', '강점', '우리와 차이'].map(h => (
-                        <th key={h} style={{ padding: '10px 12px', color: '#c8b89a', textAlign: 'left', fontWeight: '600', letterSpacing: '0.5px', fontSize: '10px' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      ['BBQ·교촌 가맹점', '브랜드 신뢰도', '마케팅 지원', '프랜차이즈 vs 개인 브랜드'],
-                      ['배달 전문 치킨집', '저가 + 속도', '낮은 고정비', '가격 경쟁 vs 품질 경쟁'],
-                      ['홀+주류 치킨집', '객단가 높음', '재방문율', '주류 매출 없음 → 객단가 낮음'],
-                      ['편의점 냉동치킨', '접근성·가격', '즉시성', '조리 신선도 차별화 가능'],
-                    ].map((row, i) => (
-                      <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#faf6ee', borderBottom: '1px solid #e8e0d5' }}>
-                        {row.map((cell, j) => (
-                          <td key={j} style={{ padding: '10px 12px', color: j === 0 ? '#1a1208' : '#3a2a18', fontWeight: j === 0 ? '600' : '400' }}>{cell}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div style={{ background: '#f0ebe0', borderLeft: '3px solid #8a6a40', padding: '14px 18px', fontSize: '12px', color: '#3a2a18', lineHeight: '1.7' }}>
-              <strong style={{ color: '#8a6a40' }}>📌 분석가 주석</strong><br/>
-              시장 포화와 수수료 압박 속에서도 "홀 고객 충성도"는 여전히 개인 치킨집의 핵심 생존 자산이다. 지역 기반 단골을 만드는 것이 배달앱 의존에서 벗어나는 유일한 출구다.
-            </div>
-          </div>
-
-          {/* CH.01 브랜드 DNA */}
-          <div style={{ padding: '32px 40px', borderBottom: '1px solid #e0d4c0' }}>
-            <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>CH.01</div>
-            <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '8px' }}>
-              브랜드 DNA: 지금까지의 결정들이 지금의 당신을 만들었다
-            </h2>
-            <div style={{ background: '#fff8f0', border: '1px solid #e0c898', borderLeft: '4px solid #c8a060', padding: '14px 18px', marginBottom: '20px', fontSize: '13px', color: '#1a1208', lineHeight: '1.7', fontStyle: 'italic' }}>
-              <span style={{ fontSize: '9px', letterSpacing: '2px', color: '#c8a060', display: 'block', marginBottom: '6px', fontStyle: 'normal', fontWeight: '700' }}>DECISION POINT</span>
-              "지금까지 배달에 집중한 결정이 월 800만원을 만들었다. 그런데 그 결정이 동시에 월 80만원 순이익이라는 천장도 만들지 않았는가?"
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#5a4a38', textTransform: 'uppercase', marginBottom: '12px' }}>브랜드 역량 스펙트럼</div>
-              {[
-                { label: '맛 경쟁력', val: 88, color: '#c8b89a' },
-                { label: '배달 인지도', val: 75, color: '#c8b89a' },
-                { label: '가격 경쟁력', val: 68, color: '#8a6a40' },
-                { label: '수익 구조', val: 22, color: '#c87040' },
-                { label: '홀 재방문율', val: 18, color: '#c87040' },
-                { label: '단골 설계', val: 12, color: '#c87040' },
-              ].map((item) => (
-                <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                  <div style={{ fontSize: '11px', color: '#5a4a38', width: '72px', flexShrink: 0, textAlign: 'right' }}>{item.label}</div>
-                  <div style={{ flex: 1, height: '6px', background: '#e0d4c0', borderRadius: '3px' }}>
-                    <div style={{ height: '100%', width: `${item.val}%`, background: item.color, borderRadius: '3px' }} />
-                  </div>
-                  <div style={{ fontSize: '11px', color: item.color, width: '28px', textAlign: 'right' }}>{item.val}</div>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: '14px', color: '#3a2a18', lineHeight: '1.9', marginBottom: '14px' }}>
-              창업 초기 "배달로 빠르게 인지도를 올리자"는 결정은 옳았다. 4년 만에 월 800만원이라는 안정적 매출을 만든 것이 그 증거다. 하지만 그 결정이 가져온 부작용이 있다. 홀 고객을 만들고 관계를 쌓는 경험이 4년 동안 축적되지 않았다. 배달은 익명이다. 고객의 얼굴도, 이름도, 재방문 시점도 모른다. 이것이 지금 단골 비율 11%라는 수치로 나타나고 있다.
-            </p>
-            <div style={{ background: '#f0ebe0', borderLeft: '3px solid #8a6a40', padding: '14px 18px', fontSize: '12px', color: '#3a2a18', lineHeight: '1.7' }}>
-              <strong style={{ color: '#8a6a40' }}>📌 분석가 주석</strong><br/>
-              배달 의존 4년이 만든 가장 큰 비용은 "고객 관계 부재"다. 맛이 좋아도 고객이 기억하는 건 배달앱 알고리즘이지 당신의 브랜드가 아니다. 지금부터라도 홀 고객 한 명 한 명의 이름을 기억하는 시스템이 필요하다.
-            </div>
-          </div>
-
-          {/* CH.02 구조적 패턴 */}
-          <div style={{ padding: '32px 40px', borderBottom: '1px solid #e0d4c0' }}>
-            <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>CH.02</div>
-            <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '8px' }}>
-              잠금 구조 해부: 당신도 모르는 사이 작동하는 4개의 자물쇠
-            </h2>
-            <div style={{ background: '#fff8f0', border: '1px solid #e0c898', borderLeft: '4px solid #c8a060', padding: '14px 18px', marginBottom: '20px', fontSize: '13px', color: '#1a1208', lineHeight: '1.7', fontStyle: 'italic' }}>
-              <span style={{ fontSize: '9px', letterSpacing: '2px', color: '#c8a060', display: 'block', marginBottom: '6px', fontStyle: 'normal', fontWeight: '700' }}>DECISION POINT</span>
-              "지금 이 브랜드의 의사결정을 가장 강하게 붙잡고 있는 심리적 자물쇠는 무엇인가?"
-            </div>
-            {[
-              {
-                label: '첫 번째 자물쇠: 매몰비용 오류',
-                desc: '"배달로 800만원은 되니까" — 4년간 쌓은 배달 시스템을 포기하기 어렵다는 생각이 홀 전략 투자를 막고 있다. 배달앱 리뷰 관리, 메뉴 최적화에 쏟은 노력이 "여기서 방향을 바꾸면 다 날아간다"는 불안을 만든다.',
-                loss: '연간 기회비용 약 1,440만원 추정',
-                color: '#c87040'
-              },
-              {
-                label: '두 번째 자물쇠: 손실 회피 본능',
-                desc: '가격 인상 시 주문량 감소를 두려워해 단가를 올리지 못하고 있다. 실제로 치킨 한 마리 2,000원 인상 시 주문 이탈률은 평균 8%에 그치지만, 매출은 15~18% 증가한다. (WEROS AI 추정, 외식업 가격탄력성 기반)',
-                loss: '월 손실 약 80~120만원',
-                color: '#8a6a40'
-              },
-            ].map((p, i) => (
-              <div key={i} style={{ background: '#fff', border: '1px solid #e0d4c0', borderLeft: `4px solid ${p.color}`, padding: '14px 16px', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1208' }}>{p.label}</div>
-                  <div style={{ fontSize: '10px', color: '#c87040', background: '#fff3e8', padding: '2px 8px', flexShrink: 0, marginLeft: '12px' }}>{p.loss}</div>
-                </div>
-                <div style={{ fontSize: '12px', color: '#3a2a18', lineHeight: '1.7' }}>{p.desc}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* 블러 처리 구간 */}
-          <div style={{ position: 'relative' }}>
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(to bottom, rgba(253,248,242,0) 0%, rgba(253,248,242,0.7) 30%, rgba(253,248,242,0.97) 60%, rgba(253,248,242,1) 100%)',
-              zIndex: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingBottom: '32px',
-            }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '28px', marginBottom: '12px' }}>🔒</div>
-                <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '8px' }}>이후 내용은 실제 리포트에서 제공됩니다</div>
-                <div style={{ fontSize: '13px', color: '#5a4a38', lineHeight: '1.7', marginBottom: '20px' }}>
-                  세 번째 자물쇠부터 · 경쟁 구도 분석 · Dark Side · 전략 원칙 5가지<br/>
-                  수익 구조 시뮬레이션 · 30/60/90일 실행 로드맵 · 철수 트리거
-                </div>
-              </div>
-            </div>
-            <div style={{ padding: '32px 40px', filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }}>
-              <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px' }}>CH.03</div>
-              <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '16px' }}>경쟁 구도: 같아 보이지만 전혀 다른 싸움</h2>
-              <p style={{ fontSize: '14px', color: '#3a2a18', lineHeight: '1.9', marginBottom: '14px' }}>당신의 진짜 경쟁자는 배달앱에 있는 다른 치킨집이 아니다...</p>
-              <div style={{ height: '120px', background: '#f0ebe0', borderRadius: '4px', marginBottom: '14px' }} />
-              <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px', marginTop: '28px' }}>CH.04</div>
-              <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '16px' }}>Dark Side: 지금 성장을 막는 구조들</h2>
-              <div style={{ height: '80px', background: '#1a1208', borderRadius: '4px', marginBottom: '14px' }} />
-              <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#8a6a40', textTransform: 'uppercase', marginBottom: '12px', marginTop: '28px' }}>EXECUTION GUIDE</div>
-              <h2 style={{ fontSize: '20px', color: '#1a1208', fontWeight: '400', fontFamily: "'Georgia', serif", marginBottom: '16px' }}>90일 실행 로드맵</h2>
-              <div style={{ height: '160px', background: '#f0ebe0', borderRadius: '4px' }} />
-            </div>
-          </div>
-
-        </div>
-
-        {/* 하단 고정 CTA */}
-        <div style={{
-          position: 'sticky', bottom: 0, zIndex: 20,
-          background: '#1a1208',
-          padding: '20px 32px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          boxShadow: '0 -8px 32px rgba(0,0,0,0.3)',
-        }}>
-          <div>
-            <div style={{ fontSize: '11px', letterSpacing: '1px', color: '#8a6a40', marginBottom: '4px' }}>이 리포트의 전체 내용을 받으려면</div>
-            <div style={{ fontSize: '13px', color: '#fdf8f2', lineHeight: '1.4' }}>경쟁 구도 · Dark Side · 전략 원칙 · 90일 실행안 포함</div>
-          </div>
-          {/* ✅ CTA 문구 통일: "무료 진단 시작하기 →" */}
-          <button
-            onClick={() => { setSampleModal(false); setStep(1); }}
-            style={{
-              background: '#c8b89a',
-              color: '#1a1208',
-              border: 'none',
-              padding: '16px 28px',
-              fontSize: '13px',
-              fontWeight: '700',
-              letterSpacing: '1px',
-              cursor: 'pointer',
-              fontFamily: "'Georgia', serif",
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-          >
-            무료 매출 진단 결과 받기 →
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ─── STEP -1: 랜딩 페이지 ───
-  if (step === -1) return (
-    <div style={{ minHeight: "100vh", background: "#f6f1ea", fontFamily: "'Georgia', 'Times New Roman', serif", color: "#1a1208" }}>
-      <style>{`
-        .cta-btn { background: #8a6a40; color: #fff; border: none; padding: 20px 48px; font-size: 16px; font-weight: 700; letter-spacing: 1px; cursor: pointer; font-family: 'Georgia', serif; box-shadow: 0 8px 24px rgba(138,106,64,0.35); transition: transform 0.15s, box-shadow 0.15s; border-radius: 4px; }
-        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(138,106,64,0.45); }
-        .cta-btn-ghost { background: #fff; color: #4a3a28; border: 1.5px solid #d8cfc4; padding: 18px 36px; font-size: 15px; cursor: pointer; font-family: 'Georgia', serif; transition: all 0.15s; border-radius: 4px; }
-        .cta-btn-ghost:hover { background: #fdf8f2; border-color: #8a6a40; }
-        .review-card { background: #fff; border: 1px solid #e8e0d5; padding: 28px; border-radius: 16px; box-shadow: 0 4px 16px rgba(80,60,40,0.07); }
-        .sample-tabs::-webkit-scrollbar { display: none; }
-        .sample-tabs { -ms-overflow-style: none; scrollbar-width: none; }
-        .sample-content::-webkit-scrollbar { width: 4px; }
-        .sample-content::-webkit-scrollbar-track { background: #f0ebe0; }
-        .sample-content::-webkit-scrollbar-thumb { background: #c8b89a; border-radius: 2px; }
-        .sample-btn { background: transparent; border: 2px solid #8a6a40; color: #8a6a40; padding: 16px 36px; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: 'Georgia', serif; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
-        .sample-btn:hover { background: #8a6a40; color: #fff; }
-      `}</style>
-
-      {sampleModal && <SampleReportModal />}
-
-      {/* 헤더 */}
-      <header style={{ background: "#fff", borderBottom: "1px solid #e8e0d5", padding: "18px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ display: "flex", alignItems: "baseline", cursor: "pointer" }} onClick={() => setStep(-1)}>
-          <span style={{ fontSize: "22px", fontWeight: "700", letterSpacing: "6px", color: "#8a6a40" }}>WEROS</span>
-          <span style={{ fontSize: "10px", letterSpacing: "3px", color: "#b0a090", textTransform: "uppercase", marginLeft: "10px" }}>소상공인 매출 진단</span>
-        </div>
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          {/* 기업 링크는 텍스트만, 시각 우선순위 낮춤 */}
-          <a href="/company" style={{ fontSize: "12px", color: "#a09080", textDecoration: "none", letterSpacing: "1px" }}>기업 브랜드 구조 진단 →</a>
-          {/* ✅ CTA 문구 통일 */}
-          <button className="cta-btn" onClick={() => setStep(1)} style={{ padding: "10px 24px", fontSize: "13px", boxShadow: "0 4px 12px rgba(138,106,64,0.3)" }}>
-            무료 매출 진단 결과 받기 →
-          </button>
-        </div>
-      </header>
-
-      {/* 1. 히어로 */}
-      <div style={{ background: "linear-gradient(160deg, #fff 0%, #fdf8f2 60%, #f6f0e8 100%)", padding: "100px 48px 90px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-80px", right: "-80px", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(200,184,154,0.2) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
-        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
-          <div>
-            <div style={{ display: "inline-block", background: "#fff3e8", border: "1px solid #e8a060", borderRadius: "4px", padding: "6px 14px", fontSize: "13px", color: "#c87040", fontWeight: "700", marginBottom: "20px", letterSpacing: "1px" }}>소상공인 전용 매출 구조 분석 리포트</div>
-            <h1 style={{ fontSize: "44px", fontWeight: "600", color: "#1a1208", lineHeight: "1.25", margin: "0 0 12px", letterSpacing: "-0.5px" }}>
-              광고비 쓰고 있는데<br />매출이 안 느는 이유는<br />따로 있습니다
-            </h1>
-            <h2 style={{ fontSize: "20px", fontWeight: "500", color: "#5a4a38", margin: "0 0 12px", lineHeight: "1.6" }}>매출은 있는데 왜 남는 돈이 없는지<br /><strong style={{ color: "#c87040" }}>구조적으로 분석해드립니다.</strong></h2>
-            <p style={{ fontSize: "16px", color: "#5a4a38", lineHeight: "1.9", margin: "0 0 28px" }}>
-              손님은 오는데 구매를 안 하고<br />
-              구매는 하는데 금액이 낮고<br />
-              한 번 오고 다시 안 옵니다<br />
-              <strong style={{ display: "block", marginTop: "12px", color: "#1a1208" }}>이 3가지만 막혀도 매출은 절대 안 커집니다</strong>
-            </p>
-            {/* 3가지 핵심 요소 */}
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "24px" }}>
-              {[
-                { icon: "⏱", text: "약 5~7분 입력" },
-                { icon: "📊", text: "무료 분석 제공" },
-                { icon: "📄", text: "전체 리포트 정가 9.9만원 → 선착순 4.9만원" },
-              ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px", background: "#fff", border: "1px solid #e0d4c0", borderRadius: "4px", padding: "8px 14px", fontSize: "13px", color: "#3a2a18", fontWeight: "600" }}>
-                  <span>{item.icon}</span><span>{item.text}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <button className="cta-btn" onClick={() => setStep(1)}>무료 매출 진단 시작하기 →</button>
-              <button className="cta-btn-ghost" onClick={() => document.getElementById('sample-section').scrollIntoView({ behavior: 'smooth' })}>샘플 리포트 보기</button>
-            </div>
-            <p style={{ fontSize: "13px", color: "#9a8a7a", marginTop: "12px" }}>⏱ 약 5~7분 · 가입 없이 바로 시작 · 결과 즉시 확인</p>
-          </div>
-          <div style={{ position: "relative" }}>
-            <div style={{ borderRadius: "20px", overflow: "hidden", boxShadow: "0 20px 60px rgba(80,60,40,0.18)", border: "1px solid #e0d4c0" }}>
-              <img src="/images/hero-mockup.png.png" alt="WEROS 브랜드 진단 리포트 대시보드" style={{ width: "100%", display: "block" }} />
-            </div>
-            <div style={{ position: "absolute", bottom: "-16px", left: "-20px", background: "#fff", border: "1px solid #e0d4c0", borderRadius: "12px", padding: "12px 18px", boxShadow: "0 8px 24px rgba(80,60,40,0.12)" }}>
-              <div style={{ fontSize: "11px", color: "#8a7a65" }}>핵심 문제</div>
-              <div style={{ fontSize: "16px", fontWeight: "700", color: "#1a1208" }}>객단가 구조</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 1.5 공감 섹션 — 이런 분들께 필요합니다 */}
-      <div style={{ background: "#1a1208", padding: "64px 48px" }}>
-        <div style={{ maxWidth: "720px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "12px", letterSpacing: "4px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "16px" }}>이런 분들께 필요합니다</div>
-          <h2 style={{ fontSize: "26px", fontWeight: "600", color: "#f5f0ea", marginBottom: "32px", lineHeight: "1.5" }}>혹시 이런 상태 아니신가요?</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "left", marginBottom: "36px" }}>
-            {[
-              "매출은 있는데 남는 돈이 없는 경우",
-              "장사는 하는데 뭐가 문제인지 모르는 경우",
-              "메뉴는 많은데 수익이 적은 경우",
-              "광고를 하는데 효과가 없는 경우",
-              "바쁜데 통장에 남는 게 없는 경우",
-            ].map((t, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(200,184,154,0.12)", padding: "16px 20px" }}>
-                <span style={{ width: "20px", height: "20px", border: "1.5px solid #c87040", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ width: "8px", height: "8px", background: "#c87040", display: "block" }} />
-                </span>
-                <span style={{ fontSize: "16px", color: "#e8e0d5", lineHeight: "1.5" }}>✔ {t}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ borderTop: "1px solid rgba(200,184,154,0.15)", paddingTop: "28px" }}>
-            <p style={{ fontSize: "18px", color: "#c8b89a", fontWeight: "600", margin: "0 0 10px", lineHeight: "1.6" }}>
-              이 구조 그대로면, 광고비를 써도 매출은 절대 안 늘어납니다
-            </p>
-            <p style={{ fontSize: "15px", color: "#7a6a55", margin: "0 0 28px", lineHeight: "1.7" }}>
-              대부분 매장은 매출이 안 나는 게 아니라,<br /><strong style={{ color: "#a09080" }}>못 만들고 있는 상태입니다</strong>
-            </p>
-            <button className="cta-btn" onClick={() => setStep(1)} style={{ margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
-              ⏱ 5~7분으로 무료 진단 시작하기 →
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. 공감 섹션 */}
-      <div style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
-          <div>
-            <h2 style={{ fontSize: "30px", fontWeight: "600", color: "#1a1208", marginBottom: "8px", lineHeight: "1.4" }}>매출이 안 느는 이유는<br />"노력 부족"이 아닙니다</h2>
-            <h3 style={{ fontSize: "20px", fontWeight: "500", color: "#8a6a40", marginBottom: "20px", lineHeight: "1.5" }}>대부분 매장은<br /><strong style={{ color: "#c87040" }}>더 팔 구조</strong>가 아니라<br /><strong>그냥 파는 구조</strong>입니다</h3>
-            <div style={{ background: "#fff3e8", border: "1px solid #e8c090", borderRadius: "12px", padding: "20px 24px", marginBottom: "24px" }}>
-              <p style={{ fontSize: "15px", color: "#3a2a18", lineHeight: "2.1", margin: 0 }}>
-                손님은 오는데 → <strong>구매를 안 하고</strong><br />
-                구매는 하는데 → <strong>금액이 낮고</strong><br />
-                한 번 오고 → <strong>다시 안 옵니다</strong>
-              </p>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {["세트 설계가 없고", "업셀 흐름이 없고", "고객 선택을 유도하지 않습니다"].map((t, i) => (
-                <div key={i} style={{ display: "flex", gap: "12px", alignItems: "center", fontSize: "16px", color: "#3a2a18" }}>
-                  <span style={{ color: "#c87040", fontSize: "18px", flexShrink: 0 }}>—</span> {t}
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: "20px", background: "#fdf8f2", border: "1px solid #e0d4c0", borderLeft: "4px solid #c87040", borderRadius: "0 12px 12px 0", padding: "16px 20px" }}>
-              <p style={{ fontSize: "15px", color: "#1a1208", margin: 0, lineHeight: "1.6" }}>
-                그래서 자연스럽게<br /><strong>객단가가 낮게 고정됩니다</strong>
-              </p>
-            </div>
-          </div>
-          <div style={{ borderRadius: "20px", overflow: "hidden", boxShadow: "0 12px 40px rgba(80,60,40,0.12)", border: "1px solid #e0d4c0" }}>
-            <img src="/images/pain-owner.png.png" alt="매출 고민하는 소상공인" style={{ width: "100%", display: "block" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* 3. 구조 설명 */}
-      <div style={{ background: "#fdf8f2", padding: "80px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
-          <div style={{ borderRadius: "16px", overflow: "hidden", boxShadow: "0 8px 32px rgba(80,60,40,0.10)", border: "1px solid #e0d4c0" }}>
-            <img src="/images/funnel.png.png" alt="유입 전환 객단가 재방문 퍼널" style={{ width: "100%", display: "block" }} />
-          </div>
-          <div>
-            <h2 style={{ fontSize: "28px", fontWeight: "600", color: "#1a1208", marginBottom: "16px", lineHeight: "1.4" }}>광고를 더 쓰기 전에<br /><strong style={{ color: "#c87040" }}>지금 구조부터</strong> 바꿔야 합니다</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "24px" }}>
-              {[{ t: "핵심 문제", v: "객단가 구조" }, { t: "실제 손실 규모", v: "같은 비용으로 만들 수 있는\n매출의 절반을 놓치는 중" }, { t: "원인", v: "메뉴 구성 단순함" }, { t: "전략", v: "세트 구성 + 업셀 설계" }].map((c, i) => (
-                <div key={i} style={{ background: "#fff", border: i === 1 ? "2px solid #c87040" : "1px solid #e0d4c0", borderRadius: "10px", padding: "14px" }}>
-                  <div style={{ fontSize: "11px", color: i === 1 ? "#c87040" : "#8a7a65", marginBottom: "4px", fontWeight: i === 1 ? "700" : "400" }}>{c.t}</div>
-                  <div style={{ fontSize: "13px", fontWeight: "700", color: "#1a1208", whiteSpace: "pre-line" }}>{c.v}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ background: "#fff", border: "1px solid #e0d4c0", borderLeft: "4px solid #c87040", padding: "16px 20px", borderRadius: "0 12px 12px 0" }}>
-              <p style={{ fontSize: "15px", color: "#1a1208", margin: 0, lineHeight: "1.7" }}>문제는 몇십만 원이 아닙니다<br /><strong>같은 비용으로 만들 수 있는 매출의 절반을 놓치고 있다는 겁니다</strong></p>
-            </div>
-            <div style={{ marginTop: "16px", background: "#1a1208", padding: "18px 20px" }}>
-              <p style={{ fontSize: "14px", color: "#c8b89a", margin: 0, lineHeight: "1.8" }}>
-                지금 이 구조 그대로면,<br />
-                <strong style={{ color: "#fff", fontSize: "15px" }}>광고비를 써도 매출은 절대 안 늘어납니다</strong>
-              </p>
-            </div>
-            <div style={{ marginTop: "12px", fontSize: "12px", color: "#9a8a7a" }}>📌 손실 추정 수치는 입력값 기반으로 계산됩니다</div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3-1. 무료 분석에서 제공되는 내용 */}
-      <div style={{ background: "#fff", padding: "72px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <div style={{ fontSize: "12px", letterSpacing: "4px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "12px" }}>무료 분석 제공 내용</div>
-            <h2 style={{ fontSize: "28px", fontWeight: "600", color: "#1a1208", marginBottom: "8px", lineHeight: "1.4" }}>무료로 이걸 다 알 수 있습니다</h2>
-            <p style={{ fontSize: "15px", color: "#7a6a55" }}>5~7분 입력만으로 즉시 확인</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "40px" }}>
-            {[
-              { icon: "✔", title: "매출 구조 요약", desc: "현재 매출이 어디서 나오고 어디서 새는지 한눈에" },
-              { icon: "✔", title: "비용 비율 분석", desc: "재료비·인건비·임대료 대비 수익률 진단" },
-              { icon: "✔", title: "주요 손실 구간 표시", desc: "가장 많이 놓치고 있는 수익 구간을 특정" },
-              { icon: "✔", title: "핵심 문제 요약", desc: "지금 당장 바꿔야 할 1순위 문제 제시" },
-              { icon: "✔", title: "경쟁 구도 분석", desc: "같은 업종 대비 내 포지션이 어디인지 파악" },
-              { icon: "✔", title: "6개월 매출 시나리오", desc: "개선 시 예상 매출 변화를 수치로 제시" },
-            ].map((item, i) => (
-              <div key={i} style={{ display: "flex", gap: "14px", padding: "18px 20px", background: "#fdf8f2", border: "1px solid #e8e0d5", borderLeft: "3px solid #8a6a40", borderRadius: "0 8px 8px 0" }}>
-                <span style={{ fontSize: "18px", color: "#8a6a40", flexShrink: 0, marginTop: "2px" }}>{item.icon}</span>
-                <div>
-                  <div style={{ fontSize: "15px", fontWeight: "700", color: "#1a1208", marginBottom: "4px" }}>{item.title}</div>
-                  <div style={{ fontSize: "13px", color: "#7a6a55", lineHeight: "1.6" }}>{item.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 무료 → 유료 단계 구조 */}
-          <div style={{ background: "#f6f1ea", border: "1px solid #e0d4c0", borderRadius: "12px", padding: "32px 36px" }}>
-            <div style={{ fontSize: "12px", letterSpacing: "3px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "24px", textAlign: "center" }}>서비스 구조</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 32px 1fr 32px 1fr", gap: "0", alignItems: "center" }}>
-              {[
-                { step: "STEP 1", title: "무료 분석 진행", desc: "5~7분 입력\n가입 불필요", color: "#8a6a40" },
-                null,
-                { step: "STEP 2", title: "무료 결과 확인", desc: "핵심 문제 요약\n즉시 확인 가능", color: "#8a6a40" },
-                null,
-                { step: "STEP 3", title: "전체 리포트 다운로드", desc: "정가 99,000원\n→ 선착순 49,000원", color: "#c87040", highlight: true },
-              ].map((item, i) => item === null ? (
-                <div key={i} style={{ textAlign: "center", fontSize: "20px", color: "#c8b89a" }}>→</div>
-              ) : (
-                <div key={i} style={{ background: item.highlight ? "#1a1208" : "#fff", border: `2px solid ${item.color}`, borderRadius: "8px", padding: "20px 16px", textAlign: "center" }}>
-                  <div style={{ fontSize: "10px", letterSpacing: "2px", color: item.color, fontWeight: "700", marginBottom: "8px" }}>{item.step}</div>
-                  <div style={{ fontSize: "14px", fontWeight: "700", color: item.highlight ? "#f5f0ea" : "#1a1208", marginBottom: "8px" }}>{item.title}</div>
-                  <div style={{ fontSize: "12px", color: item.highlight ? "#a09080" : "#7a6a55", lineHeight: "1.7", whiteSpace: "pre-line" }}>{item.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3-2. 실제 사례 예시 섹션 */}
-      <div style={{ background: "#fdf8f2", padding: "72px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <div style={{ fontSize: "12px", letterSpacing: "4px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "12px" }}>실제 개선 사례 예시</div>
-            <h2 style={{ fontSize: "28px", fontWeight: "600", color: "#1a1208", lineHeight: "1.4" }}>이렇게 바뀝니다</h2>
-          </div>
-          <div style={{ background: "#fff", border: "1px solid #e0d4c0", borderRadius: "12px", overflow: "hidden" }}>
-            {/* 사례 헤더 */}
-            <div style={{ background: "#1a1208", padding: "20px 28px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                <div style={{ fontSize: "10px", letterSpacing: "3px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "6px" }}>사례 예시</div>
-                <div style={{ fontSize: "18px", color: "#f5f0ea", fontWeight: "600" }}>동네 카페</div>
-                <div style={{ fontSize: "12px", color: "#a09080", marginTop: "4px" }}>경기도 수원 · 홀 30석 · 운영 2년차</div>
-              </div>
-              <div style={{ text: "right" }}>
-                <div style={{ fontSize: "10px", color: "#8a6a40", letterSpacing: "1px", marginBottom: "4px" }}>월 매출</div>
-                <div style={{ fontSize: "22px", fontWeight: "700", color: "#c8b89a", fontFamily: "Georgia, serif" }}>1,500만원</div>
-              </div>
-            </div>
-            <div style={{ padding: "28px" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 40px 1fr", gap: "0", alignItems: "start" }}>
-                {/* 분석 결과 */}
-                <div>
-                  <div style={{ fontSize: "11px", letterSpacing: "2px", color: "#c87040", textTransform: "uppercase", marginBottom: "16px", fontWeight: "700" }}>분석 결과 — 핵심 문제</div>
-                  {[
-                    { label: "순이익", val: "180만원", bad: true, desc: "매출 대비 12% 수준 (업계 평균 22%)" },
-                    { label: "재료비 비율", val: "38%", bad: true, desc: "적정 기준(30%) 초과 — 월 120만원 손실" },
-                    { label: "저수익 메뉴 비중", val: "전체 60%", bad: true, desc: "마진 낮은 메뉴가 주문의 절반 이상" },
-                    { label: "할인 구조 손실", val: "월 80만원", bad: true, desc: "불필요한 할인으로 수익 잠식" },
-                  ].map((item, i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "12px 0", borderBottom: i < 3 ? "1px solid #e8e0d5" : "none" }}>
-                      <div>
-                        <div style={{ fontSize: "13px", color: "#1a1208", fontWeight: "600", marginBottom: "3px" }}>{item.label}</div>
-                        <div style={{ fontSize: "11px", color: "#9a8a7a" }}>{item.desc}</div>
-                      </div>
-                      <div style={{ fontSize: "14px", fontWeight: "700", color: "#c87040", flexShrink: 0, marginLeft: "12px" }}>{item.val}</div>
-                    </div>
-                  ))}
-
-                  {/* 막대 차트 */}
-                  <div style={{ marginTop: "20px", padding: "16px", background: "#fdf8f2", border: "1px solid #e0d4c0", borderRadius: "8px" }}>
-                    <div style={{ fontSize: "10px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "12px" }}>비용 구조 진단</div>
-                    {[
-                      { label: "재료비", val: 38, limit: 30, color: "#c87040" },
-                      { label: "인건비", val: 28, limit: 30, color: "#8a6a40" },
-                      { label: "임대료", val: 18, limit: 20, color: "#8a6a40" },
-                      { label: "기타", val: 4, limit: null, color: "#c8b89a" },
-                    ].map((item, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                        <div style={{ fontSize: "11px", color: "#5a4a38", width: "48px", flexShrink: 0, textAlign: "right" }}>{item.label}</div>
-                        <div style={{ flex: 1, height: "7px", background: "#e8e0d5", borderRadius: "4px", position: "relative" }}>
-                          <div style={{ height: "100%", width: `${item.val * 2}%`, background: item.color, borderRadius: "4px" }} />
-                          {item.limit && <div style={{ position: "absolute", top: "-3px", left: `${item.limit * 2}%`, width: "1px", height: "13px", background: "#1a1208", opacity: 0.3 }} />}
-                        </div>
-                        <div style={{ fontSize: "11px", color: item.color, fontWeight: "700", width: "28px" }}>{item.val}%</div>
-                      </div>
-                    ))}
-                    <div style={{ fontSize: "10px", color: "#9a8a7a", marginTop: "8px" }}>▏ 선 = 업계 적정 기준</div>
-                  </div>
-                </div>
-
-                <div style={{ textAlign: "center", paddingTop: "60px", fontSize: "24px", color: "#8a6a40" }}>→</div>
-
-                {/* 개선 후 */}
-                <div>
-                  <div style={{ fontSize: "11px", letterSpacing: "2px", color: "#16a34a", textTransform: "uppercase", marginBottom: "16px", fontWeight: "700" }}>개선 방향 적용 후</div>
-                  {[
-                    { label: "재료비 절감", action: "저마진 메뉴 정리 + 원가율 개선", effect: "-8%p" },
-                    { label: "고수익 메뉴 비중↑", action: "세트 구성 + 계절 한정 메뉴 도입", effect: "+매출 15%" },
-                    { label: "할인 구조 개편", action: "무분별 할인 제거 → 적립 제도 전환", effect: "+80만원/월" },
-                  ].map((item, i) => (
-                    <div key={i} style={{ padding: "12px 16px", background: "#f0fdf4", border: "1px solid #86efac", borderLeft: "3px solid #16a34a", borderRadius: "0 6px 6px 0", marginBottom: "10px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                        <div style={{ fontSize: "13px", color: "#1a1208", fontWeight: "700" }}>{item.label}</div>
-                        <div style={{ fontSize: "13px", color: "#16a34a", fontWeight: "700" }}>{item.effect}</div>
-                      </div>
-                      <div style={{ fontSize: "11px", color: "#5a4a38" }}>{item.action}</div>
-                    </div>
-                  ))}
-
-                  {/* 결과 */}
-                  <div style={{ marginTop: "20px", background: "#1a1208", borderRadius: "8px", padding: "20px" }}>
-                    <div style={{ fontSize: "10px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "12px" }}>예상 개선 결과</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                      <div style={{ fontSize: "13px", color: "#a09080" }}>현재 순이익</div>
-                      <div style={{ fontSize: "18px", fontWeight: "700", color: "#c8b89a", textDecoration: "line-through", opacity: 0.6 }}>180만원</div>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ fontSize: "13px", color: "#c8a060" }}>개선 후 예상</div>
-                      <div style={{ fontSize: "26px", fontWeight: "700", color: "#c8b89a", fontFamily: "Georgia, serif" }}>340만원</div>
-                    </div>
-                    <div style={{ height: "1px", background: "rgba(200,184,154,0.2)", margin: "12px 0" }} />
-                    <div style={{ fontSize: "12px", color: "#7a6a55", textAlign: "right" }}>+160만원 / 월 · 같은 매출에서</div>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: "24px", padding: "14px 18px", background: "#fff3e8", border: "1px solid #e8c090", borderRadius: "8px", fontSize: "13px", color: "#5a3a20" }}>
-                📌 위 수치는 예시 기반 추정입니다. 실제 결과는 업종·규모·운영 방식에 따라 달라집니다.
-              </div>
-            </div>
-          </div>
-
-          <div style={{ textAlign: "center", marginTop: "36px" }}>
-            <button className="cta-btn" onClick={() => setStep(1)} style={{ fontSize: "15px", padding: "18px 40px" }}>
-              내 매장도 진단받기 → (무료)
-            </button>
-            <p style={{ fontSize: "13px", color: "#9a8a7a", marginTop: "10px" }}>⏱ 약 5~7분 · 즉시 결과 확인</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. 입력→결과 연결 */}
-      <div style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <h2 style={{ fontSize: "30px", fontWeight: "600", color: "#1a1208", marginBottom: "8px" }}>진단하면 이런 결과를 바로 확인합니다</h2>
-          <p style={{ fontSize: "16px", color: "#7a6a55", marginBottom: "40px" }}>입력한 정보를 기반으로 구조적 문제를 정확히 짚어드립니다</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "24px", alignItems: "center" }}>
-            <div style={{ background: "#fdf8f2", border: "1px solid #e0d4c0", borderRadius: "16px", padding: "28px" }}>
-              <div style={{ fontSize: "12px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "16px" }}>입력 예시</div>
-              {[["유입", "많음 (플레이스 1위)"], ["객단가", "낮음 (7,000원대)"], ["재방문", "거의 없음"], ["광고비", "0원"]].map(([k, v], i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < 3 ? "1px solid #e8e0d5" : "none", fontSize: "14px" }}>
-                  <span style={{ color: "#7a6a55" }}>{k}</span>
-                  <span style={{ color: "#1a1208", fontWeight: "600" }}>{v}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "32px", color: "#8a6a40" }}>→</div>
-              <div style={{ fontSize: "12px", color: "#9a8a7a", marginTop: "8px" }}>AI 분석</div>
-            </div>
-            <div style={{ background: "#fff3e8", border: "2px solid #e8a060", borderRadius: "16px", padding: "28px" }}>
-              <div style={{ fontSize: "12px", letterSpacing: "2px", color: "#c87040", textTransform: "uppercase", marginBottom: "16px" }}>분석 결과</div>
-              <div style={{ fontSize: "18px", fontWeight: "700", color: "#1a1208", marginBottom: "12px" }}>객단가 구조 문제</div>
-              <p style={{ fontSize: "14px", color: "#3a2a18", lineHeight: "1.7", margin: "0 0 16px" }}>유입은 충분하지만 구매 금액이 낮아 수익이 남지 않는 구조입니다.</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                {["✓ 세트 메뉴 구성", "✓ 고단가 상품 추가", "✓ 업셀 전략 도입"].map((t, i) => (
-                  <div key={i} style={{ fontSize: "13px", color: "#5a3a20", fontWeight: "600" }}>{t}</div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div style={{ marginTop: "48px", borderRadius: "20px", overflow: "hidden", boxShadow: "0 12px 40px rgba(80,60,40,0.12)", border: "1px solid #e0d4c0" }}>
-            <img src="/images/laptop-report.png.png" alt="리포트를 확인하는 사장님" style={{ width: "100%", display: "block", maxHeight: "380px", objectFit: "cover" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* 5. 리포트 예시 */}
-      <div id="sample-section" style={{ background: "#fdf8f2", padding: "80px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
-          <div>
-            <h2 style={{ fontSize: "30px", fontWeight: "600", color: "#1a1208", marginBottom: "8px", lineHeight: "1.4" }}>단순 분석이 아니라<br />실행 가능한 리포트를<br />제공합니다</h2>
-            <p style={{ fontSize: "16px", color: "#7a6a55", margin: "0 0 32px", lineHeight: "1.7" }}>업종·매출·고객 흐름 데이터를 기반으로 현실적인 범위에서 추정됩니다</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {[["◈", "문제 구조 분석", "핵심 병목을 데이터로 짚어드립니다"], ["₩", "손실 원인 정리", "어디서 수익이 새는지 수치로 보여드립니다"], ["▶", "개선 전략 제시", "구체적 실행 방향을 제시합니다"], ["✓", "실행 체크리스트", "오늘·이번주·이번달 행동 계획까지 포함됩니다"]].map(([icon, title, desc], i) => (
-                <div key={i} style={{ display: "flex", gap: "14px", padding: "14px 0", borderBottom: i < 3 ? "1px solid #e8e0d5" : "none" }}>
-                  <span style={{ fontSize: "18px", color: "#8a6a40", flexShrink: 0 }}>{icon}</span>
-                  <div>
-                    <div style={{ fontSize: "15px", fontWeight: "700", color: "#1a1208", marginBottom: "2px" }}>{title}</div>
-                    <div style={{ fontSize: "13px", color: "#7a6a55" }}>{desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: "16px", padding: "12px 16px", background: "#f0ece6", borderRadius: "8px", fontSize: "12px", color: "#9a8a7a" }}>
-              📌 모든 수치는 입력한 데이터 기반으로 계산됩니다. 실제 수치는 운영 방식에 따라 달라질 수 있습니다.
-            </div>
-          </div>
-
-          <div>
-            <div style={{ borderRadius: "12px", overflow: "hidden", boxShadow: "0 16px 48px rgba(26,18,8,0.18)", border: "1px solid #d8cfc4", display: "flex", flexDirection: "column", height: "540px" }}>
-              {/* 리포트 헤더 */}
-              <div style={{ background: "#1a1208", padding: "18px 22px", flexShrink: 0 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <div style={{ fontSize: "9px", letterSpacing: "3px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "7px" }}>WEROS · 소상공인 매출 진단 리포트</div>
-                    <div style={{ fontSize: "18px", color: "#fdf8f2", fontFamily: "'Georgia', serif", marginBottom: "4px", lineHeight: "1.2" }}>김포치킨</div>
-                    <div style={{ fontSize: "11px", color: "#a09080", lineHeight: "1.6" }}>경기도 김포시 · 치킨 전문점 · 홀+배달 4년차</div>
-                  </div>
-                  <div style={{ fontFamily: "'Georgia', serif", fontSize: "10px", color: "#8a6a40", fontStyle: "italic", textAlign: "right", flexShrink: 0, paddingTop: "4px" }}>
-                    See Both Sides<br />of Your Brand
-                  </div>
-                </div>
-              </div>
-
-              {/* 챕터 탭 */}
-              <div className="sample-tabs" style={{ background: "#241c10", display: "flex", overflowX: "auto", flexShrink: 0, borderBottom: "1px solid #3a3025" }}>
-                {[
-                  { label: "Executive", icon: "◈" },
-                  { label: "브랜드 DNA", icon: "①" },
-                  { label: "구조 패턴", icon: "②" },
-                  { label: "90일 플랜", icon: "▶" },
-                ].map((ch, i) => (
-                  <button key={i} onClick={() => setSampleChapter(i)} style={{
-                    background: "transparent", border: "none",
-                    borderBottom: sampleChapter === i ? "2px solid #c8b89a" : "2px solid transparent",
-                    color: sampleChapter === i ? "#c8b89a" : "#6a5848",
-                    padding: "10px 16px", fontSize: "11px", cursor: "pointer",
-                    whiteSpace: "nowrap", fontFamily: "'Georgia', serif",
-                    letterSpacing: "0.3px", transition: "color 0.2s, border-color 0.2s", flexShrink: 0
-                  }}>
-                    <span style={{ marginRight: "5px" }}>{ch.icon}</span>{ch.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* 챕터 콘텐츠 */}
-              <div className="sample-content" style={{ flex: 1, overflowY: "auto", background: "#fdf8f2" }}>
-                {sampleChapter === 0 && (
-                  <div style={{ padding: "20px 22px" }}>
-                    <div style={{ background: "#1a1208", padding: "16px 18px", marginBottom: "14px", borderRadius: "4px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                        <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase" }}>브랜드 건강도 종합 점수</div>
-                        <div style={{ fontSize: "22px", fontWeight: "700", color: "#c8b89a", fontFamily: "'Georgia', serif" }}>58<span style={{ fontSize: "13px", color: "#8a6a40" }}>/100</span></div>
-                      </div>
-                      <div style={{ height: "5px", background: "rgba(200,184,154,0.15)", borderRadius: "3px" }}>
-                        <div style={{ height: "100%", width: "58%", background: "linear-gradient(90deg, #c87040, #c8b89a)", borderRadius: "3px" }} />
-                      </div>
-                      <div style={{ fontSize: "10px", color: "#a09080", marginTop: "7px" }}>맛 경쟁력은 강하나 수익 구조·재방문 설계 개선 시급</div>
-                    </div>
-                    <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#5a4a38", textTransform: "uppercase", marginBottom: "8px" }}>3가지 핵심 진단</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                      {[
-                        { num: "01", text: "배달 의존도 87% — 수수료로 수익 붕괴", color: "#c87040" },
-                        { num: "02", text: "홀 고객 재방문 유도 장치 전무", color: "#8a6a40" },
-                        { num: "03", text: "점심 시간대 가동률 40% 공백 손실", color: "#a09080" },
-                      ].map((item) => (
-                        <div key={item.num} style={{ display: "flex", alignItems: "center", gap: "10px", background: "#fff", border: "1px solid #e0d4c0", borderLeft: `3px solid ${item.color}`, padding: "9px 12px", borderRadius: "0 3px 3px 0" }}>
-                          <span style={{ fontSize: "9px", fontWeight: "700", color: item.color, fontFamily: "'Georgia', serif", flexShrink: 0 }}>{item.num}</span>
-                          <span style={{ fontSize: "12px", color: "#1a1208" }}>{item.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#5a4a38", textTransform: "uppercase", marginBottom: "8px" }}>6개월 매출 시나리오</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
-                      {[
-                        { label: "현재 유지", val: "월 800만", sub: "순이익 ~80만", borderColor: "#a09080", bg: "#fff", textColor: "#1a1208" },
-                        { label: "전략 실행", val: "월 1,200만", sub: "순이익 ~200만", borderColor: "#8a6a40", bg: "#fdf8f2", textColor: "#1a1208" },
-                        { label: "목표 달성", val: "월 1,800만", sub: "순이익 ~400만", borderColor: "#c8b89a", bg: "#1a1208", textColor: "#c8b89a" },
-                      ].map((s, i) => (
-                        <div key={i} style={{ background: s.bg, border: "1px solid #e0d4c0", borderTop: `3px solid ${s.borderColor}`, padding: "11px 8px", textAlign: "center", borderRadius: "0 0 3px 3px" }}>
-                          <div style={{ fontSize: "9px", color: s.borderColor, marginBottom: "3px" }}>{s.label}</div>
-                          <div style={{ fontSize: "14px", fontWeight: "700", color: s.textColor, fontFamily: "'Georgia', serif" }}>{s.val}</div>
-                          <div style={{ fontSize: "9px", color: i === 2 ? "#8a6a40" : "#c87040", marginTop: "3px" }}>{s.sub}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {sampleChapter === 1 && (
-                  <div style={{ padding: "20px 22px" }}>
-                    <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#5a4a38", textTransform: "uppercase", marginBottom: "12px" }}>브랜드 역량 스펙트럼</div>
-                    {[
-                      { label: "맛 경쟁력", val: 88, color: "#c8b89a" },
-                      { label: "배달 인지도", val: 75, color: "#c8b89a" },
-                      { label: "가격 경쟁력", val: 68, color: "#8a6a40" },
-                      { label: "수익 구조", val: 22, color: "#c87040" },
-                      { label: "홀 재방문율", val: 18, color: "#c87040" },
-                      { label: "단골 설계", val: 12, color: "#c87040" },
-                    ].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "9px" }}>
-                        <div style={{ fontSize: "10px", color: "#5a4a38", width: "72px", flexShrink: 0, textAlign: "right" }}>{item.label}</div>
-                        <div style={{ flex: 1, height: "5px", background: "#e0d4c0", borderRadius: "3px" }}>
-                          <div style={{ height: "100%", width: `${item.val}%`, background: item.color, borderRadius: "3px" }} />
-                        </div>
-                        <div style={{ fontSize: "10px", color: item.color, width: "26px", textAlign: "right" }}>{item.val}</div>
-                      </div>
-                    ))}
-                    <div style={{ background: "#fff3e8", border: "1px solid #e8c898", borderLeft: "3px solid #c87040", padding: "12px 14px", marginTop: "14px", borderRadius: "0 3px 3px 0" }}>
-                      <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#c87040", marginBottom: "5px", textTransform: "uppercase" }}>📌 분석가 주석</div>
-                      <p style={{ fontSize: "11px", color: "#3a2a18", margin: 0, lineHeight: "1.7" }}>맛과 배달 인지도는 최상위권이나, <strong>이 자산이 수익과 단골로 연결되는 구조가 없다</strong>는 것이 핵심 문제입니다.</p>
-                    </div>
-                  </div>
-                )}
-                {sampleChapter === 2 && (
-                  <div style={{ padding: "20px 22px" }}>
-                    <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#5a4a38", textTransform: "uppercase", marginBottom: "10px" }}>성장을 막는 4가지 구조적 패턴</div>
-                    {[
-                      { label: "매몰비용 효과", desc: '"배달로 800만은 되니까" — 배달 시스템에 쏟은 4년이 홀 전략 전환을 막는다', loss: "연 기회비용 ~1,440만", color: "#c87040" },
-                      { label: "손실 회피 편향", desc: "가격 2,000원 인상 시 이탈 8%, 매출 +15% — 그런데 올리지 못하는 구조", loss: "월 손실 ~80~120만", color: "#8a6a40" },
-                      { label: "소유 효과", desc: "배달앱 평점 4.3점과 후기 230개를 과신 — 지역 내 단골 자산은 아직 없음", loss: "단골 비율 11% 수준", color: "#c8b89a" },
-                      { label: "뺄셈 무시", desc: "메뉴 20종 이상 운영 — 주문 상위 30%가 전체 매출의 80% 차지 (파레토 법칙)", loss: "원가율 3~5%p 낭비", color: "#a09080" },
-                    ].map((pattern, i) => (
-                      <div key={i} style={{ background: "#fff", border: "1px solid #e0d4c0", borderLeft: `3px solid ${pattern.color}`, padding: "11px 13px", marginBottom: "7px", borderRadius: "0 3px 3px 0" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "3px" }}>
-                          <div style={{ fontSize: "12px", fontWeight: "700", color: "#1a1208" }}>{pattern.label}</div>
-                          <div style={{ fontSize: "9px", color: "#c87040", background: "#fff3e8", padding: "2px 7px", borderRadius: "10px", flexShrink: 0, marginLeft: "8px" }}>{pattern.loss}</div>
-                        </div>
-                        <div style={{ fontSize: "11px", color: "#5a4a38", lineHeight: "1.5" }}>{pattern.desc}</div>
-                      </div>
-                    ))}
-                    <div style={{ background: "#1a1208", padding: "12px 14px", borderRadius: "3px", marginTop: "10px" }}>
-                      <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "5px" }}>WEROS AI 추정 합산</div>
-                      <div style={{ fontSize: "14px", color: "#c8b89a", fontWeight: "700", fontFamily: "'Georgia', serif" }}>연간 기회비용 약 2,400만원</div>
-                    </div>
-                  </div>
-                )}
-                {sampleChapter === 3 && (
-                  <div style={{ padding: "20px 22px" }}>
-                    <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#5a4a38", textTransform: "uppercase", marginBottom: "10px" }}>90일 실행 로드맵</div>
-                    {[
-                      { phase: "PHASE 1", period: "1~30일", label: "기반 정비", color: "#c87040", bg: "#fdf8f2", isDark: false, actions: ["점심 세트 메뉴 2종 설계 (단가 +3,000원)", "홀 손님 재방문 스탬프 카드 도입"] },
-                      { phase: "PHASE 2", period: "31~60일", label: "방향 전환", color: "#8a6a40", bg: "#f5f0e8", isDark: false, actions: ["자체 주문 채널 구축 (카카오채널 예약)", "배달 메뉴 슬림화 — 상위 8종으로 집중"] },
-                      { phase: "PHASE 3", period: "61~90일", label: "성과 확인", color: "#c8b89a", bg: "#1a1208", isDark: true, actions: ["월 매출 1,200만 달성 여부 검증", "단골 비율 20% 이상 달성 확인"] }
-                    ].map((ph, i) => (
-                      <div key={i} style={{ marginBottom: "10px", border: "1px solid #e0d4c0", borderRadius: "3px", overflow: "hidden" }}>
-                        <div style={{ background: ph.bg, padding: "9px 13px", display: "flex", alignItems: "center", gap: "10px", borderBottom: "1px solid #e0d4c0" }}>
-                          <span style={{ fontSize: "9px", letterSpacing: "1.5px", color: ph.color, fontWeight: "700", textTransform: "uppercase" }}>{ph.phase}</span>
-                          <span style={{ fontSize: "9px", color: ph.isDark ? "#7a6a55" : "#8a7a65" }}>{ph.period}</span>
-                          <span style={{ fontSize: "12px", color: ph.isDark ? "#fdf8f2" : "#1a1208", fontWeight: "600", marginLeft: "4px" }}>{ph.label}</span>
-                        </div>
-                        <div style={{ padding: "10px 13px", background: "#fff" }}>
-                          {ph.actions.map((action, j) => (
-                            <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: "8px", padding: "5px 0", borderBottom: j < ph.actions.length - 1 ? "1px solid #f0e8e0" : "none", fontSize: "11px", color: "#3a2a18", lineHeight: "1.5" }}>
-                              <span style={{ width: "14px", height: "14px", border: `1px solid ${ph.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "8px", flexShrink: 0, color: ph.color, marginTop: "1px" }}>□</span>
-                              {action}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                    <div style={{ padding: "10px 13px", background: "#1a1208", borderRadius: "3px" }}>
-                      <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#c87040", textTransform: "uppercase", marginBottom: "5px" }}>⚠️ 철수 트리거</div>
-                      <p style={{ fontSize: "10px", color: "#a09080", margin: 0, lineHeight: "1.7" }}>30일 후 홀 재방문율 변화 없음 → 고객 접점 방식 재검토<br />점심 매출 비중 10% 미만 지속 → 메뉴·시간대 전략 재설계</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* 리포트 푸터 */}
-              <div style={{ background: "#f0ebe0", padding: "9px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #e0d4c0", flexShrink: 0 }}>
-                <div style={{ fontSize: "9px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase" }}>WEROS Brand Anatomy</div>
-                <div style={{ fontSize: "9px", color: "#a09080", fontStyle: "italic" }}>© 2026 WEROS · theweros.com</div>
-              </div>
-            </div>
-
-            {/* 샘플 리포트 보기 버튼 */}
-            <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
-              <button className="sample-btn" onClick={() => setSampleModal(true)}>
-                <span style={{ fontSize: "18px" }}>📋</span>
-                <span>샘플 리포트 미리보기</span>
-                <span style={{ fontSize: "14px", opacity: 0.7 }}>→</span>
-              </button>
-            </div>
-            <p style={{ fontSize: "11px", color: "#a09080", textAlign: "center", marginTop: "10px" }}>
-              가상 업체 '김포치킨' 기준 샘플입니다 · 실제 리포트는 입력 데이터로 개별 생성됩니다
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 6. 후기 */}
-      <div style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          <h2 style={{ fontSize: "30px", fontWeight: "600", color: "#1a1208", marginBottom: "40px" }}>진단을 받아본 분들의 반응</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "20px" }}>
-            {[
-              { text: "막연히 광고 문제라고 생각했는데, 진단을 받고 보니 객단가 구조 자체가 문제였습니다. 메뉴 구성이 낱개 위주라 평균 주문금액이 낮았던 거예요. 리포트에서 세트 묶음 제안이 나왔고, 바로 적용했더니 객단가가 눈에 띄게 올랐습니다.", name: "카페 운영 6년차 사장님", tag: "객단가 구조" },
-              { text: "읽고 나서 '아, 이거 바꿔야겠다'는 게 바로 보였습니다. 재방문 유도 구조가 없다는 진단을 받고 예약 고객 전용 서비스를 만들었는데, 한 달 사이에 예약률이 확실히 달라졌습니다.", name: "미용실 원장님", tag: "재방문 구조" },
-              { text: "왜 안 되는지를 설명해주는 자료를 처음 받아봤습니다. 메뉴 구조 자체가 신규 고객 유입을 막고 있었다는 걸 알게 됐어요. 입문용 메뉴를 따로 구성하고 가격대를 조정했더니 패턴이 생기기 시작했습니다.", name: "음식점 운영 3년차", tag: "진입 구조 설계" },
-              { text: "사업한 지 4년인데 왜 단골이 안 생기는지 계속 의문이었어요. 재방문 이유를 만드는 게 먼저라는 걸 처음 알았어요. 재방문율이 전달 대비 확실히 올랐습니다.", name: "네일샵 운영 4년차", tag: "단골 유지 구조" },
-              { text: "SNS 팔로워는 많은데 매출이 안 나와서 답답했습니다. 온라인에서 오프라인으로 넘어오는 흐름을 만드는 작업을 했고, 인스타 링크 하나를 바꿨을 뿐인데 문의가 늘었어요.", name: "소품샵 운영 2년차", tag: "온오프 연결 구조" },
-              { text: "광고비를 줄이고 구조를 바꿨더니 오히려 매출이 안정됐습니다. 들어오는 사람은 있는데 한 번 사고 안 돌아오는 구조였어요. 객단가를 높이고 재방문 이유를 만드는 게 먼저였습니다.", name: "반찬가게 운영 5년차", tag: "마케팅 의존 탈피" },
-            ].map((review, i) => (
-              <div key={i} className="review-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ fontSize: "28px", color: "#c8b89a", marginBottom: "16px", lineHeight: 1 }}>"</div>
-                  <p style={{ fontSize: "14px", color: "#3a2a18", lineHeight: "1.9", margin: "0 0 20px" }}>{review.text}</p>
-                </div>
-                <div>
-                  <div style={{ width: "28px", height: "1px", background: "#e8e0d5", marginBottom: "14px" }} />
-                  <div style={{ fontSize: "12px", color: "#8a7a65", marginBottom: "10px" }}>— {review.name}</div>
-                  <span style={{ fontSize: "11px", background: "#fdf8f2", border: "1px solid #e0d0b0", color: "#8a6a40", padding: "4px 12px", borderRadius: "4px" }}>{review.tag}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 7. 다크 CTA */}
-      <div style={{ background: "#1a1208", padding: "80px 48px", textAlign: "center" }}>
-        <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <div style={{ background: "rgba(200,112,64,0.12)", border: "1px solid rgba(200,112,64,0.3)", padding: "20px 28px", marginBottom: "36px" }}>
-            <p style={{ fontSize: "15px", color: "#e8c090", margin: 0, lineHeight: "1.8" }}>
-              지금 문제를 해결하지 않으면<br />
-              <strong style={{ fontSize: "17px", color: "#fff" }}>앞으로도 같은 구조로 계속 손실이 쌓입니다</strong>
-            </p>
-          </div>
-          <h2 style={{ fontSize: "28px", fontWeight: "600", color: "#e8e0d5", lineHeight: "1.6", marginBottom: "12px" }}>
-            지금 구조를 모르면<br />같은 문제를 계속 반복하게 됩니다
-          </h2>
-          <p style={{ fontSize: "18px", color: "#c8b89a", marginBottom: "8px", fontWeight: "600" }}>버티는 시간이 가장 큰 손실입니다</p>
-          <p style={{ fontSize: "15px", color: "#a09080", marginBottom: "40px" }}>⏱ 약 5~7분 입력으로 지금 사업의 가장 큰 병목을 확인할 수 있습니다</p>
-          {/* ✅ CTA 문구 강화 */}
-          <button className="cta-btn" onClick={() => setStep(1)} style={{ background: "#c8b89a", color: "#1a1208", fontSize: "16px", padding: "22px 56px" }}>
-           무료 매출 진단 결과 받기 →
-          </button>
-          <p style={{ fontSize: "15px", color: "#222222", marginTop: "16px" }}>가입 없이 바로 시작 · 결과 즉시 확인</p>
-        </div>
-      </div>
-
-      {/* 실시간 접수 전광판 */}
-      <LiveTicker />
-
-      {/* 할인 가격 배너 */}
-      <div style={{ background: "#1a1208", padding: "48px 48px", borderTop: "1px solid #2a2018" }}>
-        <div style={{ maxWidth: "720px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ display: "inline-block", background: "#c87040", borderRadius: "4px", padding: "6px 16px", fontSize: "12px", color: "#fff", fontWeight: "700", letterSpacing: "2px", marginBottom: "20px" }}>
-            🔥 선착순 50명 특가 — 현재 {`${Math.floor(Math.random()*18)+28}`}명 신청 완료
-          </div>
-          <h2 style={{ fontSize: "26px", fontWeight: "600", color: "#f5f0ea", marginBottom: "8px", lineHeight: "1.4" }}>전체 리포트, 지금이 가장 저렴합니다</h2>
-          <p style={{ fontSize: "15px", color: "#a09080", marginBottom: "28px", lineHeight: "1.7" }}>무료 분석 후 전체 리포트가 필요하다면<br />선착순 특가로 다운로드 가능합니다</p>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", marginBottom: "12px" }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "13px", color: "#7a6a55", marginBottom: "4px" }}>정가</div>
-              <div style={{ fontSize: "26px", fontWeight: "700", color: "#5a4a38", textDecoration: "line-through", fontFamily: "Georgia, serif" }}>99,000원</div>
-            </div>
-            <div style={{ fontSize: "28px", color: "#c87040" }}>→</div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "13px", color: "#c8a060", marginBottom: "4px" }}>선착순 특가</div>
-              <div style={{ fontSize: "38px", fontWeight: "700", color: "#c8b89a", fontFamily: "Georgia, serif" }}>49,000원</div>
-            </div>
-          </div>
-          <div style={{ fontSize: "13px", color: "#7a6a55", marginBottom: "28px" }}>
-            50% 할인 · 무료 분석 완료 후 결제 · 즉시 다운로드
-          </div>
-          <button className="cta-btn" onClick={() => setStep(1)} style={{ background: "#c87040", fontSize: "15px", padding: "18px 40px" }}>
-            무료 분석 먼저 시작하기 →
-          </button>
-          <p style={{ fontSize: "12px", color: "#5a4a38", marginTop: "10px" }}>무료 분석 → 결과 확인 → 필요 시 전체 리포트 구매</p>
-        </div>
-      </div>
-
-      {/* 8. 마지막 CTA */}
-      <div style={{ background: "#fdf8f2", padding: "80px 48px", textAlign: "center", borderTop: "1px solid #e8e0d5" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-          <div style={{ borderRadius: "20px", overflow: "hidden", marginBottom: "48px", boxShadow: "0 12px 40px rgba(80,60,40,0.12)", border: "1px solid #e0d4c0" }}>
-            <img src="/images/cafe-owner.png.png" alt="진단 후 매장을 운영하는 사장님" style={{ width: "100%", display: "block", maxHeight: "340px", objectFit: "cover" }} />
-          </div>
-          <h2 style={{ fontSize: "28px", fontWeight: "400", color: "#1a1208", marginBottom: "16px" }}>⏱ 약 5~7분이면 충분합니다</h2>
-          <p style={{ fontSize: "15px", color: "#5a4a38", lineHeight: "1.8", marginBottom: "40px" }}>복잡한 입력 없이 몇 가지 질문만으로 분석이 시작됩니다</p>
-          {/* ✅ CTA 문구 강화 */}
-          <button className="cta-btn" onClick={() => setStep(1)}>무료 매출 진단 결과 받기 →</button>
-          <p style={{ fontSize: "15px", color: "#222222", marginTop: "16px" }}>가입 없이 바로 시작 · 결과 즉시 확인</p>
-          <div style={{ marginTop: "32px", paddingTop: "28px", borderTop: "1px solid #e0d4c0" }}>
-            <p style={{ fontSize: "14px", color: "#7a6a55", margin: 0 }}>
-              기업 브랜드 구조 진단은 <a href="/company" style={{ color: "#8a6a40", textDecoration: "underline", fontFamily: "'Georgia', serif" }}>여기서 →</a>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ✅ 푸터: 법적 링크 추가 */}
-      <div style={{ background: "#111009", padding: "40px 48px", borderTop: "1px solid #2a2018" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ marginBottom: "24px" }}>
-            <img src="/images/weroslogo_white.png" alt="WEROS" style={{ height: "100px", width: "auto", opacity: 0.9 }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "24px" }}>
-            {[
-              { label: "Instagram", href: "#", svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg> },
-              { label: "YouTube", href: "#", svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 7.98A2.83 2.83 0 0 0 20.01 6C18.26 5.5 12 5.5 12 5.5s-6.26 0-8.01.5A2.83 2.83 0 0 0 2 7.98 29.5 29.5 0 0 0 1.5 12a29.5 29.5 0 0 0 .5 4.02A2.83 2.83 0 0 0 3.99 18c1.75.5 8.01.5 8.01.5s6.26 0 8.01-.5A2.83 2.83 0 0 0 22 16.02 29.5 29.5 0 0 0 22.5 12a29.5 29.5 0 0 0-.5-4.02z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg> },
-              { label: "Naver Blog", href: "#", svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg> },
-            ].map(({ label, href, svg }) => (
-              <a key={label} href={href} aria-label={label} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "36px", height: "36px", background: "#2a2018", color: "#c8b89a", borderRadius: "50%", transition: "background 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#3a3025"}
-                onMouseLeave={e => e.currentTarget.style.background = "#2a2018"}>
-                {svg}
-              </a>
-            ))}
-          </div>
-
-          {/* ✅ 법적 링크 4개 추가 */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "20px", flexWrap: "wrap" }}>
-            {[
-              { label: "이용약관", href: "/terms" },
-              { label: "개인정보처리방침", href: "/privacy" },
-              { label: "환불정책", href: "/refund" },
-              { label: "문의하기", href: "mailto:mrwiver@naver.com" },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} style={{ fontSize: "12px", color: "#a09080", textDecoration: "none", letterSpacing: "0.5px", transition: "color 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.color = "#c8b89a"}
-                onMouseLeave={e => e.currentTarget.style.color = "#a09080"}>
-                {label}
-              </a>
-            ))}
-          </div>
-
-          <div style={{ fontSize: "11px", color: "#a09080", lineHeight: "1.9" }}>
-            © WEROS All rights reserved.<br />
-            주식회사 위버플레인 | 대표이사 이정운 | 경기도 김포시 김포한강11로 322 138-P44호<br />
-            사업자등록번호 128-86-27688 | 통신판매업번호 2018-경기김포-0227호
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ─── STEP 5: 테스트 완료 ───
-  if (step === 5) return (
-    <div style={styles.root}>
-      <header style={styles.header}>
-        <div style={{ display: "flex", alignItems: "baseline", cursor: "pointer" }} onClick={handleReset}>
-          <span style={styles.logo}>WEROS</span><span style={styles.logoSub}>소상공인 매출 진단</span>
-        </div>
-        <div style={{ background: "#fff8e8", border: "1px solid #c8a020", padding: "6px 16px", fontSize: "13px", color: "#5a4010", letterSpacing: "2px", borderRadius: "4px" }}>
-          🔒 TEST MODE
-        </div>
-      </header>
-      <div style={{ maxWidth: "560px", margin: "0 auto", padding: "120px 40px", textAlign: "center" }}>
-        <div style={{ fontSize: "40px", marginBottom: "24px" }}>✓</div>
-        <div style={{ fontSize: "11px", letterSpacing: "3px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "16px" }}>테스트 제출 완료</div>
-        <h2 style={{ fontSize: "26px", fontWeight: "400", color: "#1a1208", marginBottom: "16px" }}>운영자에게 전송되었습니다</h2>
-        <p style={{ fontSize: "15px", color: "#4a3a28", lineHeight: "1.8", marginBottom: "8px" }}>브랜드: {formData.brandName}</p>
-        <p style={{ fontSize: "13px", color: "#7a6a55", lineHeight: "1.8", marginBottom: "32px" }}>테스트 응답이 mrwiver@naver.com으로 전달되었습니다.</p>
-        <div style={{ background: "#fdf8f2", border: "1px solid #e0d4c0", borderLeft: "4px solid #8a6a40", padding: "16px 20px", marginBottom: "24px", textAlign: "left" }}>
-          <div style={{ fontSize: "11px", color: "#8a6a40", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>운영자 확인 후</div>
-          <p style={{ fontSize: "13px", color: "#5a4a38", margin: 0, lineHeight: "1.7" }}>
-            자동 생성 링크로 리포트를 확인하거나,<br />
-            직접 데이터를 로드해 리포트를 생성할 수 있습니다.
-          </p>
-        </div>
-        <button onClick={handleReset} style={{ ...styles.btnGhost, padding: "12px 28px", fontSize: "13px" }}>처음으로 돌아가기</button>
-      </div>
-    </div>
-  );
-
-  // ─── STEP 1~3: 폼 ───
-  if (step >= 1 && step <= 3) {
-    const currentStepData = FORM_STEPS[formStep];
-    if (!currentStepData) return null;
-    return (
-      <div style={styles.root}>
-        <header style={styles.header}>
-          <div style={{ display: "flex", alignItems: "baseline", cursor: "pointer" }} onClick={handleReset}>
-            <span style={styles.logo}>WEROS</span><span style={styles.logoSub}>소상공인 매출 진단</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            {isTestMode && <div style={{ background: "#fff8e8", border: "1px solid #c8a020", padding: "4px 12px", fontSize: "11px", color: "#5a4010", letterSpacing: "2px", borderRadius: "4px" }}>🔒 TEST MODE</div>}
-            <button onClick={handleReset} style={{ background: "transparent", border: "1px solid #d8cfc4", color: "#5a4a38", padding: "6px 14px", fontSize: "11px", cursor: "pointer", fontFamily: "'Georgia', serif", letterSpacing: "1px" }}>← 처음으로</button>
-            {isTestMode && (
-              <button onClick={() => setFormData(DUMMY_DATA)} style={{ background: "transparent", border: "1px dashed #c8a020", color: "#8a6020", padding: "6px 14px", fontSize: "11px", cursor: "pointer", fontFamily: "'Georgia', serif", letterSpacing: "1px", borderRadius: "4px" }}>
-                📋 테스트 데이터 로드
-              </button>
-            )}
-          </div>
-        </header>
-        <div style={styles.container}>
-          <div style={{ display: "flex", gap: "6px", marginBottom: "32px" }}>
-            {[1, 2, 3].map(i => <div key={i} style={{ flex: 1, height: "2px", background: i <= step ? "#8a6a40" : "#d8cfc4", transition: "background 0.3s" }} />)}
-          </div>
-          <div style={{ marginBottom: "40px" }}>
-            <div style={{ fontSize: "11px", letterSpacing: "3px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "8px" }}>{currentStepData.subtitle}</div>
-            <h1 style={{ fontSize: "32px", fontWeight: "400", color: "#1a1208", margin: 0 }}>{currentStepData.title}</h1>
-          </div>
-          {error && <div style={{ background: "#fff0ee", border: "1px solid #e0a090", padding: "14px 18px", marginBottom: "28px", fontSize: "13px", color: "#c03020" }}>{error}</div>}
-          <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-            {currentStepData.fields.map(field => (
-              <div key={field.name}>
-                <label style={{ display: "block", fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", color: "#5a4a35", marginBottom: "8px" }}>
-                  {field.label}{field.required && <span style={{ color: "#c03020", marginLeft: "4px" }}>*</span>}
-                </label>
-                <textarea name={field.name} value={formData[field.name]} onChange={handleChange} placeholder={field.placeholder} rows={2}
-                  style={styles.textarea} onFocus={e => e.target.style.borderColor = "#8a6a40"} onBlur={e => e.target.style.borderColor = "#d8cfc4"} />
-              </div>
-            ))}
-          </div>
-          <div style={{ display: "flex", gap: "12px", marginTop: "48px" }}>
-            <button onClick={handlePrev} style={{ ...styles.btnGhost, color: "#4a3a28" }}>← 이전</button>
-            <button onClick={handleNext} style={{ ...styles.btn, flex: 1 }}>
-              {step < 3 ? "다음 단계 →" : isTestMode ? "제출하기 →" : "브랜드 해부 시작 →"}
-            </button>
-          </div>
-          {currentStepData.nextHint && (
-            <div style={{ background: "#fdf8f2", border: "1px solid #e0d4c0", borderLeft: "3px solid #8a6a40", padding: "14px 18px", marginTop: "16px", fontSize: "13px", color: "#4a3a28", lineHeight: "1.6" }}>
-              {currentStepData.nextHint}
-            </div>
-          )}
-          {step === 1 && <p style={{ fontSize: "12px", color: "#a09080", marginTop: "12px", textAlign: "center" }}>입력값은 리포트 생성에만 사용됩니다</p>}
-        </div>
-      </div>
-    );
+/* ── 이미지 공통 ── */
+img { display:block; }
+
+/* 히어로 배너 이미지 — 상단 전체 폭 */
+
+
+
+
+#hero .section-inner { padding-top:52px; }
+
+/* 위험신호 이미지 — 텍스트 아래 전체 폭 */
+
+
+
+
+/* 서비스 카드 이미지 — 전체 폭, 자연 비율 */
+.svc-img { width:calc(100% + 72px); margin:-36px -36px 24px; overflow:hidden; }
+.svc-img img { width:100%; height:auto; display:block; object-fit:contain; }
+
+/* 원장 이미지 — 전체 폭, 자연 비율 */
+.director-real-photo { overflow:hidden; border-radius:2px; }
+.director-real-photo img { width:100%; height:auto; display:block; object-fit:contain; }
+
+/* 후기 상단 이미지 배너 — 전체 폭, 자연 비율 */
+.reviews-img-banner {
+  width:100%; margin-bottom:32px;
+  position:relative; overflow:hidden; border-radius:4px;
+}
+.reviews-img-banner img { width:100%; height:auto; display:block; filter:brightness(0.72); }
+.reviews-img-banner-text {
+  position:absolute; inset:0; display:flex; align-items:center; padding:0 5%;
+  font-family:var(--serif); font-size:clamp(18px,2.8vw,26px); color:#fff;
+  font-weight:400; line-height:1.55;
+  background:linear-gradient(to right, rgba(0,0,0,0.45) 0%, transparent 70%);
+}
+
+/* 카카오 CTA 바 */
+#kakao-bar { background:#2A4D14; padding:72px 0; }
+.kakao-bar-inner { display:grid; grid-template-columns:1fr 420px; gap:60px; align-items:center; }
+.kakao-bar-img { overflow:hidden; border-radius:4px; }
+.kakao-bar-img img { width:100%; height:auto; display:block; object-fit:contain; }
+
+/* 최종 CTA — 이미지를 섹션 위에 전체 폭으로 배치, 텍스트는 그 아래 */
+#cta-final { background:#1C3A18; padding:0 0 80px; }
+#cta-final .cta-bg { width:100%; overflow:hidden; margin-bottom:52px; }
+#cta-final .cta-bg img { width:100%; height:auto; display:block; opacity:0.55; }
+#cta-final .cta-final-inner { position:relative; z-index:1; text-align:center; }
+#cta-final { color:#fff; }
+#cta-final .section-title { color:#fff; }
+#cta-final .section-sub { color:rgba(255,255,255,0.78); max-width:600px; margin:0 auto 36px; }
+#cta-final .cta-note { color:rgba(255,255,255,0.6); }
+#cta-final .btn-outline { border-color:rgba(255,255,255,0.45); color:#fff; }
+#cta-final .btn-outline:hover { background:rgba(255,255,255,0.12); }
+#cta-final .section-label { justify-content:center; color:rgba(200,221,168,0.8); }
+
+/* 반응형 */
+@media(max-width:900px) {
+  
+  .kakao-bar-inner { grid-template-columns:1fr; }
+  .kakao-bar-img { max-width:480px; }
+}
+
+/* 수리 사격 그리드 */
+.suri-section-title { font-size:11px; letter-spacing:0.12em; color:var(--green-dark); font-weight:600; margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(196,162,74,0.13); grid-column:1/-1; }
+.suri-section-title:first-child { margin-top:0; }
+.suri-item { background:#fff; border:1px solid rgba(196,162,74,0.1); border-top:3px solid; padding:14px 10px; text-align:center; }
+.suri-item.good  { border-top-color:#1a6fb5; }
+.suri-item.mid   { border-top-color:#c47c00; }
+.suri-item.bad   { border-top-color:#c0392b; }
+.suri-label { font-size:10px; letter-spacing:0.12em; color:var(--ink3); margin-bottom:4px; }
+.suri-phase { font-size:9px; color:var(--ink-faint); margin-bottom:6px; }
+.suri-num { font-family:var(--serif); font-size:28px; font-weight:400; line-height:1; margin-bottom:4px; }
+.suri-num.good { color:#1a6fb5; }
+.suri-num.mid  { color:#c47c00; }
+.suri-num.bad  { color:#c0392b; }
+.suri-name { font-size:11px; font-weight:600; margin-bottom:4px; }
+.suri-name.good { color:#1a6fb5; }
+.suri-name.mid  { color:#c47c00; }
+.suri-name.bad  { color:#c0392b; }
+.suri-desc { font-size:10px; color:var(--ink3); line-height:1.5; }
+/* 주역괘 */
+.gua-section-title { font-size:11px; letter-spacing:0.12em; color:var(--green-dark); font-weight:600; margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid rgba(196,162,74,0.13); }
+.gua-cards { display:flex; flex-direction:column; gap:10px; margin-bottom:4px; }
+.gua-card { display:flex; align-items:flex-start; gap:14px; background:#fff; border:1px solid rgba(196,162,74,0.1); border-left:4px solid; padding:14px 16px; }
+.gua-card.good { border-left-color:#1a6fb5; }
+.gua-card.mid  { border-left-color:#c47c00; }
+.gua-card.bad  { border-left-color:#c0392b; }
+.gua-card-sym { font-size:28px; line-height:1; flex-shrink:0; margin-top:2px; }
+.gua-card-info { flex:1; }
+.gua-card-top { display:flex; align-items:baseline; gap:8px; margin-bottom:4px; }
+.gua-card-label { font-size:10px; color:var(--ink3); letter-spacing:0.1em; }
+.gua-card-name { font-size:14px; font-weight:700; }
+.gua-card-name.good { color:#1a6fb5; }
+.gua-card-name.mid  { color:#c47c00; }
+.gua-card-name.bad  { color:#c0392b; }
+.gua-card-hanja { font-size:11px; color:var(--ink3); }
+.gua-card-meaning { font-size:13px; font-weight:600; color:var(--ink2); margin-bottom:6px; }
+.gua-card-desc { font-size:12px; color:var(--ink3); line-height:1.75; }
+/* 오행 칩 */
+.ohang-chip-diag { display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:5px 12px; border-radius:2px; font-weight:500; margin:0 2px; }
+.ohang-chip-diag.木 { background:#E8F5E8; color:#2d6a4f; border:1px solid rgba(45,106,79,0.3); }
+.ohang-chip-diag.火 { background:#FEE8E8; color:#c0392b; border:1px solid rgba(192,57,43,0.3); }
+.ohang-chip-diag.土 { background:#FBF5E0; color:#8b5e0a; border:1px solid rgba(139,94,10,0.3); }
+.ohang-chip-diag.金 { background:#F0F0F8; color:#4a4a6a; border:1px solid rgba(74,74,106,0.3); }
+.ohang-chip-diag.水 { background:#E8F4F8; color:#2a7f7f; border:1px solid rgba(42,127,127,0.3); }
+.sanggeuk-badge { font-size:10px; color:#c0392b; font-weight:600; margin-left:6px; }
+/* 운세 별점 */
+.fortune-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.fortune-item { background:#fff; border:1px solid rgba(196,162,74,0.1); padding:14px 12px; text-align:center; border-radius:2px; }
+.fortune-label { font-size:11px; color:var(--ink3); letter-spacing:0.1em; margin-bottom:8px; }
+.fortune-stars { font-size:18px; line-height:1; margin-bottom:4px; letter-spacing:1px; }
+.fortune-score { font-size:11px; color:var(--ink3); }
+.star-full  { color:#f0a500; }
+.star-half  { color:#f0a500; opacity:0.5; }
+.star-empty { color:#ddd; }
+/* 개명 진단 등급 */
+
+
+
+
+
+/* ── Signal 섹션 ── */
+#signal { padding:72px 0; background:var(--dark-section-bg); }
+#signal .section-label { color:rgba(200,221,168,0.7); }
+#signal .section-title { color:var(--dark-section-text); }
+.signal-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:28px 32px; }
+.signal-card h3 { font-size:15px; font-weight:500; color:var(--dark-section-text); margin-bottom:10px; line-height:1.5; }
+.signal-card p { font-size:13px; color:var(--dark-section-sub); line-height:1.8; font-weight:400; }
+.signal-bottom { background:rgba(255,255,255,0.05); border:1px solid rgba(200,221,168,0.15); border-left:3px solid var(--dark-section-text); padding:18px 24px; font-size:14px; color:var(--dark-section-sub); line-height:1.85; text-align:center; margin-bottom:28px; }
+.signal-bottom strong { color:var(--dark-section-text); }
+.signal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:36px; }
+
+/* ── 서비스 카드 03 혼자일 때 ── */
+.services-grid .service-card:nth-child(3):last-of-type { grid-column: 1 / -1; }
+
+
+/* ── 히어로 ── */
+#hero {
+  background: #1F2A18;
+  padding-top: 68px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  min-height: 640px;
+}
+.hero-content {
+  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  min-height: 640px;
+}
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 400;
+  animation: fadeUp 0.7s ease both;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 16px;
+  height: 1px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.hero-headline {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.8vw, 48px);
+  font-weight: 300;
+  color: #F5F5F0;
+  line-height: 1.4;
+  margin: 0;
+  letter-spacing: 0.01em;
+  animation: fadeUp 0.7s 0.1s ease both;
+}
+.hero-headline em {
+  font-style: normal;
+  color: var(--gold);
+  display: block;
+}
+.hero-divider {
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+  margin: 22px 0;
+}
+.hero-sub {
+  font-size: 17px;
+  color: rgba(232,240,222,0.82);
+  line-height: 1.75;
+  margin-bottom: 28px;
+  font-weight: 400;
+  font-family: var(--serif);
+  animation: fadeUp 0.7s 0.15s ease both;
+}
+.hero-cta-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+/* 히어로 서비스 리스트 */
+.hero-content .btn-outline {
+  border-color: rgba(191,164,106,0.55);
+  color: rgba(232,240,222,0.8);
+}
+.hero-content .btn-outline:hover {
+  background: rgba(191,164,106,0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.hero-svc-list {
+  border-top: 1px solid rgba(191,164,106,0.15);
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.7s 0.25s ease both;
+}
+.hero-svc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(191,164,106,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hero-svc-item:last-child { border-bottom: none; }
+.hero-svc-item:hover .hero-svc-ttl { color: var(--gold); }
+.hero-svc-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.hero-svc-num {
+  font-size: 9px;
+  color: rgba(191,164,106,0.45);
+  letter-spacing: 0.2em;
+  flex-shrink: 0;
+  font-family: var(--sans);
+}
+.hero-svc-ttl {
+  font-size: 13px;
+  color: rgba(232,240,222,0.62);
+  font-family: var(--serif);
+  font-weight: 300;
+  line-height: 1.5;
+  transition: color 0.2s;
+}
+.hero-svc-arr {
+  font-size: 10px;
+  color: rgba(191,164,106,0.3);
+  flex-shrink: 0;
+}
+/* 오른쪽 사진 */
+.hero-photo {
+  position: relative;
+  overflow: hidden;
+}
+.hero-photo img {
+  width: 100%;
+  height: 640px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+.hero-photo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(28,38,20,0.6) 0%, transparent 35%);
+  z-index: 1;
+}
+.hero-photo-badge {
+  position: absolute;
+  bottom: 40%;
+  left: 20px;
+  z-index: 2;
+  background: rgba(28,38,20,0.75);
+  border: 1px solid rgba(191,164,106,0.22);
+  padding: 12px 22px;
+  backdrop-filter: blur(6px);
+  font-size: 13px;
+  color: rgba(232,240,222,0.75);
+  line-height: 1.6;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.hero-photo-badge strong {
+  color: #F5F5F0;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-content { padding: 44px 24px 36px; }
+  .hero-photo img { min-height: 320px; }
+  .hero-photo::before { display: none; }
+}
+
+/* ── 선택지 섹션 ── */
+#user-choice { padding:36px 0; background:var(--bg2); border-top:1px solid rgba(196,162,74,0.1); }
+.choice-label { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-dark); margin-bottom:20px; text-align:center; font-weight:400; }
+.choice-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:820px; margin:0 auto; }
+.choice-btn { display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff; border:1px solid rgba(196,162,74,0.18); padding:18px 20px; cursor:pointer; font-family:var(--sans); font-size:14px; color:var(--ink2); font-weight:400; text-align:left; transition:all 0.2s; }
+.choice-btn:hover { border-color:var(--gold); background:var(--gold-pale); }
+.choice-btn span { font-size:11px; color:var(--gold-dark); flex-shrink:0; opacity:0.8; }
+
+/* ── 서비스 카드 강조형 ── */
+.service-card--accent { border-color:rgba(192,57,43,0.18); }
+.service-card--accent::before { background:#C0392B; }
+
+/* ── 서비스 연결 노트 ── */
+.svc-connect-note { font-size:12px; color:var(--gold-dark); margin:-10px 0 18px; line-height:1.7; font-weight:400; }
+.svc-sub-label { font-size:14px; color:var(--ink3); font-family:var(--sans); font-weight:300; }
+
+
+/* ── 인생 전략 리포트 featured 카드 ── */
+.service-card--featured {
+  grid-column: 1 / -1;
+  background: var(--dark-section-bg);
+  border-color: rgba(191,164,106,0.2);
+  display: grid;
+  grid-template-columns: 42% 58%;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  align-items: stretch;
+}
+.service-card--featured .svc-img {
+  position: relative;
+  min-height: 360px;
+  margin: 0;
+  overflow: hidden;
+}
+.service-card--featured .svc-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.service-card--featured .service-tag {
+  color: var(--gold);
+  background: rgba(191,164,106,0.12);
+  border-color: rgba(191,164,106,0.25);
+}
+.service-card--featured h3 {
+  color: var(--dark-section-text);
+  font-size: 22px;
+}
+.service-card--featured .svc-sub-label {
+  color: rgba(232,240,222,0.55);
+}
+.service-card--featured p {
+  color: rgba(232,240,222,0.6);
+}
+.service-card--featured .service-points li {
+  color: rgba(232,240,222,0.55);
+  border-color: rgba(255,255,255,0.06);
+}
+.service-card--featured .service-points li::before {
+  background: var(--gold);
+  opacity: 0.5;
+}
+.service-card--featured .btn-primary {
+  background: var(--gold);
+  color: var(--dark-section-bg);
+  box-shadow: none;
+}
+.service-card--featured .btn-primary:hover {
+  background: #d4b878;
+}
+.svc-featured-body { padding: 44px 48px; display: flex; flex-direction: column; justify-content: center; }
+@media (max-width: 768px) {
+  .service-card--featured {
+    grid-template-columns: 1fr;
   }
+  .service-card--featured .svc-img {
+    min-height: 200px;
+  }
+}
 
-  // ─── STEP 4: 리포트 ───
-  return (
-    <div style={styles.root}>
-      <header style={styles.header}>
-        <div style={{ display: "flex", alignItems: "baseline", cursor: "pointer" }} onClick={handleReset}>
-          <span style={styles.logo}>WEROS</span><span style={styles.logoSub}>소상공인 매출 진단</span>
-        </div>
-        <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", color: "#8a6a40", background: "#fdf8f2", border: "1px solid #e0d4c0", padding: "4px 12px" }}>소상공인</span>
-          <span style={{ fontSize: "12px", color: "#5a4a38" }}>{doneCount}/{CHAPTERS.length} 챕터</span>
-          {reportLink && (
-            <button
-              onClick={() => { navigator.clipboard.writeText(reportLink).then(() => alert('링크가 복사되었습니다!')); }}
-              style={{ ...styles.btnGhost, padding: "8px 14px", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px" }}
-              title="이 링크로 나중에 다시 볼 수 있습니다">
-              🔗 링크 복사
-            </button>
-          )}
-          {doneCount > 0 && (
-            <button
-              onClick={() => window.print()}
-              style={{ ...styles.btn, padding: "8px 14px", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px" }}>
-              📄 PDF 저장
-            </button>
-          )}
-          <button onClick={handleReset} style={{ ...styles.btnGhost, padding: "8px 16px", fontSize: "11px" }}>새 진단</button>
-          <button onClick={fillDummyChapters} style={{ ...styles.btnGhost, padding: "8px 16px", fontSize: "11px", color: "#9ca3af", border: "1px dashed #d8cfc4" }}>레이아웃 테스트</button>
-        </div>
-      </header>
-      <div className="print-container" style={{ maxWidth: "900px", margin: "0 auto", padding: "48px 40px", display: "grid", gridTemplateColumns: "240px 1fr", gap: "40px", alignItems: "start" }}>
-        <div className="print-sidebar" style={{ position: "sticky", top: "80px" }}>
-          <div style={{ marginBottom: "20px" }}>
-            <div style={{ fontSize: "11px", color: "#5a4a38", textTransform: "uppercase", marginBottom: "4px" }}>Brand Report</div>
-            <div style={{ fontSize: "16px", color: "#1a1208", fontWeight: "600" }}>{formData.brandName}</div>
-            <div style={{ fontSize: "12px", color: "#8a6a40", marginTop: "4px" }}>소상공인 분석 기준</div>
-          </div>
-          <button onClick={generateAll} disabled={generatingAll} style={{ ...styles.btn, width: "100%", marginBottom: "20px", opacity: generatingAll ? 0.6 : 1, fontSize: "11px", padding: "14px" }}>
-            {generatingAll ? "생성 중..." : "전체 챕터 생성 →"}
-          </button>
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            {CHAPTERS.map(ch => {
-              const state = chapters[ch.id];
-              const status = state?.status || 'idle';
-              return (
-                <button key={ch.id} onClick={() => status === 'idle' && generateChapter(ch.id)}
-                  style={{ display: "flex", alignItems: "center", gap: "10px", background: status === 'done' ? "#ffffff" : "transparent", border: status === 'done' ? "1px solid #d8cfc4" : "1px solid transparent", padding: "10px 12px", cursor: status === 'idle' ? "pointer" : "default", textAlign: "left", width: "100%" }}>
-                  <span style={{ fontSize: "14px", color: status === 'done' ? "#8a6a40" : status === 'loading' ? "#a08060" : "#c0b0a0" }}>
-                    {status === 'loading' ? "…" : status === 'done' ? "✓" : ch.icon}
-                  </span>
-                  <div>
-                    <div style={{ fontSize: "12px", color: status === 'done' ? "#1a1208" : "#5a4a38" }}>{ch.label}</div>
-                    <div style={{ fontSize: "10px", color: "#7a6a55", marginTop: "2px" }}>{ch.desc}</div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="print-main">
-          <style>{`
-            .r-h1 { font-size: 26px; font-weight: 400; color: #1a1208; margin: 0 0 8px; border-bottom: 1px solid #d8cfc4; padding-bottom: 14px; line-height: 1.3; }
-            .r-h2 { font-size: 13px; font-weight: 700; color: #7a5530; margin: 36px 0 12px; letter-spacing: 2px; text-transform: uppercase; }
-            .r-h3 { font-size: 17px; font-weight: 600; color: #3a2010; margin: 24px 0 10px; }
-            .r-brand-insight { background: linear-gradient(135deg, #1a1208 0%, #3a2a18 100%); border-left: 4px solid #c8a060; padding: 24px 28px; margin: 0 0 32px; }
-            .r-insight-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #c8a060; display: block; margin-bottom: 10px; }
-            .r-brand-insight p { color: #f5f0ea; font-size: 17px; margin: 0; line-height: 1.75; font-style: italic; }
-            .r-analyst { background: #fdf8f2; border-left: 3px solid #c8b89a; padding: 16px 20px; margin: 24px 0; }
-            .r-analyst-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #8a6a40; display: block; margin-bottom: 8px; font-weight: 700; }
-            .r-analyst p { color: #3a2a18; font-size: 14px; margin: 0; line-height: 1.8; }
-            .r-decision { background: #fff8f0; border: 1px solid #e0c898; border-left: 4px solid #c8a060; padding: 18px 22px; margin: 28px 0; }
-            .r-dp-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #c8a060; display: block; margin-bottom: 8px; font-weight: 700; }
-            .r-decision p { color: #1a1208; font-size: 16px; margin: 0; line-height: 1.65; font-style: italic; font-weight: 500; }
-            .r-quote { border-left: 2px solid #c8b89a; padding: 10px 18px; margin: 18px 0; color: #4a3a28; font-style: italic; }
-            .r-hr { border: none; border-top: 1px solid #e0d4c0; margin: 36px 0; }
-            .r-p { font-size: 15px; line-height: 1.9; color: #3a2a18; margin: 0 0 16px; }
-            .r-ul { padding-left: 20px; margin: 12px 0; }
-            .r-li { font-size: 14px; line-height: 1.8; color: #3a2a18; margin-bottom: 6px; }
-            strong { color: #1a1208; font-weight: 700; } em { color: #7a5530; font-style: normal; }
-            .r-chart { background: #fdf8f2; border: 1px solid #e0d4c0; border-radius: 4px; padding: 20px; margin: 20px 0; }
-            .r-chart-title { font-size: 11px; letter-spacing: 2px; color: #8a6a40; text-transform: uppercase; margin-bottom: 14px; font-weight: 700; }
-            .r-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-            .r-bar-label { font-size: 12px; color: #5a4a38; width: 100px; flex-shrink: 0; text-align: right; }
-            .r-bar-track { flex: 1; height: 8px; background: #e8e0d5; border-radius: 4px; }
-            .r-bar-fill { height: 100%; border-radius: 4px; background: #8a6a40; }
-            .r-bar-value { font-size: 12px; color: #8a6a40; font-weight: 700; width: 36px; }
-            .r-score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
-            .r-score-card { background: #fff; border: 1px solid #e0d4c0; border-top: 3px solid #8a6a40; padding: 14px; text-align: center; }
-            .r-score-label { font-size: 10px; color: #8a7a65; margin-bottom: 6px; }
-            .r-score-value { font-size: 22px; font-weight: 700; color: #1a1208; font-family: 'Georgia', serif; }
-            .r-before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-            .r-before { background: #fef2f2; border: 1px solid #fca5a5; border-left: 3px solid #dc2626; padding: 14px; }
-            .r-after { background: #f0fdf4; border: 1px solid #86efac; border-left: 3px solid #16a34a; padding: 14px; }
-            .r-ba-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-            .r-before .r-ba-label { color: #dc2626; }
-            .r-after .r-ba-label { color: #16a34a; }
-            .r-step-block { border: 1px solid #e0d4c0; border-left: 3px solid #8a6a40; padding: 14px 16px; margin: 10px 0; background: #fff; }
-            .r-step-num { font-size: 10px; color: #8a6a40; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
-            .r-checklist { list-style: none; padding: 0; margin: 12px 0; }
-            .r-checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #3a2a18; line-height: 1.7; margin-bottom: 8px; padding: 8px 12px; background: #fdf8f2; border-radius: 4px; }
-            .r-checklist li::before { content: "□"; color: #8a6a40; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-            @media print {
-              header { display: none !important; }
-              .print-sidebar { display: none !important; }
-              .no-print { display: none !important; }
-              .print-container { display: block !important; }
-              .print-main { width: 100% !important; }
-              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-              .r-brand-insight { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            }
-          `}</style>
-
-          {CHAPTERS.map(ch => {
-            const state = chapters[ch.id];
-            const status = state?.status || 'idle';
-            return (
-              <div key={ch.id} style={{ marginBottom: "8px", border: "1px solid #e8e0d5", background: "#ffffff" }}>
-                <div onClick={() => status === 'idle' && generateChapter(ch.id)}
-                  style={{ padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: status === 'idle' ? "pointer" : "default", borderBottom: status === 'done' ? "1px solid #e8e0d5" : "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                    <span style={{ fontSize: "18px", color: status === 'done' ? "#8a6a40" : "#c0b0a0" }}>
-                      {status === 'loading' ? "…" : status === 'done' ? "✓" : ch.icon}
-                    </span>
-                    <div>
-                      <div style={{ fontSize: "14px", color: status === 'done' ? "#1a1208" : "#4a3a28" }}>{ch.label}</div>
-                      <div style={{ fontSize: "11px", color: "#7a6a55", marginTop: "2px" }}>{ch.desc}</div>
-                    </div>
-                  </div>
-                  {status === 'idle' && <span style={{ fontSize: "11px", color: "#7a6a55" }}>클릭하여 생성</span>}
-                  {status === 'loading' && <span style={{ fontSize: "11px", color: "#8a6a40" }}>분석 중...</span>}
-                </div>
-                {status === 'done' && <div style={{ padding: "28px 24px" }}><div dangerouslySetInnerHTML={{ __html: renderMarkdown(state.content) }} /></div>}
-                {status === 'error' && (
-                  <div style={{ padding: "20px 24px", color: "#c87060", fontSize: "13px" }}>
-                    {state.content}
-                    <button onClick={() => generateChapter(ch.id)} style={{ ...styles.btnGhost, marginLeft: "12px", padding: "6px 12px", fontSize: "11px" }}>재시도</button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+/* ── 프리미엄 블록 ── */
+.service-premium { background:var(--dark-section-bg); padding:56px 48px; display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; position:relative; margin-top:1px; }
+.service-premium::before, .service-premium::after { content:''; position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.service-premium::before { top:0; }
+.service-premium::after { bottom:0; }
+.service-premium__badge { display:inline-block; font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); border:1px solid rgba(196,162,74,0.35); padding:4px 12px; margin-bottom:16px; font-weight:400; }
+.service-premium h3 { font-family:var(--serif); font-size:clamp(22px,2.8vw,32px); font-weight:300; color:var(--bg); line-height:1.35; margin-bottom:10px; }
+.service-premium__price { font-size:12px; color:var(--gold); letter-spacing:0.08em; margin-bottom:28px; font-weight:400; }
+.service-premium__right p { font-size:14px; color:rgba(232,240,222,0.65); line-height:1.95; margin-bottom:24px; font-weight:400; }
+.service-points--light li { color:rgba(232,240,222,0.55); border-color:rgba(255,255,255,0.06); }
+.service-points--light li::before { background:var(--gold); opacity:0.5; }
+.btn-premium { display:inline-block; font-size:12px; padding:13px 28px; border:1px solid rgba(196,162,74,0.45); color:var(--gold); background:transparent; cursor:pointer; font-family:var(--sans); letter-spacing:0.1em; transition:all 0.25s; }
+.btn-premium:hover { background:var(--gold); color:var(--green-dark); }
 
 
-          {/* 링크 안내 + PDF 저장 안내 */}
-          {reportLink && (
-            <div style={{ marginTop: "32px", background: "#fdf8f2", border: "1px solid #e0d4c0", borderLeft: "4px solid #8a6a40", padding: "20px 24px" }}>
-              <div style={{ fontSize: "11px", letterSpacing: "2px", color: "#8a6a40", textTransform: "uppercase", marginBottom: "10px" }}>리포트 보관 안내</div>
-              <p style={{ fontSize: "13px", color: "#3a2a18", lineHeight: "1.8", margin: "0 0 12px" }}>
-                이 리포트는 아래 링크에서 언제든 다시 확인할 수 있습니다.<br />
-                이메일로도 링크를 발송해드렸습니다.
-              </p>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-                <input
-                  readOnly
-                  value={reportLink}
-                  style={{ flex: 1, minWidth: "200px", background: "#fff", border: "1px solid #d8cfc4", padding: "8px 12px", fontSize: "12px", color: "#5a4a38", fontFamily: "monospace" }}
-                />
-                <button
-                  onClick={() => { navigator.clipboard.writeText(reportLink).then(() => alert('링크가 복사되었습니다!')); }}
-                  style={{ ...styles.btn, padding: "8px 16px", fontSize: "12px", flexShrink: 0 }}>
-                  복사
-                </button>
-              </div>
-              {emailSent && (
-                <p style={{ fontSize: "12px", color: "#4a7a50", marginTop: "10px", margin: "10px 0 0" }}>
-                  ✓ {formData.userEmail} 로 링크를 발송했습니다
-                </p>
-              )}
-              <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #e0d4c0" }}>
-                <p style={{ fontSize: "12px", color: "#8a7a65", margin: "0 0 8px" }}>📄 PDF로 저장하려면</p>
-                <button onClick={() => window.print()} style={{ ...styles.btn, padding: "10px 20px", fontSize: "12px" }}>
-                  📄 PDF로 저장하기
-                </button>
-                <p style={{ fontSize: "11px", color: "#a09080", margin: "8px 0 0" }}>
-                  저장 창에서 '대상: PDF로 저장' 선택 후 저장하세요
-                </p>
-              </div>
-            </div>
-          )}
+/* ── 5번째 카드 비즈니스 네이밍 ── */
+.service-card--premium-alt {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border-color: rgba(191,164,106,0.2);
+}
+.service-card--premium-alt .svc-img {
+  height: 100%;
+  min-height: 260px;
+  margin: 0;
+}
+.service-card--premium-alt .svc-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.svc-premium-body {
+  padding: 36px 40px;
+}
+.svc-price-note {
+  font-size: 12px;
+  color: var(--gold-dark);
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+@media (max-width: 768px) {
+  .service-card--premium-alt { grid-template-columns: 1fr; }
+}
 
-          <div style={{ marginTop: "32px", textAlign: "center", fontSize: "11px", color: "#7a6a55", lineHeight: "1.9" }}>
-            © WEROS All rights reserved.<br />
-            주식회사 위버플레인 | 대표이사 이정운<br />
-            사업자등록번호 128-86-27688
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+
+.signal-img-col { margin-top:56px; border-radius:4px; overflow:hidden; max-width:720px; margin-left:auto; margin-right:auto; }
+.signal-img-col img { width:100%; height:440px; object-fit:cover; display:block; border-radius:4px; }
+
+
+/* ── 카드 3 전폭 가로 레이아웃 ── */
+.service-card--wide {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.service-card--wide .svc-img {
+  height: 100%;
+  min-height: 240px;
+  margin: 0;
+}
+.service-card--wide .svc-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.svc-wide-body {
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.svc-wide-body .service-points {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+}
+@media (max-width: 768px) {
+  .service-card--wide { grid-template-columns: 1fr; }
+  .svc-wide-body .service-points { grid-template-columns: 1fr; }
+}
+
+/* ── 반응형 ── */
+@media (max-width:768px) {
+  .choice-grid { grid-template-columns:1fr; }
+  .service-premium { grid-template-columns:1fr; padding:40px 24px; gap:32px; }
 }
