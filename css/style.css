@@ -73,7 +73,7 @@ nav {
 /* 공통 */
 section { position:relative; z-index:1; }
 .section-inner { max-width:1100px; margin:0 auto; padding:0 5%; }
-.section-label { font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold-dark); font-weight:500; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+.section-label { font-size:13px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold-dark); font-weight:500; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
 .section-label::after { content:''; display:block; width:28px; height:1px; background:var(--green-dark); opacity:0.5; }
 .section-title { font-family:var(--serif); font-size:clamp(26px,3.8vw,44px); font-weight:300; line-height:1.4; color:var(--ink); margin-bottom:18px; letter-spacing:0.02em; }
 .section-title em { font-style:normal; color:var(--gold-dark); }
@@ -285,7 +285,7 @@ section { position:relative; z-index:1; }
 .initial { font-family:var(--serif); font-size:68px; color:rgba(196,162,74,0.38); display:block; }
 .director-photo-placeholder p { font-size:12px; color:var(--ink-faint); letter-spacing:0.1em; margin-top:10px; }
 .director-info h3 { font-family:var(--serif); font-size:26px; font-weight:400; color:var(--ink); margin-bottom:6px; }
-.director-role { font-size:12px; color:var(--gold-dark); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:28px; }
+.director-role { font-size:14px; color:var(--gold-dark); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:28px; }
 .director-phil { font-size:15px; color:var(--ink2); line-height:1.95; margin-bottom:28px; border-left:3px solid var(--green); padding-left:22px; font-family:var(--serif); font-style:italic; }
 .director-specs { list-style:none; }
 .director-specs li { font-size:13px; color:var(--ink3); padding:10px 0; border-bottom:1px solid rgba(196,162,74,0.1); display:flex; gap:16px; }
@@ -1601,11 +1601,11 @@ footer {
   box-shadow: 0 6px 32px rgba(28,28,20,0.07);
 }
 .pricing-tag {
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--gold-dark);
-  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  color: var(--ink);
+  font-weight: 700;
   margin-bottom: 16px;
   border-bottom: 1px solid rgba(196,162,74,0.2);
   padding-bottom: 12px;
@@ -1727,12 +1727,12 @@ footer {
   white-space: nowrap;
 }
 .pricing-tier-name {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--ink3);
-  text-transform: uppercase;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  text-transform: none;
   margin-bottom: 10px;
-  font-weight: 500;
+  font-weight: 700;
 }
 .pricing-tier-price {
   font-family: var(--serif);
