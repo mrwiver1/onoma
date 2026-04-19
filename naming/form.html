@@ -1602,6 +1602,162 @@ if (tierParam) {
 
 // 초기화
 switchForm();
+
+// =====================
+// 더미데이터 자동입력 (Ctrl+Shift+D)
+// =====================
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+    e.preventDefault();
+    fillDummyData();
+  }
+});
+
+function fillDummyData() {
+  const svcType = document.querySelector('input[name="svc-type"]:checked')?.value || '신생아';
+
+  // ── 신생아 작명 ──
+  if (svcType === '신생아') {
+    const s = document.getElementById('section-baby');
+    if (s) {
+      const inputs = s.querySelectorAll('input[type=text]');
+      // 성씨(한글), 성씨(한자), 출생년, 태명
+      if (inputs[0]) inputs[0].value = '김';
+      if (inputs[1]) inputs[1].value = '金';
+      if (inputs[2]) inputs[2].value = '2025';
+      if (inputs[3]) inputs[3].value = '하늘이';
+      const selects = s.querySelectorAll('select');
+      if (selects[0]) selects[0].value = '3';   // 월
+      if (selects[1]) selects[1].value = '15';  // 일
+      if (selects[2]) selects[2].value = '午시 (11:00~13:00)'; // 시
+      const genderR = s.querySelector('input[name="baby-gender"][value="여"]');
+      if (genderR) genderR.checked = true;
+      const calR = s.querySelector('input[name="baby-cal"][value="양력"]');
+      if (calR) calR.checked = true;
+    }
+  }
+
+  // ── 개명 ──
+  if (svcType === '개명') {
+    const s = document.getElementById('section-rename');
+    if (s) {
+      const inputs = s.querySelectorAll('input[type=text]');
+      if (inputs[0]) inputs[0].value = '김민수';
+      if (inputs[1]) inputs[1].value = '金民洙';
+      if (inputs[2]) inputs[2].value = '1990';
+      const selects = s.querySelectorAll('select');
+      if (selects[0]) selects[0].value = '5';
+      if (selects[1]) selects[1].value = '20';
+      const reason = s.querySelector('textarea');
+      if (reason) reason.value = '현재 이름이 삶의 흐름과 맞지 않는 것 같아 개명을 희망합니다.';
+    }
+  }
+
+  // ── 예명 ──
+  if (svcType === '예명') {
+    const s = document.getElementById('section-stagename');
+    if (s) {
+      const inputs = s.querySelectorAll('input[type=text]');
+      if (inputs[0]) inputs[0].value = '박지연';
+      if (inputs[1]) inputs[1].value = '朴智延';
+      if (inputs[2]) inputs[2].value = '1995';
+      const actField = s.querySelector('input[placeholder*="가수"]');
+      if (actField) actField.value = '유튜버, 강사';
+    }
+  }
+
+  // ── 아호 ──
+  if (svcType === '아호') {
+    const s = document.getElementById('section-aho');
+    if (s) {
+      const inputs = s.querySelectorAll('input[type=text]');
+      if (inputs[0]) inputs[0].value = '이정운';
+      if (inputs[1]) inputs[1].value = '李定芸';
+      if (inputs[2]) inputs[2].value = '1968';
+      const actField = s.querySelector('input[placeholder*="한국화"]');
+      if (actField) actField.value = '한국화, 서예';
+      const purposeField = s.querySelector('input[placeholder*="작품"]');
+      if (purposeField) purposeField.value = '작품 서명 및 명함 활동명';
+    }
+  }
+
+  // ── 소상공인 상호 ──
+  if (svcType === '소상공인') {
+    const s = document.getElementById('section-small');
+    if (s) {
+      const inputs = s.querySelectorAll('input[type=text]');
+      if (inputs[0]) inputs[0].value = '박영훈';
+      if (inputs[1]) inputs[1].value = '1975';
+      const bizField = s.querySelector('input[placeholder*="업종"]');
+      if (bizField) bizField.value = '카페 / 음식점';
+      const areaField = s.querySelector('input[placeholder*="지역"]');
+      if (areaField) areaField.value = '서울 마포구';
+    }
+  }
+
+  // ── 법인 상호 ──
+  if (svcType === '법인') {
+    const s = document.getElementById('section-business');
+    if (s) {
+      const inputs = s.querySelectorAll('input[type=text]');
+      if (inputs[0]) inputs[0].value = '최준혁';
+      if (inputs[1]) inputs[1].value = '1980';
+      const bizField = s.querySelector('input[placeholder*="업종"]');
+      if (bizField) bizField.value = 'IT 소프트웨어';
+    }
+  }
+
+  // ── 가족 정보 (신생아/개명 공통) ──
+  const familySection = document.querySelector('.form-section:nth-of-type(4)');
+  const fatherName = document.querySelector('.family-block:first-of-type input[placeholder="예: 김정운"]');
+  if (fatherName) fatherName.value = '김정운';
+  const motherName = document.querySelector('.family-block:nth-of-type(2) input[placeholder="예: 이지윤"]');
+  if (motherName) motherName.value = '이지윤';
+
+  // 형제자매
+  const sibInputs = document.querySelectorAll('#siblings-container input[type=text]');
+  if (sibInputs[0]) sibInputs[0].value = '김민준';
+  if (sibInputs[1]) sibInputs[1].value = '';
+
+  // ── 희망 조건 ──
+  const wishTextarea = document.querySelector('textarea[placeholder*="강하고 단단한"]');
+  if (wishTextarea) wishTextarea.value = '부드럽고 밝은 느낌, 자연에서 온 이름, 발음하기 쉬운 2글자';
+  const avoidInput = document.querySelector('input[placeholder*="특정 발음"]');
+  if (avoidInput) avoidInput.value = '사, 자 발음 제외';
+
+  // ── 신청자 정보 ──
+  const nameEl = document.getElementById('f-name');
+  if (nameEl) nameEl.value = '김정운';
+  const p2 = document.getElementById('f-phone2');
+  const p3 = document.getElementById('f-phone3');
+  if (p2) p2.value = '1234';
+  if (p3) p3.value = '5678';
+  const emailEl = document.getElementById('f-email');
+  if (emailEl) emailEl.value = 'test@test.com';
+  const deliveryEl = document.getElementById('f-delivery');
+  if (deliveryEl) deliveryEl.value = '카카오톡';
+  const kakaoEl = document.getElementById('f-kakao');
+  if (kakaoEl) kakaoEl.value = 'kjw_test';
+  const referralEl = document.getElementById('f-referral');
+  if (referralEl) referralEl.value = '지인 소개';
+
+  // ── 결제 ──
+  const depositorEl = document.getElementById('f-depositor');
+  if (depositorEl) depositorEl.value = '김정운';
+
+  // ── 개인정보 동의 ──
+  const agree = document.getElementById('privacy-agree');
+  if (agree) agree.checked = true;
+
+  updatePrice();
+
+  // 안내 토스트
+  const toast = document.createElement('div');
+  toast.textContent = '✓ 더미데이터 입력 완료 (Ctrl+Shift+D)';
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green-dark);color:#fff;padding:12px 24px;font-size:13px;z-index:9999;border-radius:2px;letter-spacing:0.05em;';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
 </script>
 </body>
 </html>
