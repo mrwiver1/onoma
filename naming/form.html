@@ -38,31 +38,22 @@
     line-height: 1.8;
   }
 
-  /* 진행 단계 표시 */
+  /* 진행 단계 */
   .form-progress {
     display: flex;
-    gap: 0;
     margin-bottom: 48px;
     border: 1px solid rgba(196,162,74,0.2);
   }
   .form-progress-step {
     flex: 1;
-    padding: 14px 16px;
+    padding: 14px 8px;
     text-align: center;
     font-size: 12px;
     color: var(--ink-faint);
     border-right: 1px solid rgba(196,162,74,0.2);
-    position: relative;
   }
   .form-progress-step:last-child { border-right: none; }
-  .form-progress-step.active {
-    background: var(--green-dark);
-    color: #fff;
-  }
-  .form-progress-step.done {
-    background: rgba(74,107,66,0.08);
-    color: var(--green-dark);
-  }
+  .form-progress-step.active { background: var(--green-dark); color: #fff; }
   .form-progress-num {
     font-family: var(--serif);
     font-size: 16px;
@@ -70,12 +61,11 @@
     margin-bottom: 2px;
   }
 
-  /* 섹션 구분 */
+  /* 섹션 */
   .form-section {
     background: #fff;
     border: 1px solid rgba(196,162,74,0.2);
     margin-bottom: 24px;
-    overflow: hidden;
   }
   .form-section-header {
     background: var(--bg2);
@@ -98,19 +88,9 @@
     font-weight: 700;
     flex-shrink: 0;
   }
-  .form-section-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-  }
-  .form-section-desc {
-    font-size: 12px;
-    color: var(--ink3);
-    margin-left: auto;
-  }
-  .form-section-body {
-    padding: 28px 24px;
-  }
+  .form-section-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .form-section-desc { font-size: 12px; color: var(--ink3); margin-left: auto; }
+  .form-section-body { padding: 28px 24px; }
 
   /* 서비스 선택 카드 */
   .svc-type-grid {
@@ -127,12 +107,7 @@
     transition: all 0.2s;
     position: relative;
   }
-  .svc-type-card input[type=radio] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
+  .svc-type-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
   .svc-type-card:has(input:checked) {
     border-color: var(--green-dark);
     background: rgba(74,107,66,0.05);
@@ -140,22 +115,13 @@
   .svc-type-card:has(input:checked)::after {
     content: '✓';
     position: absolute;
-    top: 8px;
-    right: 10px;
+    top: 8px; right: 10px;
     color: var(--green-dark);
     font-size: 13px;
     font-weight: 700;
   }
-  .svc-type-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-  .svc-type-price {
-    font-size: 12px;
-    color: var(--gold-dark);
-  }
+  .svc-type-name { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .svc-type-price { font-size: 12px; color: var(--gold-dark); }
 
   /* 티어 선택 */
   .tier-select-grid {
@@ -170,10 +136,7 @@
     position: relative;
     transition: all 0.2s;
   }
-  .tier-select-card input[type=radio] {
-    position: absolute;
-    opacity: 0;
-  }
+  .tier-select-card input[type=radio] { position: absolute; opacity: 0; }
   .tier-select-card:has(input:checked) {
     border-color: var(--green-dark);
     background: rgba(74,107,66,0.05);
@@ -181,32 +144,12 @@
   .tier-select-card:has(input:checked)::after {
     content: '✓';
     position: absolute;
-    top: 10px;
-    right: 12px;
+    top: 10px; right: 12px;
     color: var(--green-dark);
     font-size: 13px;
     font-weight: 700;
   }
-  .tier-select-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 6px;
-  }
-  .tier-select-price {
-    font-family: var(--serif);
-    font-size: 18px;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .tier-select-features {
-    font-size: 11px;
-    color: var(--ink3);
-    line-height: 1.7;
-  }
-  .tier-select-card.recommended {
-    border-color: var(--green-dark);
-  }
+  .tier-select-card.recommended { border-color: var(--green-dark); }
   .tier-badge {
     display: inline-block;
     background: var(--gold-dark);
@@ -216,6 +159,9 @@
     margin-bottom: 8px;
     letter-spacing: 0.08em;
   }
+  .tier-select-name { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .tier-select-price { font-family: var(--serif); font-size: 18px; color: var(--ink); margin-bottom: 8px; }
+  .tier-select-features { font-size: 11px; color: var(--ink3); line-height: 1.7; }
 
   /* 폼 필드 */
   .form-row {
@@ -225,28 +171,11 @@
     margin-bottom: 16px;
   }
   .form-row.single { grid-template-columns: 1fr; }
-  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .form-group label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink2);
-  }
-  .form-group label .req {
-    color: #c0392b;
-    font-size: 11px;
-    margin-left: 4px;
-  }
-  .form-group label .opt {
-    color: var(--ink-faint);
-    font-size: 11px;
-    font-weight: 400;
-    margin-left: 4px;
-  }
+  .form-row.quad { grid-template-columns: repeat(4, 1fr); }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 13px; font-weight: 600; color: var(--ink2); }
+  .form-group label .req { color: #c0392b; font-size: 11px; margin-left: 4px; }
+  .form-group label .opt { color: var(--ink-faint); font-size: 11px; font-weight: 400; margin-left: 4px; }
   .form-group input[type=text],
   .form-group input[type=email],
   .form-group input[type=tel],
@@ -269,22 +198,11 @@
     border-color: var(--green-dark);
     background: #fff;
   }
-  .form-group textarea {
-    min-height: 90px;
-    resize: vertical;
-    line-height: 1.7;
-  }
-  .form-group .form-hint {
-    font-size: 11px;
-    color: var(--ink-faint);
-    line-height: 1.6;
-  }
+  .form-group textarea { min-height: 90px; resize: vertical; line-height: 1.7; }
+  .form-hint { font-size: 11px; color: var(--ink-faint); line-height: 1.6; margin-top: 4px; }
 
-  /* 음양력 선택 */
-  .cal-select {
-    display: flex;
-    gap: 6px;
-  }
+  /* 음양력 */
+  .cal-select { display: flex; gap: 6px; }
   .cal-select label {
     display: flex;
     align-items: center;
@@ -305,7 +223,7 @@
     margin: 20px 0;
   }
 
-  /* 가족 반복 블록 */
+  /* 가족 블록 */
   .family-block {
     background: var(--bg2);
     border: 1px solid rgba(196,162,74,0.15);
@@ -321,7 +239,21 @@
     border-bottom: 1px solid rgba(196,162,74,0.15);
   }
 
-  /* 개인정보 동의 */
+  /* 금액 요약 */
+  .price-summary {
+    background: var(--ink);
+    color: #fff;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .price-summary-label { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .price-summary-amount { font-family: var(--serif); font-size: 28px; color: var(--gold); }
+  .price-summary-unit { font-size: 14px; color: rgba(255,255,255,0.7); margin-left: 4px; }
+
+  /* 개인정보 */
   .privacy-box {
     background: var(--bg2);
     border: 1px solid rgba(196,162,74,0.2);
@@ -344,11 +276,8 @@
   }
   .privacy-agree input { accent-color: var(--green-dark); width: 18px; height: 18px; }
 
-  /* 제출 버튼 */
-  .form-submit-area {
-    margin-top: 32px;
-    text-align: center;
-  }
+  /* 제출 */
+  .form-submit-area { margin-top: 32px; text-align: center; }
   .form-submit-btn {
     background: var(--green-dark);
     color: #fff;
@@ -359,9 +288,9 @@
     font-family: var(--sans);
     cursor: pointer;
     letter-spacing: 0.06em;
-    transition: background 0.2s;
     width: 100%;
     max-width: 400px;
+    transition: background 0.2s;
   }
   .form-submit-btn:hover { background: #3a6333; }
   .form-submit-note {
@@ -371,36 +300,11 @@
     line-height: 1.8;
   }
 
-  /* 총 금액 표시 */
-  .price-summary {
-    background: var(--ink);
-    color: #fff;
-    padding: 20px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-  }
-  .price-summary-label {
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
-  }
-  .price-summary-amount {
-    font-family: var(--serif);
-    font-size: 28px;
-    color: var(--gold);
-  }
-  .price-summary-unit {
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
-    margin-left: 4px;
-  }
-
   @media (max-width: 640px) {
     .svc-type-grid { grid-template-columns: 1fr; }
     .tier-select-grid { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
-    .form-row.triple { grid-template-columns: 1fr 1fr; }
+    .form-row.quad { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
@@ -408,15 +312,15 @@
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="../index.html">
-    <span class="nav-logo-text">오노마 상담소</span>
+  <a class="nav-logo" href="../index.html" style="display:flex;flex-direction:column;gap:2px;line-height:1;">
+    <span style="font-family:var(--serif);font-size:18px;color:var(--ink);letter-spacing:0.05em;">힐링네임</span>
+    <span style="font-size:9px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;">by ONOMA</span>
   </a>
   <ul class="nav-links">
-    <li><a href="index.html">작명 서비스</a></li>
-    <li><a href="../index.html#services">서비스</a></li>
-    <li><a href="../index.html#director">원장 소개</a></li>
+    <li><a href="index.html">작명 서비스 안내</a></li>
+    <li><a href="https://onomalife.com" target="_blank" style="color:var(--gold-dark);">이름풀이 받기</a></li>
   </ul>
-  <button class="nav-cta" onclick="location.href='../index.html#kakao-bar'">카카오 문의</button>
+  <button class="nav-cta" onclick="location.href='http://pf.kakao.com/_Txfxmpn'" target="_blank">카카오 문의</button>
 </nav>
 
 <div class="form-page">
@@ -425,7 +329,7 @@
     <div class="form-page-eyebrow">NAMING APPLICATION</div>
     <h1 class="form-page-title">작명 신청서</h1>
     <p class="form-page-sub">
-      표시 항목은 필수 입력 사항입니다. 작성이 어려우신 경우 카카오 채널로 먼저 문의주세요.<br>
+      ※ 표시 항목은 필수 입력 사항입니다. 작성이 어려우신 경우 카카오 채널로 먼저 문의주세요.<br>
       접수 후 담당자 확인까지 1영업일 이내 안내드립니다.
     </p>
 
@@ -448,7 +352,9 @@
       </div>
     </div>
 
+    <!-- ===================== -->
     <!-- SECTION 1: 서비스 선택 -->
+    <!-- ===================== -->
     <div class="form-section">
       <div class="form-section-header">
         <div class="form-section-num">1</div>
@@ -456,28 +362,47 @@
         <div class="form-section-desc">신청 유형을 선택해주세요</div>
       </div>
       <div class="form-section-body">
-        <div class="svc-type-grid">
+
+        <!-- 서비스 유형 -->
+        <div class="svc-type-grid" style="grid-template-columns:repeat(3,1fr);">
           <label class="svc-type-card">
-            <input type="radio" name="svc-type" value="신생아" checked onchange="updatePrice()">
+            <input type="radio" name="svc-type" value="신생아" checked onchange="switchForm()">
             <div class="svc-type-name">신생아 작명</div>
             <div class="svc-type-price">330,000원~</div>
           </label>
           <label class="svc-type-card">
-            <input type="radio" name="svc-type" value="개명" onchange="updatePrice()">
+            <input type="radio" name="svc-type" value="개명" onchange="switchForm()">
             <div class="svc-type-name">개명</div>
             <div class="svc-type-price">330,000원~</div>
           </label>
           <label class="svc-type-card">
-            <input type="radio" name="svc-type" value="상호" onchange="updatePrice()">
-            <div class="svc-type-name">상호·브랜드명</div>
+            <input type="radio" name="svc-type" value="예명" onchange="switchForm()">
+            <div class="svc-type-name">예명</div>
+            <div class="svc-type-price">상담 후 안내</div>
+          </label>
+          <label class="svc-type-card">
+            <input type="radio" name="svc-type" value="아호" onchange="switchForm()">
+            <div class="svc-type-name">아호 (雅號)</div>
+            <div class="svc-type-price">상담 후 안내</div>
+          </label>
+          <label class="svc-type-card">
+            <input type="radio" name="svc-type" value="소상공인" onchange="switchForm()">
+            <div class="svc-type-name">소상공인 상호</div>
+            <div class="svc-type-price">상담 후 안내</div>
+          </label>
+          <label class="svc-type-card">
+            <input type="radio" name="svc-type" value="법인" onchange="switchForm()">
+            <div class="svc-type-name">법인 상호</div>
             <div class="svc-type-price">상담 후 안내</div>
           </label>
         </div>
 
-        <!-- 티어 선택 (상호 외) -->
+        <!-- 티어 선택 -->
         <div id="tier-section">
           <hr class="form-divider">
-          <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:14px;">서비스 등급 선택 <span class="req" style="color:#c0392b;font-size:11px;">*</span></div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:14px;">
+            서비스 등급 선택 <span style="color:#c0392b;font-size:11px;">*</span>
+          </div>
           <div class="tier-select-grid">
             <label class="tier-select-card">
               <input type="radio" name="tier" value="베이직" onchange="updatePrice()">
@@ -501,24 +426,30 @@
           </div>
         </div>
 
-        <!-- 작명장 옵션 -->
+        <!-- 고급 작명장 옵션 -->
         <hr class="form-divider">
-        <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:14px;">고급 실물 작명장 <span style="font-size:11px;color:var(--ink-faint);font-weight:400;">(선택 · 등기 발송)</span></div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:14px;">
+          고급 실물 작명장 <span style="font-size:11px;color:var(--ink-faint);font-weight:400;">(선택 · 등기 발송)</span>
+        </div>
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--ink2);">
           <input type="checkbox" id="cert-option" onchange="updatePrice()" style="width:18px;height:18px;accent-color:var(--green-dark);">
           고급 실물 작명장 신청 (+30,000원)
         </label>
+
       </div>
     </div>
 
-    <!-- SECTION 2: 신청 대상 정보 -->
-    <div class="form-section">
+    <!-- ======================== -->
+    <!-- SECTION 2-A: 신생아 정보  -->
+    <!-- ======================== -->
+    <div class="form-section" id="section-baby">
       <div class="form-section-header">
         <div class="form-section-num">2</div>
-        <div class="form-section-title">신청 대상 정보</div>
-        <div class="form-section-desc">작명 받을 분의 정보</div>
+        <div class="form-section-title">아기 정보</div>
+        <div class="form-section-desc">작명 받을 아기의 정보</div>
       </div>
       <div class="form-section-body">
+
         <div class="form-row">
           <div class="form-group">
             <label>성씨 (한글) <span class="req">*</span></label>
@@ -529,11 +460,8 @@
             <input type="text" placeholder="예: 金">
           </div>
         </div>
+
         <div class="form-row">
-          <div class="form-group">
-            <label>현재 이름 <span class="opt">(개명 시 필수)</span></label>
-            <input type="text" placeholder="예: 김철수" maxlength="10">
-          </div>
           <div class="form-group">
             <label>성별 <span class="req">*</span></label>
             <select>
@@ -542,12 +470,17 @@
               <option value="여">여자</option>
             </select>
           </div>
+          <div class="form-group">
+            <label>태명 <span class="opt">(있을 경우)</span></label>
+            <input type="text" placeholder="예: 튼튼이" maxlength="20">
+          </div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
-            <label>생년월일 <span class="req">*</span></label>
+            <label>생년월일 <span class="opt">(태어난 경우)</span></label>
             <div style="display:flex;gap:6px;">
-              <input type="text" placeholder="년 (예: 2024)" maxlength="4" style="flex:2;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
               <select style="flex:1;">
                 <option value="">월</option>
                 <option value="1">1월</option><option value="2">2월</option><option value="3">3월</option>
@@ -562,14 +495,15 @@
             </div>
           </div>
           <div class="form-group">
-            <label>양력 / 음력 <span class="req">*</span></label>
+            <label>양력 / 음력</label>
             <div class="cal-select">
-              <label><input type="radio" name="cal-type" value="양력" checked> 양력</label>
-              <label><input type="radio" name="cal-type" value="음력"> 음력</label>
-              <label><input type="radio" name="cal-type" value="윤달"> 윤달</label>
+              <label><input type="radio" name="baby-cal" value="양력" checked> 양력</label>
+              <label><input type="radio" name="baby-cal" value="음력"> 음력</label>
+              <label><input type="radio" name="baby-cal" value="윤달"> 윤달</label>
             </div>
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>태어난 시간 <span class="opt">(모를 경우 생략 가능)</span></label>
@@ -584,10 +518,11 @@
             </select>
           </div>
           <div class="form-group">
-            <label>태명 <span class="opt">(태아의 경우)</span></label>
-            <input type="text" placeholder="예: 튼튼이" maxlength="20">
+            <label>출산 예정일 <span class="opt">(태아의 경우)</span></label>
+            <input type="text" placeholder="예: 2024년 5월 예정">
           </div>
         </div>
+
         <div class="form-row single">
           <div class="form-group">
             <label>돌림자 여부</label>
@@ -596,10 +531,12 @@
                 <input type="radio" name="dollim" value="없음" checked style="accent-color:var(--green-dark);"> 없음
               </label>
               <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;">
-                <input type="radio" name="dollim" value="있음" style="accent-color:var(--green-dark);" onchange="document.getElementById('dollim-input').style.display='flex'"> 있음
+                <input type="radio" name="dollim" value="있음" style="accent-color:var(--green-dark);"
+                  onchange="document.getElementById('dollim-input').style.display='flex'"> 있음
               </label>
               <div id="dollim-input" style="display:none;gap:8px;align-items:center;">
-                <input type="text" placeholder="돌림자 입력" maxlength="5" style="width:120px;border:1px solid rgba(196,162,74,0.3);padding:8px 12px;font-size:13px;font-family:var(--sans);">
+                <input type="text" placeholder="돌림자" maxlength="5"
+                  style="width:100px;border:1px solid rgba(196,162,74,0.3);padding:8px 12px;font-size:13px;font-family:var(--sans);">
                 <select style="font-size:13px;border:1px solid rgba(196,162,74,0.3);padding:8px;">
                   <option>앞글자</option><option>뒷글자</option>
                 </select>
@@ -607,10 +544,521 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
+    <!-- ===================== -->
+    <!-- SECTION 2-B: 개명 정보 -->
+    <!-- ===================== -->
+    <div class="form-section" id="section-rename" style="display:none;">
+      <div class="form-section-header">
+        <div class="form-section-num">2</div>
+        <div class="form-section-title">신청 대상 정보</div>
+        <div class="form-section-desc">개명 받을 분의 정보</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>현재 이름 (한글) <span class="req">*</span></label>
+            <input type="text" placeholder="예: 김철수" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>현재 이름 (한자) <span class="opt">(선택)</span></label>
+            <input type="text" placeholder="예: 金哲洙">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>성별 <span class="req">*</span></label>
+            <select>
+              <option value="">선택</option>
+              <option value="남">남자</option>
+              <option value="여">여자</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>생년월일 <span class="req">*</span></label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;">
+                <option value="">월</option>
+                <option value="1">1월</option><option value="2">2월</option><option value="3">3월</option>
+                <option value="4">4월</option><option value="5">5월</option><option value="6">6월</option>
+                <option value="7">7월</option><option value="8">8월</option><option value="9">9월</option>
+                <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+              </select>
+              <select style="flex:1;">
+                <option value="">일</option>
+                <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>양력 / 음력 <span class="req">*</span></label>
+            <div class="cal-select">
+              <label><input type="radio" name="rename-cal" value="양력" checked> 양력</label>
+              <label><input type="radio" name="rename-cal" value="음력"> 음력</label>
+              <label><input type="radio" name="rename-cal" value="윤달"> 윤달</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>태어난 시간 <span class="opt">(모를 경우 생략)</span></label>
+            <select>
+              <option value="">모름 (생략)</option>
+              <option>子시 (23:00~01:00)</option><option>丑시 (01:00~03:00)</option>
+              <option>寅시 (03:00~05:00)</option><option>卯시 (05:00~07:00)</option>
+              <option>辰시 (07:00~09:00)</option><option>巳시 (09:00~11:00)</option>
+              <option>午시 (11:00~13:00)</option><option>未시 (13:00~15:00)</option>
+              <option>申시 (15:00~17:00)</option><option>酉시 (17:00~19:00)</option>
+              <option>戌시 (19:00~21:00)</option><option>亥시 (21:00~23:00)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-group">
+            <label>개명 사유 <span class="opt">(선택)</span></label>
+            <input type="text" placeholder="예: 이름과 삶의 흐름이 맞지 않는 것 같아서, 취업·결혼 준비 등">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- ==================== -->
+    <!-- SECTION 2-C: 법인 상호 -->
+    <!-- ==================== -->
+    <div class="form-section" id="section-business" style="display:none;">
+      <div class="form-section-header">
+        <div class="form-section-num">2</div>
+        <div class="form-section-title">법인 정보</div>
+        <div class="form-section-desc">법인 상호 작명을 위한 정보</div>
+      </div>
+      <div class="form-section-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>신청인 성명 (한글) <span class="req">*</span></label>
+            <input type="text" placeholder="예: 김정운" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>신청인 성명 (한자) <span class="opt">(선택)</span></label>
+            <input type="text" placeholder="예: 金正雲">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>신청인 생년월일 <span class="req">*</span></label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;"><option value="">월</option><script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script></select>
+              <select style="flex:1;"><option value="">일</option><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>음/양력 <span class="req">*</span></label>
+            <div class="cal-select">
+              <label><input type="radio" name="corp-cal" value="양력" checked> 양력</label>
+              <label><input type="radio" name="corp-cal" value="음력"> 음력</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>태어난 시간 <span class="opt">(모를 경우 생략)</span></label>
+            <select>
+              <option value="">모름 (생략)</option>
+              <option>子시 (23:00~01:00)</option><option>丑시 (01:00~03:00)</option><option>寅시 (03:00~05:00)</option><option>卯시 (05:00~07:00)</option>
+              <option>辰시 (07:00~09:00)</option><option>巳시 (09:00~11:00)</option><option>午시 (11:00~13:00)</option><option>未시 (13:00~15:00)</option>
+              <option>申시 (15:00~17:00)</option><option>酉시 (17:00~19:00)</option><option>戌시 (19:00~21:00)</option><option>亥시 (21:00~23:00)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>성별 <span class="req">*</span></label>
+            <div style="display:flex;gap:12px;padding-top:4px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="corp-gender" value="남" style="accent-color:var(--green-dark);"> 남</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="corp-gender" value="여" style="accent-color:var(--green-dark);"> 여</label>
+            </div>
+          </div>
+        </div>
+        <hr class="form-divider">
+        <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:14px;">법인 정보</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>업종 <span class="req">*</span></label>
+            <input type="text" placeholder="예: IT서비스, 제조업, 유통업 등">
+          </div>
+          <div class="form-group">
+            <label>시행시기</label>
+            <input type="text" placeholder="예: 2024년 3월">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>사업시작년도</label>
+            <input type="text" placeholder="예: 2020년">
+          </div>
+          <div class="form-group">
+            <label>동업여부</label>
+            <div style="display:flex;gap:12px;padding-top:4px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="corp-partner" value="없음" checked style="accent-color:var(--green-dark);"> 없음</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="corp-partner" value="있음" style="accent-color:var(--green-dark);"> 있음</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>배우자성명</label>
+            <input type="text" placeholder="배우자 이름" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>사업방향</label>
+            <input type="text" placeholder="예: 국내 B2B, 해외 수출, 온라인 등">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>상호에 들어가면 좋은 글자</label>
+            <input type="text" placeholder="예: 원하는 글자나 의미">
+          </div>
+          <div class="form-group">
+            <label>상호에 들어가면 좋은 색상</label>
+            <input type="text" placeholder="예: 파란색, 골드 등">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================== -->
+    <!-- SECTION 2-D: 소상공인 상호 -->
+    <!-- ====================== -->
+    <div class="form-section" id="section-small" style="display:none;">
+      <div class="form-section-header">
+        <div class="form-section-num">2</div>
+        <div class="form-section-title">소상공인 정보</div>
+        <div class="form-section-desc">소상공인 상호 작명을 위한 정보</div>
+      </div>
+      <div class="form-section-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>신청인 성명 (한글) <span class="req">*</span></label>
+            <input type="text" placeholder="예: 김정운" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>신청인 성명 (한자) <span class="opt">(선택)</span></label>
+            <input type="text" placeholder="예: 金正雲">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>신청인 생년월일 <span class="req">*</span></label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;"><option value="">월</option><script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script></select>
+              <select style="flex:1;"><option value="">일</option><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>음/양력 <span class="req">*</span></label>
+            <div class="cal-select">
+              <label><input type="radio" name="small-cal" value="양력" checked> 양력</label>
+              <label><input type="radio" name="small-cal" value="음력"> 음력</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>태어난 시간 <span class="opt">(모를 경우 생략)</span></label>
+            <select>
+              <option value="">모름 (생략)</option>
+              <option>子시 (23:00~01:00)</option><option>丑시 (01:00~03:00)</option><option>寅시 (03:00~05:00)</option><option>卯시 (05:00~07:00)</option>
+              <option>辰시 (07:00~09:00)</option><option>巳시 (09:00~11:00)</option><option>午시 (11:00~13:00)</option><option>未시 (13:00~15:00)</option>
+              <option>申시 (15:00~17:00)</option><option>酉시 (17:00~19:00)</option><option>戌시 (19:00~21:00)</option><option>亥시 (21:00~23:00)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>성별 <span class="req">*</span></label>
+            <div style="display:flex;gap:12px;padding-top:4px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="small-gender" value="남" style="accent-color:var(--green-dark);"> 남</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="small-gender" value="여" style="accent-color:var(--green-dark);"> 여</label>
+            </div>
+          </div>
+        </div>
+        <hr class="form-divider">
+        <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:14px;">업종 정보</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>업종 <span class="req">*</span></label>
+            <input type="text" placeholder="예: 카페, 미용실, 음식점, 옷가게 등">
+          </div>
+          <div class="form-group">
+            <label>시행시기</label>
+            <input type="text" placeholder="예: 2024년 3월">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>사업시작년도</label>
+            <input type="text" placeholder="예: 2020년">
+          </div>
+          <div class="form-group">
+            <label>동업여부</label>
+            <div style="display:flex;gap:12px;padding-top:4px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="small-partner" value="없음" checked style="accent-color:var(--green-dark);"> 없음</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="small-partner" value="있음" style="accent-color:var(--green-dark);"> 있음</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>배우자성명</label>
+            <input type="text" placeholder="배우자 이름" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>사업방향</label>
+            <input type="text" placeholder="예: 동네 단골, SNS 마케팅, 배달 위주 등">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>상호에 들어가면 좋은 글자</label>
+            <input type="text" placeholder="예: 원하는 글자나 의미">
+          </div>
+          <div class="form-group">
+            <label>상호에 들어가면 좋은 색상</label>
+            <input type="text" placeholder="예: 파란색, 골드 등">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== -->
+    <!-- SECTION 2-E: 예명    -->
+    <!-- =================== -->
+    <div class="form-section" id="section-stagename" style="display:none;">
+      <div class="form-section-header">
+        <div class="form-section-num">2</div>
+        <div class="form-section-title">예명 신청 정보</div>
+        <div class="form-section-desc">예명 작명을 위한 정보</div>
+      </div>
+      <div class="form-section-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>신청인 성명 (한글) <span class="req">*</span></label>
+            <input type="text" placeholder="예: 김정운" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>신청인 성명 (한자) <span class="opt">(선택)</span></label>
+            <input type="text" placeholder="예: 金正雲">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>생년월일 <span class="req">*</span></label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;"><option value="">월</option><script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script></select>
+              <select style="flex:1;"><option value="">일</option><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>음/양력 <span class="req">*</span></label>
+            <div class="cal-select">
+              <label><input type="radio" name="stage-cal" value="양력" checked> 양력</label>
+              <label><input type="radio" name="stage-cal" value="음력"> 음력</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>태어난 시간 <span class="opt">(모를 경우 생략)</span></label>
+            <select>
+              <option value="">모름 (생략)</option>
+              <option>子시 (23:00~01:00)</option><option>丑시 (01:00~03:00)</option><option>寅시 (03:00~05:00)</option><option>卯시 (05:00~07:00)</option>
+              <option>辰시 (07:00~09:00)</option><option>巳시 (09:00~11:00)</option><option>午시 (11:00~13:00)</option><option>未시 (13:00~15:00)</option>
+              <option>申시 (15:00~17:00)</option><option>酉시 (17:00~19:00)</option><option>戌시 (19:00~21:00)</option><option>亥시 (21:00~23:00)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>성별 <span class="req">*</span></label>
+            <div style="display:flex;gap:12px;padding-top:4px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="stage-gender" value="남" style="accent-color:var(--green-dark);"> 남</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="stage-gender" value="여" style="accent-color:var(--green-dark);"> 여</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>부 성함</label>
+            <input type="text" placeholder="아버지 이름" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>부 생년월일</label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;"><option value="">월</option><script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script></select>
+              <select style="flex:1;"><option value="">일</option><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script></select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>모 성함</label>
+            <input type="text" placeholder="어머니 이름" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>모 생년월일</label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;"><option value="">월</option><script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script></select>
+              <select style="flex:1;"><option value="">일</option><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script></select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>가족 성명 <span class="opt">(형제자매 등)</span></label>
+            <input type="text" placeholder="예: 김민준, 김서연">
+          </div>
+          <div class="form-group">
+            <label>배우자 성명 및 생년월일 <span class="opt">(있을 경우)</span></label>
+            <input type="text" placeholder="예: 이지윤 1985년 3월 5일">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>자녀 정보 <span class="opt">(있을 경우)</span></label>
+            <input type="text" placeholder="자녀 이름, 생년월일">
+          </div>
+          <div class="form-group">
+            <label>활동 분야 <span class="req">*</span></label>
+            <input type="text" placeholder="예: 가수, 배우, 유튜버, 작가, 강사 등">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>고향</label>
+            <input type="text" placeholder="예: 서울, 부산 등">
+          </div>
+          <div class="form-group">
+            <label>희망 이름 스타일</label>
+            <input type="text" placeholder="예: 2글자, 강렬한 느낌, 순우리말 등">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>피하고 싶은 글자·발음</label>
+            <input type="text" placeholder="예: 특정 발음이나 글자">
+          </div>
+          <div class="form-group">
+            <label>기타 요청사항</label>
+            <input type="text" placeholder="그 외 전달 사항">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- =================== -->
+    <!-- SECTION 2-F: 아호    -->
+    <!-- =================== -->
+    <div class="form-section" id="section-aho" style="display:none;">
+      <div class="form-section-header">
+        <div class="form-section-num">2</div>
+        <div class="form-section-title">아호 신청 정보</div>
+        <div class="form-section-desc">학문·예술·사회 활동에 사용할 아호</div>
+      </div>
+      <div class="form-section-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>신청인 성명 (한글) <span class="req">*</span></label>
+            <input type="text" placeholder="예: 김정운" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>신청인 성명 (한자) <span class="opt">(선택)</span></label>
+            <input type="text" placeholder="예: 金正雲">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>생년월일 <span class="req">*</span></label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" placeholder="년" maxlength="4" style="flex:2;">
+              <select style="flex:1;"><option value="">월</option><script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script></select>
+              <select style="flex:1;"><option value="">일</option><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>음/양력 <span class="req">*</span></label>
+            <div class="cal-select">
+              <label><input type="radio" name="aho-cal" value="양력" checked> 양력</label>
+              <label><input type="radio" name="aho-cal" value="음력"> 음력</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>태어난 시간 <span class="opt">(모를 경우 생략)</span></label>
+            <select>
+              <option value="">모름 (생략)</option>
+              <option>子시 (23:00~01:00)</option><option>丑시 (01:00~03:00)</option><option>寅시 (03:00~05:00)</option><option>卯시 (05:00~07:00)</option>
+              <option>辰시 (07:00~09:00)</option><option>巳시 (09:00~11:00)</option><option>午시 (11:00~13:00)</option><option>未시 (13:00~15:00)</option>
+              <option>申시 (15:00~17:00)</option><option>酉시 (17:00~19:00)</option><option>戌시 (19:00~21:00)</option><option>亥시 (21:00~23:00)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>성별 <span class="req">*</span></label>
+            <div style="display:flex;gap:12px;padding-top:4px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="aho-gender" value="남" style="accent-color:var(--green-dark);"> 남</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;font-size:14px;"><input type="radio" name="aho-gender" value="여" style="accent-color:var(--green-dark);"> 여</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>활동 분야 <span class="req">*</span></label>
+            <input type="text" placeholder="예: 한국화, 서예, 문학, 학문 연구, 한의학 등">
+          </div>
+          <div class="form-group">
+            <label>아호에 담고 싶은 뜻이나 분위기</label>
+            <input type="text" placeholder="예: 자연, 고요함, 강인함, 선비 기질 등">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>사용 목적 <span class="req">*</span></label>
+            <input type="text" placeholder="예: 작품 서명, 명함, 공식 활동명 등">
+          </div>
+          <div class="form-group">
+            <label>피하고 싶은 글자·느낌</label>
+            <input type="text" placeholder="예: 특정 발음이나 의미">
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>가족 성명 <span class="opt">(부모, 배우자, 자녀 — 이름 분석에 활용)</span></label>
+            <input type="text" placeholder="예: 부 김정운, 모 이지윤, 배우자 박민지">
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>기타 요청사항</label>
+            <textarea placeholder="그 외 전달하고 싶은 내용을 자유롭게 적어주세요"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================== -->
     <!-- SECTION 3: 가족 정보 -->
+    <!-- ================== -->
     <div class="form-section">
       <div class="form-section-header">
         <div class="form-section-num">3</div>
@@ -631,26 +1079,24 @@
               <label>생년월일 <span class="req">*</span></label>
               <div style="display:flex;gap:6px;">
                 <input type="text" placeholder="년" maxlength="4" style="flex:2;">
-                <select style="flex:1;"><option value="">월</option>
+                <select style="flex:1;">
+                  <option value="">월</option>
                   <script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script>
                 </select>
-                <select style="flex:1;"><option value="">일</option>
+                <select style="flex:1;">
+                  <option value="">일</option>
                   <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script>
                 </select>
               </div>
             </div>
           </div>
-          <div class="form-row">
+          <div class="form-row single">
             <div class="form-group">
               <label>양력 / 음력 <span class="req">*</span></label>
               <div class="cal-select">
                 <label><input type="radio" name="father-cal" value="양력" checked> 양력</label>
                 <label><input type="radio" name="father-cal" value="음력"> 음력</label>
               </div>
-            </div>
-            <div class="form-group">
-              <label>직업 <span class="opt">(선택)</span></label>
-              <input type="text" placeholder="예: 직장인, 자영업 등">
             </div>
           </div>
         </div>
@@ -667,26 +1113,24 @@
               <label>생년월일 <span class="req">*</span></label>
               <div style="display:flex;gap:6px;">
                 <input type="text" placeholder="년" maxlength="4" style="flex:2;">
-                <select style="flex:1;"><option value="">월</option>
+                <select style="flex:1;">
+                  <option value="">월</option>
                   <script>for(let i=1;i<=12;i++) document.write(`<option value="${i}">${i}월</option>`);</script>
                 </select>
-                <select style="flex:1;"><option value="">일</option>
+                <select style="flex:1;">
+                  <option value="">일</option>
                   <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}일</option>`);</script>
                 </select>
               </div>
             </div>
           </div>
-          <div class="form-row">
+          <div class="form-row single">
             <div class="form-group">
               <label>양력 / 음력 <span class="req">*</span></label>
               <div class="cal-select">
                 <label><input type="radio" name="mother-cal" value="양력" checked> 양력</label>
                 <label><input type="radio" name="mother-cal" value="음력"> 음력</label>
               </div>
-            </div>
-            <div class="form-group">
-              <label>직업 <span class="opt">(선택)</span></label>
-              <input type="text" placeholder="예: 직장인, 자영업 등">
             </div>
           </div>
         </div>
@@ -706,13 +1150,16 @@
               </div>
             </div>
           </div>
-          <button type="button" onclick="addSibling()" style="background:none;border:1px dashed rgba(196,162,74,0.4);color:var(--gold-dark);padding:8px 16px;font-size:12px;cursor:pointer;font-family:var(--sans);">+ 형제자매 추가</button>
+          <button type="button" onclick="addSibling()"
+            style="background:none;border:1px dashed rgba(196,162,74,0.4);color:var(--gold-dark);padding:8px 16px;font-size:12px;cursor:pointer;font-family:var(--sans);">
+            + 형제자매 추가
+          </button>
         </div>
 
         <!-- 조부모 -->
         <div class="family-block">
           <div class="family-block-title">조부모 이름 <span style="color:var(--ink-faint);font-size:11px;font-weight:400;">(있을 경우)</span></div>
-          <div class="form-row triple">
+          <div class="form-row quad">
             <div class="form-group">
               <label>친조부</label>
               <input type="text" placeholder="이름" maxlength="10">
@@ -725,13 +1172,10 @@
               <label>외조부</label>
               <input type="text" placeholder="이름" maxlength="10">
             </div>
-          </div>
-          <div class="form-row" style="margin-top:10px;">
             <div class="form-group">
               <label>외조모</label>
               <input type="text" placeholder="이름" maxlength="10">
             </div>
-            <div></div>
           </div>
         </div>
 
@@ -745,10 +1189,23 @@
           </div>
         </div>
 
+        <!-- 중복불가 이름 -->
+        <div class="family-block">
+          <div class="family-block-title">중복되면 안 되는 이름 <span style="color:var(--ink-faint);font-size:11px;font-weight:400;">(가족 내 이미 사용 중이거나 피해야 할 이름)</span></div>
+          <div class="form-row single">
+            <div class="form-group">
+              <input type="text" placeholder="예: 민준, 서연 (쉼표로 구분)">
+              <div class="form-hint">가족 내 이미 사용 중인 이름이거나 발음이 겹치면 안 되는 이름을 적어주세요</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
+    <!-- ================== -->
     <!-- SECTION 4: 희망 조건 -->
+    <!-- ================== -->
     <div class="form-section">
       <div class="form-section-header">
         <div class="form-section-num">4</div>
@@ -756,32 +1213,38 @@
         <div class="form-section-desc">이름에 담고 싶은 방향</div>
       </div>
       <div class="form-section-body">
+
         <div class="form-row single">
           <div class="form-group">
             <label>원하는 이름의 느낌·분위기 <span class="opt">(선택)</span></label>
             <textarea placeholder="예: 강하고 단단한 느낌, 부드럽고 여성스러운 느낌, 자연에서 온 이름, 순우리말 포함 등 자유롭게 적어주세요"></textarea>
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>피하고 싶은 글자·발음 <span class="opt">(선택)</span></label>
-            <input type="text" placeholder="예: '죽을 사(死)'자 발음, 특정 글자 등">
+            <input type="text" placeholder="예: 특정 발음, 특정 글자 등">
           </div>
           <div class="form-group">
             <label>참고 이름 스타일 <span class="opt">(선택)</span></label>
-            <input type="text" placeholder="예: 이름 예시나 참고할 이름이 있으면 입력">
+            <input type="text" placeholder="예: 참고할 이름이 있으면 입력">
           </div>
         </div>
+
         <div class="form-row single">
           <div class="form-group">
             <label>기타 요청사항 <span class="opt">(선택)</span></label>
             <textarea placeholder="그 외 전달하고 싶은 내용을 자유롭게 적어주세요"></textarea>
           </div>
         </div>
+
       </div>
     </div>
 
+    <!-- ==================== -->
     <!-- SECTION 5: 신청자 정보 -->
+    <!-- ==================== -->
     <div class="form-section">
       <div class="form-section-header">
         <div class="form-section-num">5</div>
@@ -789,6 +1252,7 @@
         <div class="form-section-desc">결과 전달 및 연락처</div>
       </div>
       <div class="form-section-body">
+
         <div class="form-row">
           <div class="form-group">
             <label>신청자 이름 <span class="req">*</span></label>
@@ -805,13 +1269,14 @@
             </div>
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>이메일 <span class="req">*</span></label>
             <input type="email" placeholder="example@email.com">
           </div>
           <div class="form-group">
-            <label>상담 방식 <span class="req">*</span></label>
+            <label>결과 전달 방식 <span class="req">*</span></label>
             <select>
               <option value="">선택</option>
               <option>카카오톡</option>
@@ -820,23 +1285,22 @@
             </select>
           </div>
         </div>
+
         <div class="form-row single">
           <div class="form-group">
-            <label>카카오톡 ID <span class="opt">(카카오 결과 전달 시 필요)</span></label>
+            <label>카카오톡 ID <span class="opt">(카카오 전달 시 필요)</span></label>
             <input type="text" placeholder="카카오톡 아이디 입력">
           </div>
         </div>
+
         <div class="form-row single">
           <div class="form-group">
             <label>주소 <span class="opt">(고급 작명장 신청 시 필수)</span></label>
-            <div style="display:flex;gap:8px;margin-bottom:6px;">
-              <input type="text" id="postcode" placeholder="우편번호" style="width:120px;flex-shrink:0;">
-              <button type="button" style="background:var(--bg2);border:1px solid rgba(196,162,74,0.3);color:var(--ink2);padding:0 16px;font-size:13px;cursor:pointer;white-space:nowrap;font-family:var(--sans);">우편번호 찾기</button>
-            </div>
-            <input type="text" placeholder="기본주소" style="margin-bottom:6px;">
+            <input type="text" placeholder="주소 입력" style="margin-bottom:6px;">
             <input type="text" placeholder="상세주소">
           </div>
         </div>
+
         <div class="form-row single">
           <div class="form-group">
             <label>유입 경로 <span class="opt">(선택)</span></label>
@@ -854,10 +1318,13 @@
             </select>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- SECTION 6: 결제 정보 -->
+    <!-- ============== -->
+    <!-- SECTION 6: 결제 -->
+    <!-- ============== -->
     <div class="form-section">
       <div class="form-section-header">
         <div class="form-section-num">6</div>
@@ -865,6 +1332,7 @@
         <div class="form-section-desc">선결제 후 접수 확정</div>
       </div>
       <div class="form-section-body">
+
         <!-- 금액 요약 -->
         <div class="price-summary">
           <div>
@@ -890,19 +1358,22 @@
             <input type="text" placeholder="실제 입금자명 입력">
           </div>
         </div>
+
         <div class="form-group" style="margin-bottom:16px;">
           <label>입금 계좌</label>
           <div style="background:var(--bg2);border:1px solid rgba(196,162,74,0.2);padding:14px 18px;font-size:14px;color:var(--ink2);line-height:1.9;">
-            <strong>국민은행</strong> &nbsp;123-456-78901234<br>
+            <strong>기업은행</strong> &nbsp;469901-04-117539<br>
             예금주: 주식회사 위버플레인<br>
             <span style="font-size:12px;color:var(--ink-faint);">※ 입금 확인 후 담당자가 1영업일 이내 연락드립니다</span>
           </div>
         </div>
+
         <div style="font-size:12px;color:var(--ink-faint);line-height:1.9;background:var(--bg2);padding:14px;border:1px solid rgba(196,162,74,0.1);">
           ※ 선결제 완료 후 접수가 확정됩니다.<br>
           ※ 작명 시작 전 취소 시 전액 환불, 작명 시작 후 취소 시 환불 불가합니다.<br>
           ※ 자세한 환불 정책은 <a href="/refund.html" style="color:var(--gold-dark);text-decoration:underline;">환불정책</a>을 확인해주세요.
         </div>
+
       </div>
     </div>
 
@@ -919,12 +1390,12 @@
           수집 목적: 작명 서비스 제공, 결과 전달, 상담 진행<br>
           보유 기간: 서비스 완료 후 3년<br><br>
           귀하는 개인정보 수집·이용에 동의하지 않을 권리가 있습니다. 단, 동의하지 않을 경우 서비스 이용이 불가합니다.<br><br>
-          입력하신 정보는 작명 서비스 제공 외 목적으로 사용되지 않으며, 제3자에게 제공되지 않습니다.<br>
-          개인정보 처리 관련 자세한 사항은 <a href="/privacy.html" style="color:var(--gold-dark);">개인정보처리방침</a>을 확인해주세요.
+          입력하신 정보는 작명 서비스 제공 외 목적으로 사용되지 않으며, 제3자에게 제공되지 않습니다.
         </div>
         <label class="privacy-agree">
           <input type="checkbox" id="privacy-agree">
-          개인정보 수집 및 이용에 동의합니다 <span style="color:#c0392b;font-size:11px;margin-left:4px;">(필수)</span>
+          개인정보 수집 및 이용에 동의합니다
+          <span style="color:#c0392b;font-size:11px;margin-left:4px;">(필수)</span>
         </label>
       </div>
     </div>
@@ -934,7 +1405,10 @@
       <button class="form-submit-btn" onclick="submitForm()">신청하기</button>
       <p class="form-submit-note">
         접수 완료 후 담당자 확인까지 1영업일 이내 안내드립니다<br>
-        문의: <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" style="color:var(--gold-dark);">카카오 채널</a> · <a href="mailto:help@onomalife.com" style="color:var(--gold-dark);">help@onomalife.com</a>
+        문의:
+        <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" style="color:var(--gold-dark);">카카오 채널</a>
+        ·
+        <a href="mailto:help@onomalife.com" style="color:var(--gold-dark);">help@onomalife.com</a>
       </p>
     </div>
 
@@ -942,31 +1416,69 @@
 </div>
 
 <script>
-const tierPrices = { '베이직': 330000, '프리미엄': 550000, '시그니처': 880000, '상호': 0 };
-const tierNames = { '베이직': '베이직 330,000원', '프리미엄': '프리미엄 550,000원', '시그니처': '시그니처 880,000원' };
+// =====================
+// 가격표
+// =====================
+const tierPrices = {
+  '베이직'   : 330000,
+  '프리미엄' : 550000,
+  '시그니처' : 880000
+};
+const tierNames = {
+  '베이직'   : '베이직 330,000원',
+  '프리미엄' : '프리미엄 550,000원',
+  '시그니처' : '시그니처 880,000원'
+};
 
-function updatePrice() {
+// =====================
+// 서비스 유형 전환
+// =====================
+function switchForm() {
   const svcType = document.querySelector('input[name="svc-type"]:checked')?.value;
-  const tier = document.querySelector('input[name="tier"]:checked')?.value || '프리미엄';
-  const certExtra = document.getElementById('cert-option')?.checked ? 30000 : 0;
-  const tierSection = document.getElementById('tier-section');
 
-  if (svcType === '상호') {
-    tierSection.style.display = 'none';
-    document.getElementById('total-price').textContent = '상담 후 안내';
-    document.getElementById('price-breakdown').textContent = '상호·브랜드명 — 상담 후 가격 안내';
+  // 섹션 전환
+  document.getElementById('section-baby').style.display        = (svcType === '신생아')  ? 'block' : 'none';
+  document.getElementById('section-rename').style.display      = (svcType === '개명')    ? 'block' : 'none';
+  document.getElementById('section-business').style.display    = (svcType === '법인')    ? 'block' : 'none';
+  document.getElementById('section-small').style.display       = (svcType === '소상공인') ? 'block' : 'none';
+  document.getElementById('section-stagename').style.display   = (svcType === '예명')    ? 'block' : 'none';
+  document.getElementById('section-aho').style.display         = (svcType === '아호')    ? 'block' : 'none';
+
+  // 상호/예명/아호 계열은 티어 선택 숨김
+  const noTier = ['법인', '소상공인', '예명', '아호'];
+  document.getElementById('tier-section').style.display = noTier.includes(svcType) ? 'none' : 'block';
+
+  updatePrice();
+}
+
+// =====================
+// 금액 업데이트
+// =====================
+function updatePrice() {
+  const svcType   = document.querySelector('input[name="svc-type"]:checked')?.value;
+  const tier      = document.querySelector('input[name="tier"]:checked')?.value || '프리미엄';
+  const certExtra = document.getElementById('cert-option').checked ? 30000 : 0;
+
+  const noTierTypes = ['법인', '소상공인', '예명'];
+  if (noTierTypes.includes(svcType)) {
+    document.getElementById('total-price').textContent     = '상담 후 안내';
+    document.getElementById('price-breakdown').textContent = `${svcType} — 상담 후 가격 안내`;
     return;
   }
 
-  tierSection.style.display = 'block';
-  const base = tierPrices[tier] || 550000;
+  const base  = tierPrices[tier] || 550000;
   const total = base + certExtra;
+
   document.getElementById('total-price').textContent = total.toLocaleString();
+
   let breakdown = tierNames[tier] || '';
   if (certExtra) breakdown += ' + 고급 작명장 30,000원';
   document.getElementById('price-breakdown').textContent = breakdown;
 }
 
+// =====================
+// 형제자매 추가
+// =====================
 function addSibling() {
   const container = document.getElementById('siblings-container');
   const row = document.createElement('div');
@@ -985,27 +1497,35 @@ function addSibling() {
   container.appendChild(row);
 }
 
+// =====================
+// 제출
+// =====================
 function submitForm() {
   if (!document.getElementById('privacy-agree').checked) {
     alert('개인정보 수집 및 이용에 동의해주세요.');
     return;
   }
-  alert('신청이 접수되었습니다.\n담당자 확인 후 1영업일 이내 연락드립니다.\n감사합니다.');
+  // TODO: Supabase 저장 연동 후 이 부분 교체
+  location.href = 'thank-you.html';
 }
 
+// =====================
 // URL 파라미터로 티어 자동 선택
-const params = new URLSearchParams(location.search);
+// =====================
+const params    = new URLSearchParams(location.search);
 const tierParam = params.get('tier');
 if (tierParam) {
   const map = { basic: '베이직', premium: '프리미엄', signature: '시그니처' };
-  const tierVal = map[tierParam];
-  if (tierVal) {
+  const val = map[tierParam];
+  if (val) {
     document.querySelectorAll('input[name="tier"]').forEach(r => {
-      if (r.value === tierVal) r.checked = true;
+      r.checked = (r.value === val);
     });
   }
 }
-updatePrice();
+
+// 초기화
+switchForm();
 </script>
 </body>
 </html>
