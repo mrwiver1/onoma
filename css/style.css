@@ -1408,21 +1408,21 @@ footer {
 }
 .footer-biz-left span,
 .footer-biz-left a {
-  font-size: 11px;
-  color: rgba(232,240,222,0.3);
+  font-size: 13px;
+  color: rgba(232,240,222,0.75);
   text-decoration: none;
   letter-spacing: 0.04em;
   transition: color 0.2s;
 }
 .footer-biz-left a:hover {
-  color: rgba(232,240,222,0.6);
+  color: rgba(232,240,222,0.95);
 }
 .footer-biz-div {
-  opacity: 0.2;
+  opacity: 0.5;
 }
 .footer-biz-corp {
-  font-size: 11px;
-  color: rgba(232,240,222,0.2);
+  font-size: 13px;
+  color: rgba(232,240,222,0.65);
   letter-spacing: 0.02em;
   line-height: 1.8;
   font-weight: 300;
@@ -1444,12 +1444,12 @@ footer {
 }
 
 .footer-biz-email {
-  color: rgba(232,240,222,0.35);
+  color: rgba(232,240,222,0.75);
   text-decoration: none;
   transition: color 0.2s;
 }
 .footer-biz-email:hover {
-  color: rgba(232,240,222,0.65);
+  color: rgba(232,240,222,0.95);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
