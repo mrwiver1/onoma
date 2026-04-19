@@ -65,7 +65,7 @@ nav {
 .nav-logo img { height:48px; width:auto; display:block; }
 .nav-logo-text { font-family:var(--serif); font-size:16px; font-weight:600; color:var(--green-dark); letter-spacing:0.06em; border-left:1.5px solid rgba(196,162,74,0.28); padding-left:12px; }
 .nav-links { display:flex; align-items:center; gap:24px; list-style:none; }
-.nav-links a { font-size:12px; font-weight:600; color:var(--ink2); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
+.nav-links a { font-size:15px; font-weight:600; color:var(--ink2); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--gold-dark); }
 .nav-cta { font-size:13px; font-weight:600; padding:10px 24px; border:none; color:#fff; background:var(--green-dark); cursor:pointer; font-family:var(--sans); letter-spacing:0.08em; transition:all 0.25s; }
 .nav-cta:hover { background:var(--ink); }
