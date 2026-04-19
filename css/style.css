@@ -124,7 +124,7 @@ section { position:relative; z-index:1; }
 .service-card::before { content:''; position:absolute; top:0; left:0; width:2px; height:100%; background:var(--gold); transform:scaleY(0); transform-origin:top; transition:transform 0.3s; }
 .service-card:hover { border-color:rgba(196,162,74,0.28); box-shadow:0 6px 32px rgba(28,28,20,0.07); transform:translateY(-2px); }
 .service-card:hover::before { transform:scaleY(1); }
-.service-tag { display:inline-block; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-dark); background:transparent; border:none; border-bottom:1px solid rgba(196,162,74,0.4); padding:0 0 4px 0; margin-bottom:14px; font-weight:500; }
+.service-tag { display:inline-block; font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-dark); background:transparent; border:none; border-bottom:1px solid rgba(196,162,74,0.4); padding:0 0 4px 0; margin-bottom:14px; font-weight:500; }
 .service-card h3 { font-family:var(--serif); font-size:22px; font-weight:300; color:var(--ink); margin-bottom:14px; line-height:1.35; letter-spacing:-0.01em; }
 .service-card p { font-size:13.5px; color:var(--ink3); line-height:1.95; margin-bottom:20px; font-weight:300; }
 .service-points { list-style:none; margin-bottom:24px; }
@@ -1257,8 +1257,8 @@ img { display:block; }
   background: #d4b878 !important;
 }
 .svc-push-footnote {
-  font-size: 11px !important;
-  color: rgba(232,240,222,0.3) !important;
+  font-size: 14px !important;
+  color: rgba(232,240,222,0.75) !important;
   letter-spacing: 0.06em;
   margin-top: 10px !important;
   margin-bottom: 0 !important;
