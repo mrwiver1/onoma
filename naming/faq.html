@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자주 묻는 질문 — 힐링네임 by ONOMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  :root {
+    --ink:#1a140a;--ink2:#3a2e1e;--ink3:#6b5a3e;--ink-faint:#b0a08a;
+    --gold:#c4a24a;--gold-dark:#8a6a1f;--green-dark:#4a6b42;
+    --bg:#f5f0e8;--bg2:#ede8de;
+    --serif:'Cormorant Garamond','Noto Serif KR',serif;
+    --sans:'Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);}
+
+  .board-hero{padding:56px 5% 40px;border-bottom:1px solid rgba(196,162,74,0.15);}
+  .board-hero-inner{max-width:860px;margin:0 auto;}
+  .board-eyebrow{font-size:10px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:12px;}
+  .board-title{font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:var(--ink);margin-bottom:8px;}
+  .board-sub{font-size:13px;color:var(--ink3);}
+
+  .board-wrap{max-width:860px;margin:0 auto;padding:40px 5% 80px;}
+
+  /* 카테고리 필터 */
+  .cat-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+  .cat-btn{
+    background:#fff;border:1px solid rgba(196,162,74,0.3);
+    padding:7px 16px;font-size:12px;color:var(--ink3);
+    cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;
+    font-family:var(--sans);
+  }
+  .cat-btn.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark);}
+
+  /* 아코디언 */
+  .faq-list{border-top:2px solid var(--ink);}
+  .faq-item{border-bottom:1px solid rgba(196,162,74,0.15);}
+  .faq-question{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:16px;padding:20px 0;cursor:pointer;
+  }
+  .faq-question:hover .faq-q-text{color:var(--green-dark);}
+  .faq-q-mark{font-family:var(--serif);font-size:20px;color:var(--gold-dark);font-weight:300;flex-shrink:0;margin-top:2px;}
+  .faq-q-text{font-size:14px;color:var(--ink);font-weight:500;line-height:1.6;flex:1;}
+  .faq-q-arrow{font-size:12px;color:var(--ink-faint);flex-shrink:0;margin-top:4px;transition:transform 0.2s;}
+  .faq-item.open .faq-q-arrow{transform:rotate(180deg);}
+  .faq-answer{
+    display:none;padding:0 0 20px 32px;
+    font-size:14px;color:var(--ink2);line-height:1.9;
+  }
+  .faq-item.open .faq-answer{display:block;}
+  .faq-a-mark{color:var(--green-dark);font-weight:700;margin-right:8px;}
+
+  .empty-msg{text-align:center;padding:60px 0;color:var(--ink-faint);font-size:13px;letter-spacing:0.1em;}
+
+  /* 하단 CTA */
+  .faq-bottom{
+    margin-top:48px;background:var(--bg2);
+    border:1px solid rgba(196,162,74,0.2);padding:32px;text-align:center;
+  }
+  .faq-bottom-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--ink);margin-bottom:8px;}
+  .faq-bottom-sub{font-size:13px;color:var(--ink3);margin-bottom:20px;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" style="display:flex;flex-direction:column;gap:2px;line-height:1;text-decoration:none;">
+    <span style="font-family:var(--serif);font-size:18px;color:var(--ink);letter-spacing:0.05em;">힐링네임</span>
+    <span style="font-size:9px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;">by ONOMA</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">서비스 안내</a></li>
+    <li><a href="notice.html">공지사항</a></li>
+    <li><a href="review.html">고객 리뷰</a></li>
+    <li><a href="qna.html">질문과 답변</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='form.html'">작명 신청하기</button>
+</nav>
+
+<section class="board-hero">
+  <div class="board-hero-inner">
+    <div class="board-eyebrow">FAQ</div>
+    <h1 class="board-title">자주 묻는 질문</h1>
+    <p class="board-sub">작명·개명 서비스에 대해 가장 많이 물어보시는 내용을 정리했습니다</p>
+  </div>
+</section>
+
+<div class="board-wrap">
+  <!-- 카테고리 필터 -->
+  <div class="cat-filter" id="catFilter"></div>
+
+  <!-- FAQ 목록 -->
+  <div class="faq-list" id="faqList">
+    <div class="empty-msg" style="padding:40px 0;font-size:12px;">불러오는 중…</div>
+  </div>
+
+  <!-- 하단 CTA -->
+  <div class="faq-bottom">
+    <div class="faq-bottom-title">원하는 답변을 찾지 못하셨나요?</div>
+    <p class="faq-bottom-sub">카카오 채널로 편하게 문의주세요.<br>빠르게 답변드리겠습니다.</p>
+    <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="btn-primary" style="display:inline-block;padding:14px 28px;text-decoration:none;">카카오로 문의하기</a>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://wavhcknviozwadqyjlug.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhdmhja252aW96d2FkcXlqbHVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTQ5NjksImV4cCI6MjA5MDQzMDk2OX0.frq_z3GgL8BEjHCRuVcdOqPLe0DhJp0k-joOXYVK_Ws';
+
+let ALL_FAQS = [];
+let currentCat = '전체';
+
+async function loadFaqs() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/faqs?is_published=eq.true&order=sort_order.asc,created_at.asc`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
+    );
+    ALL_FAQS = await res.json();
+    renderCats();
+    renderFaqs();
+  } catch(e) {
+    document.getElementById('faqList').innerHTML = '<div class="empty-msg">데이터를 불러올 수 없습니다</div>';
+  }
+}
+
+function renderCats() {
+  const cats = ['전체', ...new Set(ALL_FAQS.map(f => f.category).filter(Boolean))];
+  document.getElementById('catFilter').innerHTML = cats.map(c =>
+    `<button class="cat-btn ${c === currentCat ? 'active' : ''}" onclick="filterCat('${c}')">${c}</button>`
+  ).join('');
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  renderCats();
+  renderFaqs();
+}
+
+function renderFaqs() {
+  const list = currentCat === '전체' ? ALL_FAQS : ALL_FAQS.filter(f => f.category === currentCat);
+  const el = document.getElementById('faqList');
+  if (!list || list.length === 0) {
+    el.innerHTML = '<div class="empty-msg">등록된 FAQ가 없습니다</div>';
+    return;
+  }
+  el.innerHTML = list.map((f, i) => `
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-question" onclick="toggleFaq(${i})">
+        <span class="faq-q-mark">Q</span>
+        <span class="faq-q-text">${f.question}</span>
+        <span class="faq-q-arrow">▼</span>
+      </div>
+      <div class="faq-answer">
+        <span class="faq-a-mark">A</span>${f.answer}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleFaq(i) {
+  document.getElementById('faq-' + i).classList.toggle('open');
+}
+
+loadFaqs();
+</script>
+</body>
+</html>

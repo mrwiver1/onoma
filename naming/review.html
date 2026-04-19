@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고객 리뷰 — 힐링네임 by ONOMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  :root {
+    --ink:#1a140a;--ink2:#3a2e1e;--ink3:#6b5a3e;--ink-faint:#b0a08a;
+    --gold:#c4a24a;--gold-dark:#8a6a1f;--green-dark:#4a6b42;
+    --bg:#f5f0e8;--bg2:#ede8de;
+    --serif:'Cormorant Garamond','Noto Serif KR',serif;
+    --sans:'Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);}
+
+  .board-hero{padding:56px 5% 40px;border-bottom:1px solid rgba(196,162,74,0.15);}
+  .board-hero-inner{max-width:960px;margin:0 auto;}
+  .board-eyebrow{font-size:10px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:12px;}
+  .board-title{font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:var(--ink);margin-bottom:8px;}
+  .board-sub{font-size:13px;color:var(--ink3);}
+
+  .board-wrap{max-width:960px;margin:0 auto;padding:40px 5% 80px;}
+
+  /* 리뷰 그리드 */
+  .review-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:16px;margin-bottom:48px;
+  }
+  .review-card{
+    background:#fff;border:1px solid rgba(196,162,74,0.2);
+    padding:24px;
+  }
+  .review-stars{color:var(--gold);font-size:14px;margin-bottom:12px;letter-spacing:2px;}
+  .review-content{font-size:13px;color:var(--ink2);line-height:1.8;margin-bottom:16px;}
+  .review-footer{display:flex;justify-content:space-between;align-items:center;}
+  .review-author{font-size:12px;color:var(--ink3);font-weight:500;}
+  .review-svc{font-size:11px;color:var(--gold-dark);letter-spacing:0.05em;}
+  .review-date{font-size:11px;color:var(--ink-faint);}
+
+  /* 리뷰 작성 폼 */
+  .write-section{
+    background:var(--bg2);border:1px solid rgba(196,162,74,0.2);
+    padding:32px;margin-top:48px;
+  }
+  .write-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--ink);margin-bottom:20px;}
+  .write-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .write-group{display:flex;flex-direction:column;gap:6px;}
+  .write-group label{font-size:12px;font-weight:600;color:var(--ink2);}
+  .write-group input,.write-group select,.write-group textarea{
+    border:1px solid rgba(196,162,74,0.3);background:#fff;
+    padding:10px 12px;font-size:13px;font-family:var(--sans);
+    color:var(--ink);outline:none;transition:border-color 0.2s;
+  }
+  .write-group input:focus,.write-group select:focus,.write-group textarea:focus{border-color:var(--green-dark);}
+  .write-group textarea{min-height:100px;resize:vertical;line-height:1.7;}
+  .star-select{display:flex;gap:6px;padding-top:4px;}
+  .star-select label{cursor:pointer;font-size:20px;color:rgba(196,162,74,0.3);transition:color 0.15s;}
+  .star-select input{display:none;}
+  .star-select label:hover,.star-select label.on{color:var(--gold);}
+  .submit-notice{font-size:11px;color:var(--ink-faint);margin-top:10px;line-height:1.7;}
+
+  .empty-msg{text-align:center;padding:60px 0;color:var(--ink-faint);font-size:13px;letter-spacing:0.1em;}
+
+  @media(max-width:768px){
+    .review-grid{grid-template-columns:1fr;}
+    .write-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" style="display:flex;flex-direction:column;gap:2px;line-height:1;text-decoration:none;">
+    <span style="font-family:var(--serif);font-size:18px;color:var(--ink);letter-spacing:0.05em;">힐링네임</span>
+    <span style="font-size:9px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;">by ONOMA</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">서비스 안내</a></li>
+    <li><a href="notice.html">공지사항</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="qna.html">질문과 답변</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='form.html'">작명 신청하기</button>
+</nav>
+
+<section class="board-hero">
+  <div class="board-hero-inner">
+    <div class="board-eyebrow">Review</div>
+    <h1 class="board-title">고객 리뷰</h1>
+    <p class="board-sub">힐링네임 작명 서비스를 이용하신 분들의 솔직한 후기입니다</p>
+  </div>
+</section>
+
+<div class="board-wrap">
+  <div class="review-grid" id="reviewGrid">
+    <div class="empty-msg" style="grid-column:span 3;padding:40px 0;font-size:12px;">불러오는 중…</div>
+  </div>
+
+  <!-- 리뷰 작성 -->
+  <div class="write-section">
+    <div class="write-title">리뷰 작성하기</div>
+    <div class="write-grid">
+      <div class="write-group">
+        <label>이름 (닉네임 가능) *</label>
+        <input id="r-author" type="text" placeholder="예: 김○○ / 만족한 부모님">
+      </div>
+      <div class="write-group">
+        <label>이용 서비스 *</label>
+        <select id="r-svc">
+          <option value="">선택</option>
+          <option>신생아 작명</option>
+          <option>개명</option>
+          <option>예명</option>
+          <option>아호</option>
+          <option>소상공인 상호</option>
+          <option>법인 상호</option>
+        </select>
+      </div>
+    </div>
+    <div class="write-group" style="margin-bottom:14px;">
+      <label>별점 *</label>
+      <div class="star-select" id="starSelect">
+        <label id="s1" onclick="setStar(1)">★</label>
+        <label id="s2" onclick="setStar(2)">★</label>
+        <label id="s3" onclick="setStar(3)">★</label>
+        <label id="s4" onclick="setStar(4)">★</label>
+        <label id="s5" onclick="setStar(5)">★</label>
+      </div>
+    </div>
+    <div class="write-group" style="margin-bottom:16px;">
+      <label>후기 내용 *</label>
+      <textarea id="r-content" placeholder="작명 서비스를 이용하신 솔직한 후기를 남겨주세요"></textarea>
+    </div>
+    <button class="btn-primary" onclick="submitReview()" style="padding:12px 28px;">후기 등록하기</button>
+    <p class="submit-notice">※ 등록된 후기는 관리자 검토 후 게시됩니다 · 허위 후기는 삭제될 수 있습니다</p>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://wavhcknviozwadqyjlug.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhdmhja252aW96d2FkcXlqbHVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTQ5NjksImV4cCI6MjA5MDQzMDk2OX0.frq_z3GgL8BEjHCRuVcdOqPLe0DhJp0k-joOXYVK_Ws';
+let selectedStar = 5;
+
+function setStar(n) {
+  selectedStar = n;
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('s' + i).classList.toggle('on', i <= n);
+  }
+}
+setStar(5);
+
+async function loadReviews() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/reviews?is_approved=eq.true&order=created_at.desc`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
+    );
+    const data = await res.json();
+    renderReviews(data);
+  } catch(e) {
+    document.getElementById('reviewGrid').innerHTML = '<div class="empty-msg" style="grid-column:span 3">데이터를 불러올 수 없습니다</div>';
+  }
+}
+
+function renderReviews(list) {
+  const el = document.getElementById('reviewGrid');
+  if (!list || list.length === 0) {
+    el.innerHTML = '<div class="empty-msg" style="grid-column:span 3">등록된 리뷰가 없습니다<br><span style="font-size:11px;margin-top:8px;display:block;">첫 번째 후기를 남겨주세요</span></div>';
+    return;
+  }
+  el.innerHTML = list.map(r => `
+    <div class="review-card">
+      <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+      <div class="review-content">${r.content}</div>
+      <div class="review-footer">
+        <div>
+          <div class="review-author">${r.author_name}</div>
+          <div class="review-svc">${r.service_type || ''}</div>
+        </div>
+        <div class="review-date">${r.created_at.slice(0,10)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function submitReview() {
+  const author  = document.getElementById('r-author').value.trim();
+  const svc     = document.getElementById('r-svc').value;
+  const content = document.getElementById('r-content').value.trim();
+  if (!author) { alert('이름을 입력해주세요.'); return; }
+  if (!svc)    { alert('이용 서비스를 선택해주세요.'); return; }
+  if (!content){ alert('후기 내용을 입력해주세요.'); return; }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        author_name: author,
+        service_type: svc,
+        rating: selectedStar,
+        content: content,
+        is_approved: false
+      })
+    });
+    if (res.ok) {
+      alert('후기가 등록되었습니다.\n관리자 검토 후 게시됩니다. 감사합니다!');
+      document.getElementById('r-author').value = '';
+      document.getElementById('r-svc').value = '';
+      document.getElementById('r-content').value = '';
+      setStar(5);
+    } else {
+      alert('등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+  } catch(e) {
+    alert('네트워크 오류가 발생했습니다.');
+  }
+}
+
+loadReviews();
+</script>
+</body>
+</html>

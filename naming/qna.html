@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>질문과 답변 — 힐링네임 by ONOMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  :root {
+    --ink:#1a140a;--ink2:#3a2e1e;--ink3:#6b5a3e;--ink-faint:#b0a08a;
+    --gold:#c4a24a;--gold-dark:#8a6a1f;--green-dark:#4a6b42;
+    --bg:#f5f0e8;--bg2:#ede8de;
+    --serif:'Cormorant Garamond','Noto Serif KR',serif;
+    --sans:'Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);}
+
+  .board-hero{padding:56px 5% 40px;border-bottom:1px solid rgba(196,162,74,0.15);}
+  .board-hero-inner{max-width:860px;margin:0 auto;}
+  .board-eyebrow{font-size:10px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:12px;}
+  .board-title{font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:var(--ink);margin-bottom:8px;}
+  .board-sub{font-size:13px;color:var(--ink3);}
+
+  .board-wrap{max-width:860px;margin:0 auto;padding:40px 5% 80px;}
+
+  /* Q&A 목록 */
+  .qna-list{border-top:2px solid var(--ink);margin-bottom:48px;}
+  .qna-item{border-bottom:1px solid rgba(196,162,74,0.15);}
+  .qna-header{
+    display:grid;grid-template-columns:auto 1fr auto auto;
+    align-items:center;gap:12px;padding:16px 0;cursor:pointer;
+  }
+  .qna-header:hover .qna-title{color:var(--green-dark);}
+  .qna-badge{
+    font-size:10px;padding:3px 10px;letter-spacing:0.08em;white-space:nowrap;
+  }
+  .badge-wait{background:var(--bg2);color:var(--ink3);border:1px solid rgba(196,162,74,0.2);}
+  .badge-done{background:#e8f4ec;color:var(--green-dark);border:1px solid #a8d8b8;}
+  .badge-secret{background:var(--ink);color:rgba(255,255,255,0.6);border:none;}
+  .qna-title{font-size:14px;color:var(--ink);font-weight:500;line-height:1.5;}
+  .qna-date{font-size:11px;color:var(--ink-faint);white-space:nowrap;}
+  .qna-arrow{font-size:11px;color:var(--ink-faint);transition:transform 0.2s;}
+  .qna-item.open .qna-arrow{transform:rotate(180deg);}
+
+  .qna-body{display:none;padding:0 0 20px 0;}
+  .qna-item.open .qna-body{display:block;}
+
+  .qna-q-block{
+    background:#fff;border-left:3px solid var(--gold-dark);
+    padding:16px 20px;margin-bottom:12px;
+  }
+  .qna-q-label{font-size:10px;letter-spacing:0.15em;color:var(--gold-dark);margin-bottom:8px;}
+  .qna-q-text{font-size:13px;color:var(--ink2);line-height:1.8;white-space:pre-wrap;}
+
+  .qna-a-block{
+    background:rgba(74,107,66,0.05);border-left:3px solid var(--green-dark);
+    padding:16px 20px;
+  }
+  .qna-a-label{font-size:10px;letter-spacing:0.15em;color:var(--green-dark);margin-bottom:8px;}
+  .qna-a-text{font-size:13px;color:var(--ink2);line-height:1.8;white-space:pre-wrap;}
+  .qna-no-answer{font-size:13px;color:var(--ink-faint);font-style:italic;padding:12px 0;}
+
+  /* 질문 작성 */
+  .write-section{background:var(--bg2);border:1px solid rgba(196,162,74,0.2);padding:32px;}
+  .write-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--ink);margin-bottom:20px;}
+  .write-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .write-group{display:flex;flex-direction:column;gap:6px;}
+  .write-group label{font-size:12px;font-weight:600;color:var(--ink2);}
+  .write-group input,.write-group textarea,.write-group select{
+    border:1px solid rgba(196,162,74,0.3);background:#fff;
+    padding:10px 12px;font-size:13px;font-family:var(--sans);
+    color:var(--ink);outline:none;transition:border-color 0.2s;
+  }
+  .write-group input:focus,.write-group textarea:focus,.write-group select:focus{border-color:var(--green-dark);}
+  .write-group textarea{min-height:120px;resize:vertical;line-height:1.7;}
+  .secret-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink3);cursor:pointer;margin-bottom:16px;}
+  .secret-check input{accent-color:var(--green-dark);width:16px;height:16px;}
+  .submit-notice{font-size:11px;color:var(--ink-faint);margin-top:10px;line-height:1.7;}
+
+  .empty-msg{text-align:center;padding:60px 0;color:var(--ink-faint);font-size:13px;letter-spacing:0.1em;}
+
+  @media(max-width:640px){.write-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" style="display:flex;flex-direction:column;gap:2px;line-height:1;text-decoration:none;">
+    <span style="font-family:var(--serif);font-size:18px;color:var(--ink);letter-spacing:0.05em;">힐링네임</span>
+    <span style="font-size:9px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;">by ONOMA</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">서비스 안내</a></li>
+    <li><a href="notice.html">공지사항</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="review.html">고객 리뷰</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='form.html'">작명 신청하기</button>
+</nav>
+
+<section class="board-hero">
+  <div class="board-hero-inner">
+    <div class="board-eyebrow">Q&amp;A</div>
+    <h1 class="board-title">질문과 답변</h1>
+    <p class="board-sub">궁금하신 점을 남겨주시면 이지윤 원장이 직접 답변드립니다</p>
+  </div>
+</section>
+
+<div class="board-wrap">
+  <div class="qna-list" id="qnaList">
+    <div class="empty-msg" style="padding:40px 0;font-size:12px;">불러오는 중…</div>
+  </div>
+
+  <!-- 질문 작성 -->
+  <div class="write-section">
+    <div class="write-title">질문 남기기</div>
+    <div class="write-grid">
+      <div class="write-group">
+        <label>이름 *</label>
+        <input id="q-author" type="text" placeholder="이름 또는 닉네임">
+      </div>
+      <div class="write-group">
+        <label>제목 *</label>
+        <input id="q-title" type="text" placeholder="질문 제목을 간단히 적어주세요">
+      </div>
+    </div>
+    <div class="write-group" style="margin-bottom:14px;">
+      <label>질문 내용 *</label>
+      <textarea id="q-content" placeholder="궁금하신 내용을 자세히 적어주세요&#10;작명 비용, 기간, 방법 등 무엇이든 물어보세요"></textarea>
+    </div>
+    <label class="secret-check">
+      <input type="checkbox" id="q-secret">
+      비밀글로 등록 (작성자와 관리자만 볼 수 있습니다)
+    </label>
+    <button class="btn-primary" onclick="submitQna()" style="padding:12px 28px;">질문 등록하기</button>
+    <p class="submit-notice">※ 답변은 보통 1~2영업일 이내에 등록됩니다 · 급한 문의는 카카오 채널을 이용해주세요</p>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://wavhcknviozwadqyjlug.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhdmhja252aW96d2FkcXlqbHVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTQ5NjksImV4cCI6MjA5MDQzMDk2OX0.frq_z3GgL8BEjHCRuVcdOqPLe0DhJp0k-joOXYVK_Ws';
+
+async function loadQnas() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/qnas?is_published=eq.true&order=created_at.desc`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
+    );
+    const data = await res.json();
+    renderQnas(data);
+  } catch(e) {
+    document.getElementById('qnaList').innerHTML = '<div class="empty-msg">데이터를 불러올 수 없습니다</div>';
+  }
+}
+
+function renderQnas(list) {
+  const el = document.getElementById('qnaList');
+  if (!list || list.length === 0) {
+    el.innerHTML = '<div class="empty-msg">등록된 질문이 없습니다<br><span style="font-size:11px;margin-top:8px;display:block;">첫 번째 질문을 남겨주세요</span></div>';
+    return;
+  }
+  el.innerHTML = list.map((q, i) => {
+    const isSecret = q.is_secret;
+    const hasAnswer = !!q.answer;
+    return `
+    <div class="qna-item" id="qna-${i}">
+      <div class="qna-header" onclick="toggleQna(${i})">
+        <span class="qna-badge ${hasAnswer ? 'badge-done' : 'badge-wait'}">${hasAnswer ? '답변완료' : '답변대기'}</span>
+        <div class="qna-title">${isSecret ? '🔒 비밀글입니다' : q.title}</div>
+        <div class="qna-date">${q.created_at.slice(0,10)}</div>
+        <span class="qna-arrow">▼</span>
+      </div>
+      ${!isSecret ? `
+      <div class="qna-body">
+        <div class="qna-q-block">
+          <div class="qna-q-label">Q · ${q.author_name}</div>
+          <div class="qna-q-text">${q.content}</div>
+        </div>
+        ${hasAnswer
+          ? `<div class="qna-a-block">
+               <div class="qna-a-label">A · 힐링네임</div>
+               <div class="qna-a-text">${q.answer}</div>
+             </div>`
+          : `<div class="qna-no-answer">답변을 준비 중입니다. 빠른 문의는 카카오 채널을 이용해주세요.</div>`
+        }
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleQna(i) {
+  document.getElementById('qna-' + i).classList.toggle('open');
+}
+
+async function submitQna() {
+  const author  = document.getElementById('q-author').value.trim();
+  const title   = document.getElementById('q-title').value.trim();
+  const content = document.getElementById('q-content').value.trim();
+  const secret  = document.getElementById('q-secret').checked;
+  if (!author)  { alert('이름을 입력해주세요.'); return; }
+  if (!title)   { alert('제목을 입력해주세요.'); return; }
+  if (!content) { alert('질문 내용을 입력해주세요.'); return; }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/qnas`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        author_name: author, title, content,
+        is_secret: secret, is_published: true
+      })
+    });
+    if (res.ok) {
+      alert('질문이 등록되었습니다.\n1~2영업일 이내에 답변드리겠습니다.');
+      document.getElementById('q-author').value = '';
+      document.getElementById('q-title').value = '';
+      document.getElementById('q-content').value = '';
+      document.getElementById('q-secret').checked = false;
+      loadQnas();
+    } else {
+      alert('등록 중 오류가 발생했습니다.');
+    }
+  } catch(e) {
+    alert('네트워크 오류가 발생했습니다.');
+  }
+}
+
+loadQnas();
+</script>
+</body>
+</html>
