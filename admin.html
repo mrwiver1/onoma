@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEROS · 운영자 분석 패널</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
+:root {
+  --bg:           #f5f0e8;
+  --cream:        #fdfaf4;
+  --white:        #ffffff;
+  --dark:         #1c1710;       /* 헤더만 사용 */
+  --gold:         #a07840;
+  --gold-light:   #c49a58;
+  --gold-pale:    #f0e4c8;
+  --border:       #ddd4bc;
+  --border-light: #eae4d4;
+  --text:         #26200f;
+  --text-sub:     #5a5040;
+  --muted:        #8a7e68;
+  --green:        #2a6a3a;
+  --red:          #7a2020;
+  --blue:         #2a3a6a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Serif KR', serif;
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ── 헤더 (다크 유지) ── */
+.admin-header {
+  background: var(--dark);
+  padding: 0 28px; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.admin-header .logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; letter-spacing: 0.28em;
+  color: #f0e8d8; font-weight: 300;
+}
+.admin-header .logo span { color: #d4aa6a; }
+.admin-header .badge {
+  font-size: 9px; letter-spacing: 0.22em;
+  color: #c49a58; border: 1px solid #3a3020;
+  padding: 4px 14px;
+}
+
+/* ── 레이아웃 ── */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 52px);
+}
+
+/* ── 사이드바 (밝은 배경) ── */
+.sidebar {
+  background: var(--cream);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: calc(100vh - 52px);
+  position: sticky; top: 52px;
+}
+.sidebar-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 9px; letter-spacing: 0.2em; color: var(--muted);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sidebar-header .count {
+  background: var(--gold); color: #fff;
+  font-size: 9px; padding: 2px 9px; border-radius: 10px;
+}
+.person-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer; transition: background 0.15s;
+}
+.person-item:hover { background: #ede8dc; }
+.person-item.active {
+  background: #e8e0cc;
+  border-left: 3px solid var(--gold);
+  padding-left: 15px;
+}
+.person-item .name {
+  font-size: 14px; font-weight: 500;
+  color: var(--text); margin-bottom: 3px;
+}
+.person-item .name small {
+  font-size: 11px; color: var(--gold);
+  font-weight: 300; margin-left: 4px;
+}
+.person-item .meta {
+  font-size: 11px; color: var(--text-sub); line-height: 1.8;
+}
+.status {
+  display: inline-block; font-size: 9px;
+  padding: 3px 10px; margin-top: 6px; letter-spacing: 0.1em;
+}
+.status-pending { background: #faf0d8; color: #8a6020; border: 1px solid #e8d098; }
+.status-done    { background: #e8f4ec; color: var(--green); border: 1px solid #a8d8b8; }
+.status-sent    { background: #e8ecf4; color: var(--blue);  border: 1px solid #a8b8d8; }
+
+/* ── 메인 패널 ── */
+.main-panel { padding: 28px 32px; overflow-y: auto; }
+
+/* ── 빈 상태 ── */
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 60vh; color: var(--muted); gap: 14px;
+}
+.empty-state .icon { font-size: 36px; opacity: 0.2; }
+.empty-state p { font-size: 12px; letter-spacing: 0.12em; }
+
+/* ── 고객 요약 (골드 라인만) ── */
+.client-summary {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--gold);
+  padding: 18px 22px; margin-bottom: 24px;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 20px;
+}
+.client-summary .client-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 400;
+  color: var(--text); letter-spacing: 0.04em; margin-bottom: 6px;
+}
+.client-summary .client-meta {
+  font-size: 12px; color: var(--text-sub); line-height: 2;
+}
+.btn-regenerate {
+  background: var(--bg); color: var(--text-sub);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  font-family: 'Noto Serif KR', serif; font-size: 11px;
+  cursor: pointer; letter-spacing: 0.08em;
+  white-space: nowrap; align-self: center;
+  transition: all 0.2s;
+}
+.btn-regenerate:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── 섹션 ── */
+.section { margin-bottom: 24px; }
+.section-label {
+  font-size: 9px; letter-spacing: 0.22em; color: var(--muted);
+  padding-bottom: 8px; margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label .num {
+  background: var(--dark); color: #d4aa6a;
+  font-size: 9px; padding: 3px 9px; letter-spacing: 0.12em;
+}
+
+/* ── 사주 그리드 ── */
+.saju-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  border: 1px solid var(--border);
+  background: var(--border); gap: 1px; margin-bottom: 1px;
+}
+.saju-col { background: var(--white); }
+.saju-col .col-header {
+  background: #2c2418; color: #d4b880;
+  text-align: center; font-size: 9px;
+  letter-spacing: 0.18em; padding: 9px 6px; font-weight: 300;
+}
+.saju-col .gan-sub {
+  text-align: center; font-size: 9px;
+  color: var(--gold); padding: 6px 4px 1px; min-height: 22px;
+}
+.saju-col .gan {
+  text-align: center; font-size: 32px;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 2px 8px; color: var(--text); font-weight: 400;
+}
+.saju-col .zhi {
+  text-align: center; font-size: 32px;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 2px 8px; color: var(--text); font-weight: 400;
+  border-top: 1px solid var(--border-light);
+}
+.saju-col .zhi-sub {
+  text-align: center; font-size: 9px;
+  color: var(--muted); padding: 2px 4px; min-height: 18px;
+}
+.saju-col .changsheng {
+  text-align: center; font-size: 10px; color: #3a6070; padding: 2px 4px;
+}
+.saju-col .nayin-text {
+  text-align: center; font-size: 9px; color: var(--muted); padding: 2px 4px 9px;
+}
+
+/* ── 지장간 ── */
+.hg-row {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  border: 1px solid var(--border); border-top: none;
+  background: var(--border); gap: 1px; margin-bottom: 14px;
+}
+.hg-cell { background: var(--cream); padding: 9px 13px; }
+.hg-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 3px; }
+.hg-val { font-size: 12px; color: var(--text); }
+
+/* ── 대운 ── */
+.dayun-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; margin-bottom: 14px;
+}
+.dayun-table th {
+  background: #2c2418; color: #c8a860;
+  padding: 9px 12px; text-align: center;
+  font-weight: 300; letter-spacing: 0.12em; font-size: 9px;
+}
+.dayun-table td {
+  padding: 8px 12px; text-align: center;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--white); color: var(--text);
+}
+.dayun-table tr:hover td { background: #f5f0e4; }
+.dayun-current td { background: var(--gold-pale) !important; font-weight: 500; }
+.dayun-current td:first-child { color: var(--gold); font-size: 11px; }
+
+/* ── 신살 ── */
+.sinsal-box {
+  background: var(--white); border: 1px solid var(--border);
+  padding: 16px; margin-bottom: 14px;
+}
+.sinsal-group-label {
+  font-size: 9px; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 9px;
+}
+.sinsal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.sinsal-tag {
+  font-size: 11px; padding: 4px 12px; letter-spacing: 0.03em;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text-sub);
+}
+.sinsal-tag.active-good { background: #e8f4ec; border-color: #80b890; color: var(--green); }
+.sinsal-tag.active-bad  { background: #f4e8e8; border-color: #c09090; color: var(--red);   }
+.sinsal-tag.active-neu  { background: #eaecf4; border-color: #9098c0; color: var(--blue);  }
+
+/* ── 수리 카드 ── */
+.suri-card {
+  background: var(--white); border: 1px solid var(--border);
+  padding: 16px; margin-bottom: 12px;
+}
+.suri-title { font-size: 9px; letter-spacing: 0.2em; color: var(--muted); margin-bottom: 13px; }
+.suri-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 10px; }
+.gua-row  { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 10px; }
+.suri-item label {
+  display: block; font-size: 10px; color: var(--muted);
+  letter-spacing: 0.08em; margin-bottom: 5px;
+}
+.suri-item input {
+  width: 100%; background: var(--bg);
+  border: none; border-bottom: 1px solid var(--border);
+  padding: 7px 8px;
+  font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.suri-item input:focus { border-bottom: 2px solid var(--gold); }
+
+/* ── 수리 2열 레이아웃 ── */
+.suri-row-2col { width: 100%; }
+.suri-field-block { width: 100%; }
+.suri-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+.suri-desc-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* ── 수리 설명 ── */
+.suri-desc-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 8px; margin-top: 12px; margin-bottom: 4px;
+}
+.suri-desc-item {
+  border-left: 3px solid transparent;
+  padding: 0; font-size: 11px;
+  line-height: 1.7; overflow: hidden;
+  max-height: 0; transition: all 0.25s;
+}
+.suri-desc-item.visible { padding: 10px 11px; max-height: 300px; background: var(--cream); }
+.suri-desc-item.luck-5 { border-left-color: #b8924a; }
+.suri-desc-item.luck-4 { border-left-color: #5aaa7a; }
+.suri-desc-item.luck-3 { border-left-color: #7080b0; }
+.suri-desc-item.luck-2 { border-left-color: #c09050; }
+.suri-desc-item.luck-1 { border-left-color: #c07070; }
+.suri-desc-name {
+  font-size: 12px; font-weight: 600; color: var(--text);
+  margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
+}
+.suri-luck-badge { font-size: 9px; padding: 1px 7px; letter-spacing: 0.08em; }
+.luck-5 .suri-luck-badge { background: var(--gold-pale); color: var(--gold); }
+.luck-4 .suri-luck-badge { background: #e8f4ec; color: var(--green); }
+.luck-3 .suri-luck-badge { background: #eaecf4; color: var(--blue); }
+.luck-2 .suri-luck-badge { background: #f4ece8; color: #8a4020; }
+.luck-1 .suri-luck-badge { background: #f4e8e8; color: var(--red); }
+.suri-desc-text { font-size: 11px; color: var(--text-sub); line-height: 1.7; }
+
+/* ── 주역괘 설명 ── */
+.gua-desc-box {
+  background: var(--cream); border-left: 3px solid var(--gold);
+  padding: 0; font-size: 11px; line-height: 1.7;
+  margin-top: 6px; overflow: hidden;
+  max-height: 0; transition: all 0.25s;
+}
+.gua-desc-box.visible { padding: 10px 11px; max-height: 300px; }
+.gua-sym { font-size: 18px; margin-right: 5px; }
+.gua-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.gua-meaning { font-size: 10px; color: var(--gold); margin-bottom: 4px; letter-spacing: 0.05em; }
+.gua-desc-text { font-size: 11px; color: var(--text-sub); line-height: 1.7; }
+
+/* ── 메모/노트 ── */
+.analysis-box, .note-box {
+  background: var(--white); border: 1px solid var(--border); padding: 16px;
+}
+.analysis-box { margin-bottom: 20px; }
+.note-box { margin-top: 0; }
+.analysis-box label, .note-box label {
+  display: block; font-size: 9px; letter-spacing: 0.18em;
+  color: var(--muted); margin-bottom: 9px;
+}
+.analysis-box textarea, .note-box textarea {
+  width: 100%; background: var(--bg);
+  border: 1px solid var(--border-light);
+  padding: 12px 13px;
+  font-family: 'Noto Serif KR', serif; font-size: 13px;
+  line-height: 1.9; color: var(--text);
+  resize: vertical; outline: none; transition: border-color 0.2s;
+}
+.analysis-box textarea { min-height: 110px; }
+.note-box textarea { min-height: 80px; font-size: 12px; }
+.analysis-box textarea:focus, .note-box textarea:focus { border-color: var(--gold); }
+
+/* ── 액션 버튼 ── */
+.action-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.btn-generate {
+  background: var(--dark); color: #f0e8d8; border: none;
+  padding: 15px; font-family: 'Noto Serif KR', serif; font-size: 13px;
+  cursor: pointer; letter-spacing: 0.1em; transition: opacity 0.2s;
+}
+.btn-generate:hover { opacity: 0.82; }
+.btn-preview {
+  background: var(--white); color: var(--text);
+  border: 1px solid var(--border); padding: 15px;
+  font-family: 'Noto Serif KR', serif; font-size: 13px;
+  cursor: pointer; letter-spacing: 0.1em; transition: background 0.2s;
+}
+.btn-preview:hover { background: var(--bg); }
+
+/* ── 발송 프로세스 ── */
+.process-bar {
+  background: var(--cream); border: 1px solid var(--border);
+  padding: 12px 20px; display: flex; align-items: center;
+  justify-content: center; gap: 12px;
+  font-size: 10px; letter-spacing: 0.12em; margin-bottom: 14px;
+}
+.process-bar .step { color: var(--muted); transition: color 0.3s; }
+.process-bar .step.active { color: var(--gold); font-weight: 500; }
+.process-bar .arrow { color: var(--border); }
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .sidebar { max-height: 220px; position: static; }
+  .saju-grid { grid-template-columns: repeat(2,1fr); }
+  .suri-row { grid-template-columns: repeat(2,1fr); }
+}
+
+/* ── 설문 답변 섹션 ── */
+.survey-answer-section { background: var(--white); border: 1px solid var(--border); margin-top: 8px; }
+.survey-answer-header {
+  padding: 10px 16px; background: #f0ebe0; border-bottom: 1px solid var(--border);
+  font-size: 9px; letter-spacing: 0.18em; color: var(--muted);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.survey-answer-body { padding: 14px 16px; max-height: 400px; overflow-y: auto; }
+.survey-q-item { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border-light); }
+.survey-q-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.survey-q-num  { font-size: 9px; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 2px; }
+.survey-q-text { font-size: 11px; color: var(--text-sub); margin-bottom: 4px; }
+.survey-q-ans  { font-size: 12px; color: var(--text); line-height: 1.7; background: var(--bg); padding: 6px 10px; }
+
+/* ── 삭제 버튼 ── */
+.btn-delete {
+  background: transparent; color: var(--red); border: 1px solid var(--red);
+  padding: 6px 14px; font-size: 10px; cursor: pointer; letter-spacing: 0.08em;
+  font-family: 'Noto Serif KR', serif; transition: all 0.2s; margin-left: 8px;
+}
+.btn-delete:hover { background: var(--red); color: #fff; }
+
+/* ── 탭 네비게이션 ── */
+.tab-nav {
+  background: #232018;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 0;
+  border-bottom: 1px solid #3a3020;
+}
+.tab-btn {
+  padding: 12px 24px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: rgba(240,232,216,0.45);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: rgba(240,232,216,0.75); }
+.tab-btn.active { color: #d4aa6a; border-bottom-color: #d4aa6a; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── 작명 접수 전용 ── */
+.naming-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.naming-field {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+}
+.naming-field-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.naming-field-value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.naming-field-value.price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: var(--gold);
+}
+.status-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+.status-select:focus { border-color: var(--gold); }
+.naming-note-area {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  padding: 12px 13px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  min-height: 90px;
+  transition: border-color 0.2s;
+}
+.naming-note-area:focus { border-color: var(--gold); }
+.btn-save-status {
+  background: var(--dark);
+  color: #f0e8d8;
+  border: none;
+  padding: 12px 24px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: opacity 0.2s;
+}
+.btn-save-status:hover { opacity: 0.82; }
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>emailjs.init('XtQjgmwTBrg29gJnf');</script>
+</head>
+<body>
+
+<!-- ── 비밀번호 잠금 ── -->
+<div id="lockScreen" style="position:fixed;inset:0;background:#1c1710;display:flex;align-items:center;justify-content:center;z-index:9999">
+  <div style="text-align:center">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;letter-spacing:0.3em;color:#d4aa6a;margin-bottom:32px">WEROS · ADMIN</div>
+    <div style="margin-bottom:16px">
+      <input type="password" id="pwInput" placeholder="비밀번호 입력"
+        style="background:#2c2418;border:1px solid #4a3c20;color:#f0e8d8;padding:12px 18px;font-size:14px;width:240px;outline:none;text-align:center;letter-spacing:0.1em;font-family:'Noto Serif KR',serif"
+        onkeydown="if(event.key==='Enter') checkPW()">
+    </div>
+    <button onclick="checkPW()"
+      style="background:#b8924a;color:#fff;border:none;padding:11px 32px;font-size:13px;cursor:pointer;letter-spacing:0.1em;font-family:'Noto Serif KR',serif">
+      입장
+    </button>
+    <div id="pwError" style="color:#c07070;font-size:12px;margin-top:12px;height:18px"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  if (sessionStorage.getItem('weros_admin_auth') === 'true') {
+    document.getElementById('lockScreen').style.display = 'none';
+    // 세션 유지 시 자동으로 데이터 로드 (DOMContentLoaded 타이밍 무관하게)
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', function() { init(); });
+    } else {
+      init();
+    }
+  }
+})();
+
+function checkPW() {
+  var pw = document.getElementById('pwInput').value;
+  if (pw === 'weros2026') {
+    sessionStorage.setItem('weros_admin_auth', 'true');
+    document.getElementById('lockScreen').style.display = 'none';
+    init(); // 로그인 후 데이터 로드
+  } else {
+    document.getElementById('pwError').textContent = '비밀번호가 틀렸습니다.';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+</script>
+
+<!-- ── 헤더 ── -->
+<div class="admin-header">
+  <div class="logo">WEROS · <span>OPERATOR</span></div>
+  <div class="badge">ADMIN PANEL</div>
+</div>
+
+<!-- ── 탭 네비게이션 ── -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('life')">인생 통찰 보고서</button>
+  <button class="tab-btn" onclick="switchTab('naming')">힐링네임 작명 접수</button>
+  <button class="tab-btn" onclick="switchTab('board')">게시판 관리</button>
+</div>
+
+<!-- ══ 탭 1: 인생 통찰 보고서 (기존) ══ -->
+<div id="tab-life" class="tab-panel active">
+<div class="admin-layout">
+
+  <!-- ── 사이드바: 제출자 목록 ── -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      대기 중인 분석 요청
+      <span class="count" id="pendingCount">0</span>
+    </div>
+    <div id="personList">
+      <!-- JS로 렌더링 -->
+    </div>
+  </div>
+
+  <!-- ── 메인 패널 ── -->
+  <div class="main-panel" id="mainPanel">
+
+    <!-- 빈 상태 -->
+    <div class="empty-state" id="emptyState">
+      <div class="icon">⊹</div>
+      <p>좌측에서 분석 요청을 선택하세요</p>
+    </div>
+
+    <!-- 분석 패널 (선택 시 표시) -->
+    <div id="analysisPanel" class="hidden">
+
+      <!-- 고객 요약 -->
+      <div class="client-summary">
+        <div class="main-info">
+          <div class="client-name" id="clientName">—</div>
+          <div class="client-meta" id="clientMeta">—</div>
+        </div>
+        <button class="btn-regenerate" onclick="regenerateSaju()">↺ 재계산</button>
+      </div>
+
+      <!-- (0) 설문 답변 + 삭제 버튼 -->
+      <div class="section" id="surveyAnswerSection">
+        <div class="section-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span><span class="num">00</span> 고객 설문 답변</span>
+          <button class="btn-delete" onclick="deleteRequest()">🗑 이 요청 삭제</button>
+        </div>
+        <div class="survey-answer-section">
+          <div class="survey-answer-header">
+            <span>26문항 응답 내용</span>
+            <span id="surveyAnswerCount" style="color:var(--gold)"></span>
+          </div>
+          <div class="survey-answer-body" id="surveyAnswerBody">
+            <div style="color:var(--muted);font-size:12px;padding:12px 0">설문 데이터 없음</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (1) 사주 정보 -->
+      <div class="section">
+        <div class="section-label">
+          <span class="num">01</span> 사주 원국
+        </div>
+        <div class="saju-grid" id="sajuGrid">
+          <!-- JS로 렌더링 -->
+        </div>
+
+        <!-- 지장간 -->
+        <div class="hg-row">
+          <div class="hg-cell"><div class="hg-label">년지 지장간</div><div class="hg-val" id="hg-year">—</div></div>
+          <div class="hg-cell"><div class="hg-label">월지 지장간</div><div class="hg-val" id="hg-month">—</div></div>
+          <div class="hg-cell"><div class="hg-label">일지 지장간</div><div class="hg-val" id="hg-day">—</div></div>
+          <div class="hg-cell"><div class="hg-label">시지 지장간</div><div class="hg-val" id="hg-time">—</div></div>
+        </div>
+
+        <!-- 대운 -->
+        <table class="dayun-table" id="dayunTable">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>나이</th>
+              <th>대운 간지</th>
+              <th>기간</th>
+            </tr>
+          </thead>
+          <tbody id="dayunBody">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- (2) 신살 -->
+      <div class="section">
+        <div class="section-label">
+          <span class="num">02</span> 신살 · 합충형파해
+        </div>
+        <div class="sinsal-box">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+            <div>
+              <div class="sinsal-group-label">길신 (吉神)</div>
+              <div class="sinsal-tags" id="sinsal-good"></div>
+            </div>
+            <div>
+              <div class="sinsal-group-label">흉살 (凶殺)</div>
+              <div class="sinsal-tags" id="sinsal-bad"></div>
+            </div>
+            <div>
+              <div class="sinsal-group-label">합충형 (合冲刑)</div>
+              <div class="sinsal-tags" id="sinsal-rel"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="sinsal-group-label">공망 (空亡)</div>
+            <span id="sinsal-gongmang" class="sinsal-tag">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- (3) 한글 이름 수리 -->
+      <div class="section">
+        <div class="section-label">
+          <span class="num">03</span> 한글 이름 수리
+        </div>
+        <div class="suri-card">
+          <div class="suri-title" style="display:flex;justify-content:space-between;align-items:center">
+            <span>수리 (한글 기준)</span>
+            <button onclick="adminCalcSuri()" style="background:var(--gold);color:#fff;border:none;padding:5px 14px;font-size:10px;cursor:pointer;letter-spacing:0.08em;font-family:'Noto Serif KR',serif">⚡ 수리 자동계산</button>
+          </div>
+          <!-- 이름 직접 입력 -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border-light)">
+            <div>
+              <label style="font-size:10px;color:var(--muted);margin-bottom:4px;display:block">한글 이름 (수리계산용)</label>
+              <input type="text" id="admin-ko-name" placeholder="김지연" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);background:var(--bg);width:100%">
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--muted);margin-bottom:4px;display:block">한자 이름 (수리계산용)</label>
+              <input type="text" id="admin-hj-name" placeholder="金志演" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);background:var(--bg);width:100%">
+            </div>
+          </div>
+
+          <!-- 오행 구성 -->
+          <div class="suri-item" style="margin-bottom:14px">
+            <label>오행 구성</label>
+            <div id="ko-ohang-display" style="font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid var(--border);letter-spacing:0.05em">—</div>
+          </div>
+
+          <!-- 원/형 첫 번째 줄 -->
+          <div class="suri-row-2col">
+            <div class="suri-field-block">
+              <div class="suri-field-row">
+                <div class="suri-item">
+                  <label>원격 (元格)</label>
+                  <input type="number" id="ko-won" placeholder="14" oninput="showSuriDesc('ko-won',this.value,'ko-won-desc')" onchange="showSuriDesc('ko-won',this.value,'ko-won-desc')">
+                </div>
+                <div class="suri-item">
+                  <label>형격 (亨格)</label>
+                  <input type="number" id="ko-hyung" placeholder="21" oninput="showSuriDesc('ko-hyung',this.value,'ko-hyung-desc')" onchange="showSuriDesc('ko-hyung',this.value,'ko-hyung-desc')">
+                </div>
+              </div>
+              <div class="suri-desc-row2">
+                <div class="suri-desc-item" id="ko-won-desc"></div>
+                <div class="suri-desc-item" id="ko-hyung-desc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 이/정 두 번째 줄 -->
+          <div class="suri-row-2col" style="margin-top:14px">
+            <div class="suri-field-block">
+              <div class="suri-field-row">
+                <div class="suri-item">
+                  <label>이격 (利格)</label>
+                  <input type="number" id="ko-yi" placeholder="18" oninput="showSuriDesc('ko-yi',this.value,'ko-yi-desc')" onchange="showSuriDesc('ko-yi',this.value,'ko-yi-desc')">
+                </div>
+                <div class="suri-item">
+                  <label>정격 (貞格)</label>
+                  <input type="number" id="ko-jung" placeholder="31" oninput="showSuriDesc('ko-jung',this.value,'ko-jung-desc')" onchange="showSuriDesc('ko-jung',this.value,'ko-jung-desc')">
+                </div>
+              </div>
+              <div class="suri-desc-row2">
+                <div class="suri-desc-item" id="ko-yi-desc"></div>
+                <div class="suri-desc-item" id="ko-jung-desc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 주역괘 -->
+          <div class="gua-row" style="margin-top:18px">
+            <div class="suri-item">
+              <label>주역괘 번호 · 초년</label>
+              <input type="number" id="ko-gua-e" placeholder="14" oninput="showGuaDesc(this.value,'ko-gua-e-desc')" onchange="showGuaDesc(this.value,'ko-gua-e-desc')">
+              <div class="gua-desc-box" id="ko-gua-e-desc"></div>
+            </div>
+            <div class="suri-item">
+              <label>주역괘 번호 · 중년</label>
+              <input type="number" id="ko-gua-m" placeholder="57" oninput="showGuaDesc(this.value,'ko-gua-m-desc')" onchange="showGuaDesc(this.value,'ko-gua-m-desc')">
+              <div class="gua-desc-box" id="ko-gua-m-desc"></div>
+            </div>
+            <div class="suri-item">
+              <label>주역괘 번호 · 말년</label>
+              <input type="number" id="ko-gua-l" placeholder="11" oninput="showGuaDesc(this.value,'ko-gua-l-desc')" onchange="showGuaDesc(this.value,'ko-gua-l-desc')">
+              <div class="gua-desc-box" id="ko-gua-l-desc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (4) 한자 이름 수리 -->
+      <div class="section">
+        <div class="section-label">
+          <span class="num">04</span> 한자 이름 수리
+        </div>
+        <div class="suri-card">
+          <div class="suri-title">수리 (한자 기준)</div>
+
+          <!-- 오행 구성 -->
+          <div class="suri-item" style="margin-bottom:14px">
+            <label>오행 구성</label>
+            <div id="hj-ohang-display" style="font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid var(--border);letter-spacing:0.05em">—</div>
+          </div>
+
+          <!-- 원/형 첫 번째 줄 -->
+          <div class="suri-row-2col">
+            <div class="suri-field-block">
+              <div class="suri-field-row">
+                <div class="suri-item">
+                  <label>원격 (元格)</label>
+                  <input type="number" id="hj-won" placeholder="14" oninput="showSuriDesc('hj-won',this.value,'hj-won-desc')" onchange="showSuriDesc('hj-won',this.value,'hj-won-desc')">
+                </div>
+                <div class="suri-item">
+                  <label>형격 (亨格)</label>
+                  <input type="number" id="hj-hyung" placeholder="21" oninput="showSuriDesc('hj-hyung',this.value,'hj-hyung-desc')" onchange="showSuriDesc('hj-hyung',this.value,'hj-hyung-desc')">
+                </div>
+              </div>
+              <div class="suri-desc-row2">
+                <div class="suri-desc-item" id="hj-won-desc"></div>
+                <div class="suri-desc-item" id="hj-hyung-desc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 이/정 두 번째 줄 -->
+          <div class="suri-row-2col" style="margin-top:14px">
+            <div class="suri-field-block">
+              <div class="suri-field-row">
+                <div class="suri-item">
+                  <label>이격 (利格)</label>
+                  <input type="number" id="hj-yi" placeholder="18" oninput="showSuriDesc('hj-yi',this.value,'hj-yi-desc')" onchange="showSuriDesc('hj-yi',this.value,'hj-yi-desc')">
+                </div>
+                <div class="suri-item">
+                  <label>정격 (貞格)</label>
+                  <input type="number" id="hj-jung" placeholder="31" oninput="showSuriDesc('hj-jung',this.value,'hj-jung-desc')" onchange="showSuriDesc('hj-jung',this.value,'hj-jung-desc')">
+                </div>
+              </div>
+              <div class="suri-desc-row2">
+                <div class="suri-desc-item" id="hj-yi-desc"></div>
+                <div class="suri-desc-item" id="hj-jung-desc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 주역괘 -->
+          <div class="gua-row" style="margin-top:18px">
+            <div class="suri-item">
+              <label>주역괘 번호 · 초년</label>
+              <input type="number" id="hj-gua-e" placeholder="14" oninput="showGuaDesc(this.value,'hj-gua-e-desc')" onchange="showGuaDesc(this.value,'hj-gua-e-desc')">
+              <div class="gua-desc-box" id="hj-gua-e-desc"></div>
+            </div>
+            <div class="suri-item">
+              <label>주역괘 번호 · 중년</label>
+              <input type="number" id="hj-gua-m" placeholder="57" oninput="showGuaDesc(this.value,'hj-gua-m-desc')" onchange="showGuaDesc(this.value,'hj-gua-m-desc')">
+              <div class="gua-desc-box" id="hj-gua-m-desc"></div>
+            </div>
+            <div class="suri-item">
+              <label>주역괘 번호 · 말년</label>
+              <input type="number" id="hj-gua-l" placeholder="11" oninput="showGuaDesc(this.value,'hj-gua-l-desc')" onchange="showGuaDesc(this.value,'hj-gua-l-desc')">
+              <div class="gua-desc-box" id="hj-gua-l-desc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (5) 이름 풀이 메모 -->
+      <div class="section">
+        <div class="section-label">
+          <span class="num">05</span> 이름 풀이 · 운영자 메모
+        </div>
+        <div class="analysis-box">
+          <label>사주 · 이름 종합 분석 메모 (AI 프롬프트에 반영됨)</label>
+          <textarea id="operatorMemo" placeholder="예: 무토 일간으로 신유월 출생. 금기가 강해 식상이 발달. 이름 무오는 양인과 겹쳐 강한 추진력과 고집이 공존..."></textarea>
+        </div>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="action-bar">
+        <button class="btn-generate" onclick="generateReport()">✦ 보고서 생성</button>
+        <button class="btn-preview" onclick="previewReport()">보고서 미리보기 →</button>
+        <button id="btnSendEmail" onclick="sendReportEmail()" style="display:none;margin-top:8px;width:100%;padding:13px;background:#2a5a2a;color:#fff;border:none;cursor:pointer;font-size:13px;letter-spacing:0.1em;font-family:'Noto Serif KR',serif">✉ 고객에게 리포트 발송</button>
+      </div>
+
+      <!-- 발송 프로세스 -->
+      <div class="process-bar">
+        <span class="step active">① 데이터 검증</span>
+        <span class="arrow">→</span>
+        <span class="step" id="step2">② 보고서 생성</span>
+        <span class="arrow">→</span>
+        <span class="step" id="step3">③ 이메일 발송</span>
+      </div>
+
+      <!-- 고객 프로파일 노트 -->
+      <div class="note-box">
+        <label>고객 프로파일 / 라이프스타일 노트</label>
+        <textarea id="profileNote" placeholder="설문에서 파악된 고객 특징, 직업, 고민 포인트 등을 간단히 메모..."></textarea>
+      </div>
+
+    </div><!-- /analysisPanel -->
+  </div><!-- /main-panel -->
+</div><!-- /admin-layout -->
+</div><!-- /tab-life -->
+
+<!-- ══ 탭 2: 힐링네임 작명 접수 ══ -->
+<div id="tab-naming" class="tab-panel">
+<div class="admin-layout">
+
+  <!-- 사이드바: 작명 접수 목록 -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      작명 접수 목록
+      <span class="count" id="namingPendingCount">0</span>
+    </div>
+    <div id="namingList">
+      <div style="padding:24px 18px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:0.1em">로딩 중…</div>
+    </div>
+  </div>
+
+  <!-- 메인 패널: 작명 접수 상세 -->
+  <div class="main-panel">
+
+    <div class="empty-state" id="namingEmptyState">
+      <div class="icon">✦</div>
+      <p>좌측에서 접수 건을 선택하세요</p>
+    </div>
+
+    <div id="namingDetailPanel" class="hidden">
+
+      <!-- 요약 헤더 -->
+      <div class="client-summary">
+        <div>
+          <div class="client-name" id="nClientName">—</div>
+          <div class="client-meta" id="nClientMeta">—</div>
+        </div>
+        <button class="btn-regenerate" onclick="loadNamingApplications()">↺ 새로고침</button>
+      </div>
+
+      <!-- 서비스 정보 -->
+      <div class="section">
+        <div class="section-label"><span class="num">01</span> 서비스 정보</div>
+        <div class="naming-detail-grid">
+          <div class="naming-field">
+            <div class="naming-field-label">서비스 유형</div>
+            <div class="naming-field-value" id="n-svc-type">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">등급</div>
+            <div class="naming-field-value" id="n-tier">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">결제 금액</div>
+            <div class="naming-field-value price" id="n-price">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">결제 방식 / 입금자</div>
+            <div class="naming-field-value" id="n-payment">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 신청자 정보 -->
+      <div class="section">
+        <div class="section-label"><span class="num">02</span> 신청자 정보</div>
+        <div class="naming-detail-grid">
+          <div class="naming-field">
+            <div class="naming-field-label">이름</div>
+            <div class="naming-field-value" id="n-name">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">연락처</div>
+            <div class="naming-field-value" id="n-phone">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">이메일</div>
+            <div class="naming-field-value" id="n-email">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">결과 전달 방식</div>
+            <div class="naming-field-value" id="n-delivery">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">카카오톡 ID</div>
+            <div class="naming-field-value" id="n-kakao">—</div>
+          </div>
+          <div class="naming-field">
+            <div class="naming-field-label">유입 경로</div>
+            <div class="naming-field-value" id="n-referral">—</div>
+          </div>
+        </div>
+        <div class="naming-field" style="margin-bottom:14px;">
+          <div class="naming-field-label">주소</div>
+          <div class="naming-field-value" id="n-address">—</div>
+        </div>
+      </div>
+
+      <!-- 접수 정보 -->
+      <div class="section">
+        <div class="section-label"><span class="num">03</span> 접수 원본 데이터</div>
+        <div class="naming-field" style="margin-bottom:14px;">
+          <div class="naming-field-label">신청 양식 전체 (form_data)</div>
+          <pre id="n-formdata" style="font-size:11px;color:var(--text-sub);line-height:1.8;white-space:pre-wrap;word-break:break-all;margin-top:6px;">—</pre>
+        </div>
+      </div>
+
+      <!-- 상태 관리 -->
+      <div class="section">
+        <div class="section-label"><span class="num">04</span> 진행 상태 관리</div>
+        <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div>
+              <label style="display:block;font-size:9px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;">진행 상태</label>
+              <select class="status-select" id="n-status-select">
+                <option value="pending">접수 대기</option>
+                <option value="confirmed">입금 확인</option>
+                <option value="in_progress">작명 진행 중</option>
+                <option value="completed">작명 완료</option>
+                <option value="delivered">전달 완료</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:9px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;">고급 작명장</label>
+              <div class="naming-field-value" id="n-cert" style="padding-top:10px;">—</div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:9px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;">운영 메모</label>
+            <textarea class="naming-note-area" id="n-memo" placeholder="작명 진행 메모, 이름 후보, 고객 피드백 등 자유롭게 작성..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="btn-save-status" onclick="saveNamingStatus()">✓ 상태 저장</button>
+            <button class="btn-delete" onclick="deleteNamingApp()">🗑 삭제</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /namingDetailPanel -->
+  </div><!-- /main-panel -->
+</div><!-- /admin-layout -->
+</div><!-- /tab-naming -->
+
+<!-- ══ 탭 3: 게시판 관리 ══ -->
+<div id="tab-board" class="tab-panel">
+<div style="max-width:1100px;margin:0 auto;padding:32px 28px;">
+
+  <!-- 서브 탭 -->
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:28px;">
+    <button class="board-sub-btn active" onclick="switchBoard('notice')" id="btab-notice"
+      style="padding:10px 20px;font-family:'Noto Serif KR',serif;font-size:12px;letter-spacing:0.1em;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);transition:all 0.2s;margin-bottom:-2px;">공지사항</button>
+    <button class="board-sub-btn" onclick="switchBoard('faq')" id="btab-faq"
+      style="padding:10px 20px;font-family:'Noto Serif KR',serif;font-size:12px;letter-spacing:0.1em;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);transition:all 0.2s;margin-bottom:-2px;">FAQ</button>
+    <button class="board-sub-btn" onclick="switchBoard('review')" id="btab-review"
+      style="padding:10px 20px;font-family:'Noto Serif KR',serif;font-size:12px;letter-spacing:0.1em;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);transition:all 0.2s;margin-bottom:-2px;">고객 리뷰</button>
+    <button class="board-sub-btn" onclick="switchBoard('qna')" id="btab-qna"
+      style="padding:10px 20px;font-family:'Noto Serif KR',serif;font-size:12px;letter-spacing:0.1em;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);transition:all 0.2s;margin-bottom:-2px;">질문과 답변</button>
+  </div>
+
+  <!-- 공지사항 관리 -->
+  <div id="board-notice">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);">NOTICE MANAGEMENT</div>
+      <button onclick="showNoticeForm()" class="btn-save-status">+ 공지 등록</button>
+    </div>
+    <div id="noticeFormWrap" style="display:none;background:var(--cream);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:12px;">
+        <input id="a-notice-title" type="text" placeholder="공지 제목" style="border:1px solid var(--border);padding:9px 12px;font-family:'Noto Serif KR',serif;font-size:13px;background:var(--bg);outline:none;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="a-notice-pinned" style="accent-color:var(--gold);"> 상단 고정
+        </label>
+      </div>
+      <textarea id="a-notice-content" placeholder="공지 내용" style="width:100%;min-height:100px;border:1px solid var(--border);padding:10px 12px;font-family:'Noto Serif KR',serif;font-size:13px;background:var(--bg);outline:none;resize:vertical;line-height:1.7;margin-bottom:12px;"></textarea>
+      <div style="display:flex;gap:8px;">
+        <button onclick="saveNotice()" class="btn-save-status">등록</button>
+        <button onclick="document.getElementById('noticeFormWrap').style.display='none'" style="background:none;border:1px solid var(--border);padding:10px 16px;font-size:11px;cursor:pointer;font-family:'Noto Serif KR',serif;">취소</button>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:var(--dark);color:#d4aa6a;">
+        <th style="padding:10px 14px;text-align:left;font-weight:300;letter-spacing:0.1em;">제목</th>
+        <th style="padding:10px 14px;width:80px;">고정</th>
+        <th style="padding:10px 14px;width:100px;">등록일</th>
+        <th style="padding:10px 14px;width:80px;">관리</th>
+      </tr></thead>
+      <tbody id="adminNoticeList"><tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">불러오는 중…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- FAQ 관리 -->
+  <div id="board-faq" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);">FAQ MANAGEMENT</div>
+      <button onclick="showFaqForm()" class="btn-save-status">+ FAQ 등록</button>
+    </div>
+    <div id="faqFormWrap" style="display:none;background:var(--cream);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+      <input id="a-faq-q" type="text" placeholder="질문" style="width:100%;border:1px solid var(--border);padding:9px 12px;font-family:'Noto Serif KR',serif;font-size:13px;background:var(--bg);outline:none;margin-bottom:10px;">
+      <textarea id="a-faq-a" placeholder="답변" style="width:100%;min-height:90px;border:1px solid var(--border);padding:10px 12px;font-family:'Noto Serif KR',serif;font-size:13px;background:var(--bg);outline:none;resize:vertical;line-height:1.7;margin-bottom:10px;"></textarea>
+      <input id="a-faq-cat" type="text" placeholder="카테고리 (예: 신청방법, 비용, 기간)" style="width:100%;border:1px solid var(--border);padding:9px 12px;font-family:'Noto Serif KR',serif;font-size:13px;background:var(--bg);outline:none;margin-bottom:12px;">
+      <div style="display:flex;gap:8px;">
+        <button onclick="saveFaq()" class="btn-save-status">등록</button>
+        <button onclick="document.getElementById('faqFormWrap').style.display='none'" style="background:none;border:1px solid var(--border);padding:10px 16px;font-size:11px;cursor:pointer;font-family:'Noto Serif KR',serif;">취소</button>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:var(--dark);color:#d4aa6a;">
+        <th style="padding:10px 14px;text-align:left;font-weight:300;letter-spacing:0.1em;">질문</th>
+        <th style="padding:10px 14px;width:100px;">카테고리</th>
+        <th style="padding:10px 14px;width:80px;">관리</th>
+      </tr></thead>
+      <tbody id="adminFaqList"><tr><td colspan="3" style="padding:20px;text-align:center;color:var(--muted);">불러오는 중…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- 고객 리뷰 관리 -->
+  <div id="board-review" style="display:none;">
+    <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-bottom:20px;">REVIEW MANAGEMENT · 승인 대기 리뷰를 검토하세요</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:var(--dark);color:#d4aa6a;">
+        <th style="padding:10px 14px;text-align:left;font-weight:300;letter-spacing:0.1em;">작성자 / 서비스</th>
+        <th style="padding:10px 14px;text-align:left;font-weight:300;">내용</th>
+        <th style="padding:10px 14px;width:60px;">별점</th>
+        <th style="padding:10px 14px;width:80px;">상태</th>
+        <th style="padding:10px 14px;width:100px;">관리</th>
+      </tr></thead>
+      <tbody id="adminReviewList"><tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">불러오는 중…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- Q&A 관리 -->
+  <div id="board-qna" style="display:none;">
+    <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-bottom:20px;">Q&A MANAGEMENT · 답변이 필요한 질문에 답변을 달아주세요</div>
+    <div id="adminQnaList"><div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">불러오는 중…</div></div>
+  </div>
+
+</div>
+</div><!-- /tab-board -->
+
+
+<script src="/hanja-db.js"></script>
+<script src="/suri-db.js"></script>
+<script src="/manse-db.js"></script>
+
+<script>
+// ══════════════════════════════════════════
+// 모드 설정 (test: 과금없음 / demo: 과금됨 / live: 실서비스)
+// ══════════════════════════════════════════
+const APP_MODE = new URLSearchParams(window.location.search).get('mode') || 'live';
+
+// 모드 배지 표시
+(function() {
+  if (APP_MODE === 'test') {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:52px;right:0;background:#e8a030;color:#fff;font-size:10px;padding:3px 14px;letter-spacing:2px;z-index:200';
+    d.textContent = 'TEST MODE · 과금 없음';
+    document.body.appendChild(d);
+  } else if (APP_MODE === 'demo') {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:52px;right:0;background:#3a6a3a;color:#fff;font-size:10px;padding:3px 14px;letter-spacing:2px;z-index:200';
+    d.textContent = 'DEMO MODE · 과금됨';
+    document.body.appendChild(d);
+  }
+})();
+
+// ══════════════════════════════════════════
+// Supabase 설정
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://wavhcknviozwadqyjlug.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhdmhja252aW96d2FkcXlqbHVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTQ5NjksImV4cCI6MjA5MDQzMDk2OX0.frq_z3GgL8BEjHCRuVcdOqPLe0DhJp0k-joOXYVK_Ws';
+
+async function supabaseFetch(path, options = {}) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error('Supabase error: ' + err);
+  }
+  return res.json();
+}
+
+// DB 레코드 → 내부 형식 변환
+function dbRowToRequest(row) {
+  let answers = {};
+  try { answers = typeof row.answers === 'string' ? JSON.parse(row.answers) : (row.answers || {}); } catch(e) {}
+  return {
+    id:        row.id,
+    name:      row.name      || '',
+    nameHanja: row.name_hanja || '',
+    gender:    row.gender    || '남성',
+    birthYear:  parseInt(row.birth_year)  || 0,
+    birthMonth: parseInt(row.birth_month) || 1,
+    birthDay:   parseInt(row.birth_day)   || 1,
+    birthHour:  row.birth_hour !== null && row.birth_hour !== undefined ? parseInt(row.birth_hour) : null,
+    birthMin:   row.birth_min  !== null && row.birth_min  !== undefined ? parseInt(row.birth_min)  : null,
+    calType:   row.cal_type  || '양력',
+    email:     row.email     || '',
+    concern:   row.concern   || '',
+    mbti:      row.mbti      || '',
+    answers:   answers,
+    // 수리 필드 (운영자가 입력하면 저장됨)
+    koWon:    row.ko_won   ? parseInt(row.ko_won)   : null,
+    koHyung:  row.ko_hyung ? parseInt(row.ko_hyung) : null,
+    koYi:     row.ko_yi    ? parseInt(row.ko_yi)    : null,
+    koJung:   row.ko_jung  ? parseInt(row.ko_jung)  : null,
+    koGuaE:   row.ko_gua_e || null,
+    koGuaM:   row.ko_gua_m || null,
+    koGuaL:   row.ko_gua_l || null,
+    status:    row.status || 'pending',
+    reportHtml: row.report_html || '',
+    submittedAt: row.created_at ? row.created_at.replace('T', ' ').slice(0, 16) : '',
+  };
+}
+
+let ALL_REQUESTS = [];
+let currentRequest = null;
+let currentSaju = null;
+
+// ══════════════════════════════════════════
+// 초기화
+// ══════════════════════════════════════════
+async function init() {
+  showSidebarLoading();
+  try {
+    const rows = await supabaseFetch(
+      'life_reports?select=*&order=created_at.desc&limit=50'
+    );
+    ALL_REQUESTS = rows.map(dbRowToRequest);
+    renderPersonList();
+
+    // ── URL ?id= 파라미터로 자동선택 ──
+    const autoId = new URLSearchParams(window.location.search).get('id');
+    if (autoId) {
+      const target = ALL_REQUESTS.find(r => String(r.id) === String(autoId));
+      if (target) {
+        selectRequest(target.id);
+      } else {
+        // 목록에 없으면 DB에서 직접 조회 (최신 50건 밖에 있을 경우 대비)
+        try {
+          const single = await supabaseFetch('life_reports?id=eq.' + autoId + '&select=*');
+          if (single && single.length > 0) {
+            const r = dbRowToRequest(single[0]);
+            ALL_REQUESTS.unshift(r);
+            renderPersonList();
+            selectRequest(r.id);
+          }
+        } catch(e2) { console.error('개별 조회 오류:', e2); }
+      }
+    }
+  } catch(e) {
+    console.error('Supabase 로딩 오류:', e);
+    showSidebarError(e.message);
+  }
+}
+
+function showSidebarLoading() {
+  const list = document.getElementById('personList');
+  list.innerHTML = '<div style="padding:24px 18px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:0.1em">데이터 로딩 중…</div>';
+}
+
+function showSidebarError(msg) {
+  const list = document.getElementById('personList');
+  list.innerHTML = '<div style="padding:18px;color:var(--red);font-size:11px;line-height:1.8">로딩 실패<br><span style="color:var(--muted)">' + msg + '</span></div>';
+}
+
+function renderPersonList() {
+  const list = document.getElementById('personList');
+  const count = ALL_REQUESTS.filter(r => r.status === 'pending').length;
+  document.getElementById('pendingCount').textContent = count;
+
+  if (ALL_REQUESTS.length === 0) {
+    list.innerHTML = '<div style="padding:24px 18px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:0.1em">제출된 요청이 없습니다</div>';
+    return;
+  }
+
+  list.innerHTML = ALL_REQUESTS.map(r => `
+    <div class="person-item ${currentRequest?.id === r.id ? 'active' : ''}"
+         onclick="selectRequest('${r.id}')">
+      <div class="name">${r.name} <small style="font-size:11px;opacity:0.7">${r.nameHanja||''}</small></div>
+      <div class="meta">${r.birthYear}.${String(r.birthMonth).padStart(2,'0')}.${String(r.birthDay).padStart(2,'0')} · ${r.gender}</div>
+      <div class="meta">${r.submittedAt}</div>
+      <span class="status status-${r.status}">
+        ${{pending:'검토 대기', done:'생성 완료', sent:'발송 완료'}[r.status]}
+      </span>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// 요청 선택
+// ══════════════════════════════════════════
+function selectRequest(id) {
+  currentRequest = ALL_REQUESTS.find(r => r.id === id);
+  if (!currentRequest) return;
+
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('analysisPanel').classList.remove('hidden');
+
+  // 이미 보고서 생성된 경우 발송 버튼 표시
+  const btnSend = document.getElementById('btnSendEmail');
+  if (currentRequest.reportHtml && currentRequest.status !== 'sent') {
+    btnSend.style.display = 'block';
+    btnSend.textContent = '✉ 고객에게 리포트 발송';
+    btnSend.disabled = false;
+    document.getElementById('step3').style.opacity = '1';
+  } else if (currentRequest.status === 'sent') {
+    btnSend.style.display = 'block';
+    btnSend.textContent = '✉ 발송 완료';
+    btnSend.disabled = true;
+    btnSend.style.background = '#555';
+  } else {
+    btnSend.style.display = 'none';
+    document.getElementById('step3').style.opacity = '0.5';
+  }
+
+  renderClientSummary();
+  computeAndRenderSaju();
+  setTimeout(populateSuriFields, 300);
+  renderSurveyAnswers();
+  renderPersonList();
+}
+
+function renderClientSummary() {
+  const r = currentRequest;
+  document.getElementById('clientName').textContent =
+    r.name + (r.nameHanja ? ` · ${r.nameHanja}` : '');
+
+  const timeStr = r.birthHour !== null
+    ? ` · ${r.birthHour}시 ${r.birthMin||0}분`
+    : ' · 시간 미상';
+  document.getElementById('clientMeta').innerHTML =
+    `${r.calType} ${r.birthYear}년 ${r.birthMonth}월 ${r.birthDay}일${timeStr}<br>` +
+    `${r.gender} · ${r.email}<br>` +
+    `<span style="opacity:0.8">${r.concern}</span>`;
+}
+
+// ══════════════════════════════════════════
+// 사주 계산 및 렌더링
+// ══════════════════════════════════════════
+function computeAndRenderSaju() {
+  const r = currentRequest;
+  try {
+    currentSaju = calcSaju(
+      r.birthYear, r.birthMonth, r.birthDay,
+      r.birthHour, r.birthMin,
+      r.calType === '음력',
+      r.gender
+    );
+    renderSajuGrid(currentSaju);
+    renderSinsal(currentSaju.sinsal);
+    renderDayun(currentSaju.daYun, r.birthYear);
+  } catch(e) {
+    console.error('사주 계산 오류:', e);
+    document.getElementById('sajuGrid').innerHTML =
+      '<div style="padding:16px;color:var(--red);grid-column:span 4">사주 계산 오류: ' + e.message + '</div>';
+  }
+}
+
+function renderSajuGrid(s) {
+  const cols = [
+    { label: '시주 (時)', gan: s.time.gan, zhi: s.time.zhi,
+      shishenGan: s.shishen.timeGan, shishenZhi: s.shishen.timeZhi,
+      cs: s.changSheng.time, nayin: s.naYin.time },
+    { label: '일주 (日)', gan: s.day.gan, zhi: s.day.zhi,
+      shishenGan: '일원', shishenZhi: s.shishen.dayZhi,
+      cs: s.changSheng.day, nayin: s.naYin.day },
+    { label: '월주 (月)', gan: s.month.gan, zhi: s.month.zhi,
+      shishenGan: s.shishen.monthGan, shishenZhi: s.shishen.monthZhi,
+      cs: s.changSheng.month, nayin: s.naYin.month },
+    { label: '년주 (年)', gan: s.year.gan, zhi: s.year.zhi,
+      shishenGan: s.shishen.yearGan, shishenZhi: s.shishen.yearZhi,
+      cs: s.changSheng.year, nayin: s.naYin.year },
+  ];
+
+  document.getElementById('sajuGrid').innerHTML = cols.map(c => `
+    <div class="saju-col">
+      <div class="col-header">${c.label}</div>
+      <div class="gan-sub">${Array.isArray(c.shishenGan) ? c.shishenGan.join(' ') : c.shishenGan}</div>
+      <div class="gan">${c.gan !== '-' ? c.gan : '—'}</div>
+      <div class="zhi">${c.zhi !== '-' ? c.zhi : '—'}</div>
+      <div class="zhi-sub">${Array.isArray(c.shishenZhi) ? c.shishenZhi.join(' ') : c.shishenZhi}</div>
+      <div class="changsheng">${c.cs}</div>
+      <div style="text-align:center;font-size:10px;color:var(--muted);padding:2px 4px 8px">${c.nayin}</div>
+    </div>
+  `).join('');
+
+  // 지장간
+  document.getElementById('hg-year').textContent  = s.hideGan.year.join(' · ') || '—';
+  document.getElementById('hg-month').textContent = s.hideGan.month.join(' · ') || '—';
+  document.getElementById('hg-day').textContent   = s.hideGan.day.join(' · ') || '—';
+  document.getElementById('hg-time').textContent  = s.hideGan.time.length ? s.hideGan.time.join(' · ') : '—';
+}
+
+function renderSinsal(ss) {
+  // 길신
+  const goodEl = document.getElementById('sinsal-good');
+  const goodItems = [];
+  if (ss.천을귀인_있음) goodItems.push({label: '천을귀인 ('+ss.천을귀인_해당.join(',')+')', cls: 'active-good'});
+  if (ss.문창귀인_있음) goodItems.push({label: '문창귀인 ('+ss.문창귀인+')', cls: 'active-good'});
+  if (ss.삼합.length)   goodItems.push(...ss.삼합.map(v => ({label: v, cls: 'active-good'})));
+  if (ss.지지육합.length) goodItems.push(...ss.지지육합.map(v => ({label: v, cls: 'active-neu'})));
+  goodEl.innerHTML = (goodItems.length ? goodItems : [{label:'없음',cls:''}])
+    .map(i => `<span class="sinsal-tag ${i.cls}">${i.label}</span>`).join('');
+
+  // 흉살
+  const badEl = document.getElementById('sinsal-bad');
+  const badItems = [];
+  if (ss.양인_있음)   badItems.push({label: '양인 ('+ss.양인+')', cls: 'active-bad'});
+  if (ss.백호대살)    badItems.push({label: '백호대살', cls: 'active-bad'});
+  if (ss.괴강살)      badItems.push({label: '괴강살', cls: 'active-bad'});
+  if (ss.고란살)      badItems.push({label: '고란살', cls: 'active-bad'});
+  if (ss.역마_있음)   badItems.push({label: '역마 ('+ss.역마+')', cls: 'active-neu'});
+  if (ss.도화_있음)   badItems.push({label: '도화 ('+ss.도화+')', cls: 'active-neu'});
+  if (ss.화개_있음)   badItems.push({label: '화개 ('+ss.화개+')', cls: 'active-neu'});
+  badEl.innerHTML = (badItems.length ? badItems : [{label:'없음',cls:''}])
+    .map(i => `<span class="sinsal-tag ${i.cls}">${i.label}</span>`).join('');
+
+  // 합충형
+  const relEl = document.getElementById('sinsal-rel');
+  const relItems = [];
+  if (ss.천간합.length) relItems.push(...ss.천간합.map(v=>({label:v, cls:'active-neu'})));
+  if (ss.충.length)     relItems.push(...ss.충.map(v=>({label:v, cls:'active-bad'})));
+  if (ss.형.length)     relItems.push(...ss.형.map(v=>({label:v, cls:'active-bad'})));
+  relEl.innerHTML = (relItems.length ? relItems : [{label:'없음',cls:''}])
+    .map(i => `<span class="sinsal-tag ${i.cls}">${i.label}</span>`).join('');
+
+  // 공망
+  document.getElementById('sinsal-gongmang').textContent = ss.공망 || '—';
+}
+
+function renderDayun(daYunList, birthYear) {
+  const currentYear = new Date().getFullYear();
+  const tbody = document.getElementById('dayunBody');
+  tbody.innerHTML = daYunList.slice(1).map((d, i) => {
+    const isCurrent = d.startYear <= currentYear && d.endYear >= currentYear;
+    return `<tr class="${isCurrent ? 'dayun-current' : ''}">
+      <td>${isCurrent ? '▶ 현재' : ''}</td>
+      <td>${d.startAge}~${d.endAge}세</td>
+      <td style="font-size:15px;font-family:'Cormorant Garamond',serif">${d.ganzhiKo} <small style="font-size:10px;color:var(--muted)">${d.ganzhi}</small></td>
+      <td style="font-size:11px;color:var(--muted)">${d.startYear}~${d.endYear}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// 재계산
+// ══════════════════════════════════════════
+// 수리 입력값 자동 채우기 + 설명 트리거
+function populateSuriFields() {
+  var r = currentRequest;
+  if (!r) return;
+
+  // 한글 수리값 (currentRequest에 있으면 채우기)
+  var fields = [
+    ['ko-won',   r.koWon],
+    ['ko-hyung', r.koHyung],
+    ['ko-yi',    r.koYi],
+    ['ko-jung',  r.koJung],
+    ['hj-won',   r.hjWon],
+    ['hj-hyung', r.hjHyung],
+    ['hj-yi',    r.hjYi],
+    ['hj-jung',  r.hjJung],
+  ];
+  fields.forEach(function(f) {
+    var el = document.getElementById(f[0]);
+    if (el && f[1]) {
+      el.value = f[1];
+      // 설명 자동 표시
+      showSuriDesc(f[0], f[1], f[0] + '-desc');
+    }
+  });
+
+  // 주역괘 자동 표시
+  var guaFields = [
+    ['ko-gua-e', r.koGuaE, 'ko-gua-e-desc'],
+    ['ko-gua-m', r.koGuaM, 'ko-gua-m-desc'],
+    ['ko-gua-l', r.koGuaL, 'ko-gua-l-desc'],
+    ['hj-gua-e', r.hjGuaE, 'hj-gua-e-desc'],
+    ['hj-gua-m', r.hjGuaM, 'hj-gua-m-desc'],
+    ['hj-gua-l', r.hjGuaL, 'hj-gua-l-desc'],
+  ];
+  guaFields.forEach(function(f) {
+    var el = document.getElementById(f[0]);
+    if (el && f[1]) {
+      el.value = f[1];
+      showGuaDesc(f[1], f[2]);
+    }
+  });
+
+  // 주역괘 자동 표시 (DB에서 가져온 값)
+  var guaFields2 = [
+    ['ko-gua-e', r.koGuaE, 'ko-gua-e-desc'],
+    ['ko-gua-m', r.koGuaM, 'ko-gua-m-desc'],
+    ['ko-gua-l', r.koGuaL, 'ko-gua-l-desc'],
+  ];
+  guaFields2.forEach(function(f) {
+    var el = document.getElementById(f[0]);
+    if (el && f[1] && !el.value) {
+      el.value = f[1];
+      showGuaDesc(f[1], f[2]);
+    }
+  });
+
+  // 오행 구성 표시
+  var koOhang = document.getElementById('ko-ohang-display');
+  var hjOhang = document.getElementById('hj-ohang-display');
+  if (koOhang) koOhang.textContent = r.koOhang || (currentSaju ? getOhangStr(currentSaju) : '—');
+  if (hjOhang) hjOhang.textContent = r.hjOhang || (currentSaju ? getOhangStr(currentSaju) : '—');
+
+  // 이름 입력란 자동 채우기
+  var koNameEl = document.getElementById('admin-ko-name');
+  var hjNameEl = document.getElementById('admin-hj-name');
+  if (koNameEl && r.name)      koNameEl.value = r.name;
+  if (hjNameEl && r.nameHanja) hjNameEl.value = r.nameHanja;
+}
+
+// 사주 오행 문자열 생성
+function getOhangStr(s) {
+  if (!s || !s.wuxing) return '—';
+  var map = {'木':'목','火':'화','土':'토','金':'금','水':'수'};
+  function toKo(str) {
+    return str.split('').map(function(c){ return map[c]||c; }).join('');
+  }
+  return '년' + toKo(s.wuxing.year) + ' 월' + toKo(s.wuxing.month) + ' 일' + toKo(s.wuxing.day) + ' 시' + toKo(s.wuxing.time);
+}
+
+function regenerateSaju() {
+  if (!currentRequest) return;
+  computeAndRenderSaju();
+  setTimeout(populateSuriFields, 300);
+  alert('✓ 사주 재계산 완료');
+}
+
+// ══════════════════════════════════════════
+// 수리 저장 (Supabase)
+// ══════════════════════════════════════════
+async function saveSuriToDb() {
+  if (!currentRequest) return;
+  const patch = {
+    ko_won:   parseInt(document.getElementById('ko-won').value)   || null,
+    ko_hyung: parseInt(document.getElementById('ko-hyung').value) || null,
+    ko_yi:    parseInt(document.getElementById('ko-yi').value)    || null,
+    ko_jung:  parseInt(document.getElementById('ko-jung').value)  || null,
+  };
+  try {
+    await supabaseFetch(
+      'life_reports?id=eq.' + currentRequest.id,
+      { method: 'PATCH', body: JSON.stringify(patch) }
+    );
+    // 로컬 캐시도 업데이트
+    Object.assign(currentRequest, {
+      koWon: patch.ko_won, koHyung: patch.ko_hyung,
+      koYi: patch.ko_yi,  koJung: patch.ko_jung,
+    });
+  } catch(e) {
+    console.error('수리 저장 오류:', e);
+  }
+}
+
+// ══════════════════════════════════════════
+// 보고서 생성 (Claude API → Supabase 저장)
+// ══════════════════════════════════════════
+async function generateReport() {
+  if (!currentRequest || !currentSaju) return;
+
+  // 먼저 수리값 저장
+  await saveSuriToDb();
+
+  const btn = document.querySelector('.btn-generate');
+  const step2 = document.getElementById('step2');
+  btn.textContent = '생성 중…';
+  btn.disabled = true;
+  step2.classList.add('active');
+
+  const r = currentRequest;
+  const s = currentSaju;
+  const memo = document.getElementById('operatorMemo').value;
+  const profileNote = document.getElementById('profileNote').value;
+
+  // 수리 정보
+  const koWon   = document.getElementById('ko-won').value;
+  const koHyung = document.getElementById('ko-hyung').value;
+  const koYi    = document.getElementById('ko-yi').value;
+  const koJung  = document.getElementById('ko-jung').value;
+
+  const prompt = `당신은 WEROS Life Report를 작성하는 이름·사주 분석 전문가입니다.
+
+## 의뢰인 정보
+- 이름: ${r.name}${r.nameHanja ? ' ('+r.nameHanja+')' : ''}
+- 성별: ${r.gender}
+- 생년월일: ${r.birthYear}년 ${r.birthMonth}월 ${r.birthDay}일 (${r.calType})${r.birthHour !== null ? ' '+r.birthHour+'시 '+( r.birthMin||0)+'분' : ' (시간 미상)'}
+- 이메일: ${r.email}
+- 주요 고민: ${r.concern}
+${r.mbti ? '- MBTI: '+r.mbti : ''}
+
+## 사주 정보
+- 년주: ${s.year.full} (${s.year.han})
+- 월주: ${s.month.full} (${s.month.han})
+- 일주: ${s.day.full} (${s.day.han})
+- 시주: ${s.time.full}
+- 일간: ${s.dayGan}
+- 십이운성: 년${s.changSheng.year} / 월${s.changSheng.month} / 일${s.changSheng.day}
+
+## 신살
+- 천을귀인: ${s.sinsal.천을귀인_있음 ? '있음 ('+s.sinsal.천을귀인_해당.join(',')+')' : '없음'}
+- 역마: ${s.sinsal.역마_있음 ? '있음' : '없음'}
+- 도화: ${s.sinsal.도화_있음 ? '있음' : '없음'}
+- 백호대살: ${s.sinsal.백호대살 ? '있음' : '없음'}
+- 공망: ${s.sinsal.공망}
+
+## 한글 이름 수리
+- 원격: ${koWon || '미입력'}수 / 형격: ${koHyung || '미입력'}수 / 이격: ${koYi || '미입력'}수 / 정격: ${koJung || '미입력'}수
+
+## 운영자 분석 메모
+${memo || '(없음)'}
+
+## 고객 프로파일 노트
+${profileNote || '(없음)'}
+
+---
+
+위 정보를 바탕으로 WEROS Life Report를 한국어로 작성해주세요.
+
+## 작성 원칙
+- 각 섹션 최소 800자 이상, 깊고 따뜻하게
+- 설문 답변을 최소 2~3개 직접 인용하여 개인화
+- "당신"이라는 2인칭으로 독자에게 직접 말 걸기
+- 사주·오행·수리 등 명리 용어는 쉬운 심리 언어로 풀어서 표현
+
+## 보고서 구조
+
+1. **삶의 설계도 — 사주 원국 해석**
+   일간의 본질적 기질과 성향, 이 사람이 타고난 에너지의 방향, 강점이 되는 조건과 약점이 되는 조건
+
+2. **이름이 만드는 운명**
+   수리가 보여주는 인생 패턴, 이름 에너지가 삶에 미치는 영향, 이름과 사주가 교차하는 지점
+
+3. **지금 이 시간의 의미**
+   현재 대운의 흐름, 지금 이 고민이 왜 지금 생기는지, 이 시기를 어떻게 활용해야 하는지
+
+4. **당신의 적성과 브랜드 원형**
+   - 타고난 적성: 어떤 종류의 일을 하면 자연스럽게 잘하고 에너지가 살아나는지
+   - 적성에 맞는 역할과 직업의 방향 (구체적 예시 포함)
+   - 반대로 에너지가 소진되는 일의 유형
+   - 이 사람의 핵심 브랜드 원형 (WEROS 관점)
+   - 설문 Q9~Q11 답변을 반드시 인용하여 근거 제시
+
+5. **앞으로의 방향 — 3가지 전략 제안**
+   지금 당장 실행 가능한 구체적 제안 3가지 (막연한 조언 금지, 실행 단위로 제시)
+
+각 섹션을 충분히 깊고 따뜻하게 작성해주세요.`;
+
+  // test 모드: API 호출 없이 더미 보고서 반환
+  if (APP_MODE === 'test') {
+    const dummyHtml = '<p><strong>[TEST MODE]</strong> 이 보고서는 테스트용 더미 응답입니다.</p><p>실제 분석 내용은 demo 또는 live 모드에서 확인하세요.</p>';
+    await supabaseFetch(
+      'life_reports?id=eq.' + currentRequest.id,
+      { method: 'PATCH', body: JSON.stringify({ report_html: dummyHtml, status: 'done' }) }
+    );
+    currentRequest.status = 'done';
+    currentRequest.reportHtml = dummyHtml;
+    const idx = ALL_REQUESTS.findIndex(x => x.id === currentRequest.id);
+    if (idx >= 0) ALL_REQUESTS[idx].status = 'done';
+    renderPersonList();
+    btn.textContent = '✦ 보고서 생성';
+    btn.disabled = false;
+    alert('[TEST] 더미 보고서 생성 완료! (과금 없음)');
+    return;
+  }
+
+  try {
+    const apiRes = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!apiRes.ok) throw new Error('API 오류: ' + apiRes.status);
+    const data = await apiRes.json();
+    const reportText = data.content?.[0]?.text || '';
+
+    // 간단한 HTML 변환 (마크다운 → HTML)
+    const reportHtml = reportText
+      .replace(/## (.+)/g, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+
+    // Supabase 저장
+    await supabaseFetch(
+      'life_reports?id=eq.' + currentRequest.id,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          report_html: reportHtml,
+          status: 'done'
+        })
+      }
+    );
+
+    // 로컬 업데이트
+    currentRequest.status = 'done';
+    currentRequest.reportHtml = reportHtml;
+
+    // 사이드바 갱신
+    const idx = ALL_REQUESTS.findIndex(x => x.id === currentRequest.id);
+    if (idx >= 0) ALL_REQUESTS[idx].status = 'done';
+    renderPersonList();
+
+    document.getElementById('step3').style.opacity = '1';
+    document.getElementById('btnSendEmail').style.display = 'block';
+    btn.textContent = '✦ 보고서 생성';
+    btn.disabled = false;
+    alert('✓ 보고서 생성 완료! 미리보기 후 발송 버튼을 눌러주세요.');
+
+  } catch(e) {
+    console.error('보고서 생성 오류:', e);
+    btn.textContent = '✦ 보고서 생성';
+    btn.disabled = false;
+    step2.classList.remove('active');
+    alert('⚠ 오류: ' + e.message);
+  }
+}
+
+async function sendReportEmail() {
+  if (!currentRequest || !currentRequest.reportHtml) {
+    alert('먼저 보고서를 생성해주세요.');
+    return;
+  }
+  if (!currentRequest.email) {
+    alert('고객 이메일 정보가 없습니다.');
+    return;
+  }
+  if (!confirm(`${currentRequest.name}님 (${currentRequest.email}) 에게 리포트를 발송하시겠습니까?`)) return;
+
+  const btn = document.getElementById('btnSendEmail');
+  btn.textContent = '발송 중…';
+  btn.disabled = true;
+
+  const reportUrl = window.location.origin + '/report-v2.html?id=' + currentRequest.id;
+
+  try {
+    await emailjs.send('service_efyhv3m', 'template_1j9jh1s', {
+      to_email:   currentRequest.email,
+      brand_name: currentRequest.name,
+      category:   'WEROS 인생 전략 설계 리포트',
+      concerns:   '리포트가 완성되었습니다',
+      data_link:  reportUrl,
+      message:    `안녕하세요, ${currentRequest.name}님.\n\nWEROS 인생 전략 설계 리포트가 완성되었습니다.\n\n아래 링크에서 확인하세요.\n${reportUrl}\n\n감사합니다.\nWEROS 팀`
+    });
+
+    // Supabase 상태 sent로 업데이트
+    await supabaseFetch(
+      'life_reports?id=eq.' + currentRequest.id,
+      { method: 'PATCH', body: JSON.stringify({ status: 'sent' }) }
+    );
+    currentRequest.status = 'sent';
+    const idx = ALL_REQUESTS.findIndex(x => x.id === currentRequest.id);
+    if (idx >= 0) ALL_REQUESTS[idx].status = 'sent';
+    renderPersonList();
+
+    document.getElementById('step3').classList.add('active');
+    btn.textContent = '✉ 발송 완료';
+    alert(`✓ ${currentRequest.name}님께 리포트 링크를 발송했습니다.\n(${currentRequest.email})`);
+
+  } catch(e) {
+    console.error('이메일 발송 오류:', e);
+    btn.textContent = '✉ 고객에게 리포트 발송';
+    btn.disabled = false;
+    alert('⚠ 발송 실패: ' + e.message);
+  }
+}
+
+function previewReport() {
+  if (!currentRequest) return;
+  if (!currentRequest.reportHtml) {
+    alert('아직 생성된 보고서가 없습니다. 먼저 보고서를 생성해주세요.');
+    return;
+  }
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<title>WEROS Life Report — ${currentRequest.name}</title>
+<style>
+  body { font-family: 'Noto Serif KR', serif; max-width: 700px; margin: 40px auto; padding: 0 24px; line-height: 1.9; color: #26200f; }
+  h2 { font-size: 16px; letter-spacing: 0.1em; margin: 32px 0 12px; border-bottom: 1px solid #ddd4bc; padding-bottom: 8px; }
+  strong { color: #a07840; }
+  p { margin: 0 0 16px; }
+</style>
+</head><body>
+<h1 style="font-size:22px;letter-spacing:0.15em;margin-bottom:8px">${currentRequest.name} 님의 WEROS Life Report</h1>
+<p style="font-size:12px;color:#8a7e68;margin-bottom:32px">${currentRequest.birthYear}년 ${currentRequest.birthMonth}월 ${currentRequest.birthDay}일 · ${currentRequest.gender}</p>
+<p>${currentRequest.reportHtml}</p>
+</body></html>`);
+  win.document.close();
+}
+
+// ══════════════════════════════════════════
+// 수리 설명 표시 함수
+// ══════════════════════════════════════════
+const LUCK_LABEL = {5:'대길(大吉)', 4:'길(吉)', 3:'중길(中吉)', 2:'흉(凶)', 1:'대흉(大凶)'};
+
+function showSuriDesc(inputId, val, descId) {
+  var el = document.getElementById(descId);
+  if (!el) return;
+  var num = parseInt(val);
+  if (!val || isNaN(num) || num < 1 || num > 81) {
+    el.innerHTML = '';
+    el.className = 'suri-desc-item';
+    return;
+  }
+  var SURI_DB = (typeof SURI !== 'undefined') ? SURI : window.SURI;
+  if (!SURI_DB) {
+    el.innerHTML = '<div style="padding:10px 11px;font-size:11px;color:var(--muted)">&#9888; suri-db.js 로딩 필요</div>';
+    el.classList.add('visible');
+    return;
+  }
+  var data = SURI_DB[num];
+  if (!data) return;
+  var luckClass = 'luck-' + data.l;
+  el.className = 'suri-desc-item visible ' + luckClass;
+  el.innerHTML = '<div class="suri-desc-name">' + num + '수 &middot; ' + data.n +
+    ' <span class="suri-luck-badge">' + (LUCK_LABEL[data.l]||'') + '</span></div>' +
+    '<div class="suri-desc-text">' + data.d + '</div>';
+}
+
+function showGuaDesc(val, descId) {
+  var el = document.getElementById(descId);
+  if (!el) return;
+  var num = parseInt(val);
+  if (!val || isNaN(num) || num < 1 || num > 64) {
+    el.innerHTML = '';
+    el.className = 'gua-desc-box';
+    return;
+  }
+  var GUA_DB = (typeof GUA_DATA !== 'undefined') ? GUA_DATA : window.GUA_DATA;
+  if (!GUA_DB) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:10px 11px">&#9888; suri-db.js 로딩 필요</div>';
+    el.classList.add('visible');
+    return;
+  }
+  var data = GUA_DB[num];
+  if (!data) return;
+  el.className = 'gua-desc-box visible';
+  el.innerHTML = '<div class="gua-name"><span class="gua-sym">' + data.sym + '</span>' +
+    num + '괘 &middot; ' + data.name + ' ' + data.hanja + '</div>' +
+    '<div class="gua-meaning">' + data.meaning + '</div>' +
+    '<div class="gua-desc-text">' + data.desc + '</div>';
+}
+
+// ══════════════════════════════════════════
+// 어드민 수리 자동계산
+// ══════════════════════════════════════════
+function adminCalcSuri() {
+  var koName = (document.getElementById('admin-ko-name').value || '').trim();
+  var hjName = (document.getElementById('admin-hj-name').value || '').trim();
+
+  if (!koName && !hjName) {
+    alert('이름을 입력해주세요.');
+    return;
+  }
+
+  var calcGuaFn = (typeof calcGua !== 'undefined') ? calcGua : window.calcGua;
+
+  // ── 한글 수리 계산 ──
+  if (koName && koName.length >= 2) {
+    var HANGUL_CHO = (typeof window.HANGUL_CHO !== 'undefined') ? window.HANGUL_CHO :
+      ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+    var CHO_STROKES = [2,2,2,3,3,5,4,4,4,2,2,1,3,3,3,3,4,4,3];
+    var JUNG_STROKES= [1,2,1,2,3,2,3,1,2,3,4,1,2,3,2,3,4,2,3,3,2];
+    var JONG_STROKES= [0,2,2,4,4,2,5,4,4,4,4,5,2,4,2,2,3,4,3,3,2,2,4,3,3,4,4,3,4,4,3,3];
+
+    function hangulStrokes(ch) {
+      var code = ch.charCodeAt(0);
+      if (code < 0xAC00 || code > 0xD7A3) return 1;
+      var idx = code - 0xAC00;
+      var jong = idx % 28;
+      var jung = Math.floor(idx / 28) % 21;
+      var cho  = Math.floor(idx / 28 / 21);
+      return (CHO_STROKES[cho] || 1) + (JUNG_STROKES[jung] || 1) + (JONG_STROKES[jong] || 0);
+    }
+
+    var chars = koName.split('');
+    var strokes = chars.map(hangulStrokes);
+    var norm = function(n) { while(n > 81) n -= 80; return n; };
+    var len = strokes.length;
+    var won, hyung, yi, jung;
+    if (len === 2) {
+      won = strokes[1]; hyung = strokes[0]+strokes[1];
+      yi  = strokes[0]+strokes[1]; jung = strokes[0]+strokes[1];
+    } else {
+      won   = norm(strokes.slice(1).reduce(function(a,b){return a+b;},0));
+      hyung = norm(strokes[0]+strokes[1]);
+      yi    = norm(strokes[0]+strokes[len-1]);
+      jung  = norm(strokes.reduce(function(a,b){return a+b;},0));
+    }
+    won=norm(won); hyung=norm(hyung); yi=norm(yi); jung=norm(jung);
+
+    document.getElementById('ko-won').value   = won;
+    document.getElementById('ko-hyung').value = hyung;
+    document.getElementById('ko-yi').value    = yi;
+    document.getElementById('ko-jung').value  = jung;
+    showSuriDesc('ko-won',   won,   'ko-won-desc');
+    showSuriDesc('ko-hyung', hyung, 'ko-hyung-desc');
+    showSuriDesc('ko-yi',    yi,    'ko-yi-desc');
+    showSuriDesc('ko-jung',  jung,  'ko-jung-desc');
+
+    // 한글 주역
+    if (calcGuaFn) {
+      var koGua = calcGuaFn(won, hyung, yi, jung);
+      if (koGua) {
+        var ge = koGua.원격 && koGua.원격.num ? koGua.원격.num : '';
+        var gm = koGua.이격 && koGua.이격.num ? koGua.이격.num : '';
+        var gl = koGua.정격 && koGua.정격.num ? koGua.정격.num : '';
+        if (ge) { document.getElementById('ko-gua-e').value = ge; showGuaDesc(ge,'ko-gua-e-desc'); }
+        if (gm) { document.getElementById('ko-gua-m').value = gm; showGuaDesc(gm,'ko-gua-m-desc'); }
+        if (gl) { document.getElementById('ko-gua-l').value = gl; showGuaDesc(gl,'ko-gua-l-desc'); }
+      }
+    }
+  }
+
+  // ── 한자 수리 계산 ──
+  if (hjName && hjName.length >= 2 && typeof calcHanjaStrokes !== 'undefined') {
+    var hjStrokes = hjName.split('').map(function(c){ return calcHanjaStrokes(c) || 1; });
+    var hn = function(n){ while(n>81) n-=80; return n; };
+    var hl = hjStrokes.length;
+    var hw = hn(hjStrokes.slice(1).reduce(function(a,b){return a+b;},0));
+    var hh = hn(hjStrokes[0]+hjStrokes[1]);
+    var hy = hn(hjStrokes[0]+hjStrokes[hl-1]);
+    var hj = hn(hjStrokes.reduce(function(a,b){return a+b;},0));
+    document.getElementById('hj-won').value   = hw;
+    document.getElementById('hj-hyung').value = hh;
+    document.getElementById('hj-yi').value    = hy;
+    document.getElementById('hj-jung').value  = hj;
+    showSuriDesc('hj-won',   hw, 'hj-won-desc');
+    showSuriDesc('hj-hyung', hh, 'hj-hyung-desc');
+    showSuriDesc('hj-yi',    hy, 'hj-yi-desc');
+    showSuriDesc('hj-jung',  hj, 'hj-jung-desc');
+  }
+
+  alert('✓ 수리 자동계산 완료!');
+}
+
+// ══════════════════════════════════════════
+// 설문 답변 렌더링
+// ══════════════════════════════════════════
+const SURVEY_QUESTIONS = [
+  {id:1,  q:'지금 가장 답답하거나 막혀있는 것은?'},
+  {id:2,  q:'지금 가장 해결하고 싶은 것을 한 줄로 써주세요'},
+  {id:3,  q:'지금 하고 있는 일(또는 공부)은?'},
+  {id:4,  q:'지금 경제적 상황은 솔직하게?'},
+  {id:5,  q:'이걸 할 때 시간 가는 줄 모른다 (최대 3개)'},
+  {id:6,  q:'에너지가 확 빠지는 상황 (1~3위)'},
+  {id:7,  q:'나는 어떤 환경에서 가장 잘한다 (최대 3개)'},
+  {id:8,  q:'새로운 일을 시작할 때 나는?'},
+  {id:9,  q:'주변 사람들이 나한테 자주 부탁하는 것 (최대 2개)'},
+  {id:10, q:'어릴 때부터 유독 잘했거나 칭찬받은 것 (최대 2개)'},
+  {id:11, q:'나의 가장 큰 강점과 나와 맞지 않는 것'},
+  {id:12, q:'돈을 버는 방식으로 나에게 맞는 것 (1~3위)'},
+  {id:13, q:'일할 때 절대 타협 못 하는 것 (최대 3개)'},
+  {id:14, q:'5년 후 어떤 모습이면 잘 살고 있다고 느낄 것 같나요? (1~3순위)'},
+  {id:15, q:'조금 더 구체적으로 한 줄로 써주세요'},
+  {id:16, q:'삶에서 중요한 것 순위 (1~3위)'},
+  {id:17, q:'머리로는 알면서 몸이 안 따라가는 것 (1~3순위)'},
+  {id:18, q:'나도 이해 안 되는, 반복되는 패턴이 있다면?'},
+  {id:19, q:'내가 무너질 때 보통 이런 모습이 된다 (최대 3개)'},
+  {id:20, q:'가장 두려운 것 (1~3위)'},
+  {id:21, q:'사람들이 처음 만났을 때 나를 어떻게 보는 것 같나요? (1~5순위)'},
+  {id:22, q:'사람들이 나에 대해 오해하는 것 (1~5순위)'},
+  {id:23, q:'나는 주로 어떻게 에너지를 충전하나요?'},
+  {id:24, q:'지금 이 순간 가장 듣고 싶은 말'},
+  {id:25, q:'이 보고서를 통해 가장 알고 싶은 것 (최대 3개)'},
+  {id:26, q:'분석가에게 꼭 전하고 싶은 말 (선택)'},
+];
+
+function renderSurveyAnswers() {
+  if (!currentRequest) return;
+  const answers = currentRequest.answers || {};
+  const body = document.getElementById('surveyAnswerBody');
+  const countEl = document.getElementById('surveyAnswerCount');
+  if (!body) return;
+
+  const answered = SURVEY_QUESTIONS.filter(q => {
+    const a = answers[q.id];
+    return a && (Array.isArray(a) ? a.length > 0 : String(a).trim().length > 0);
+  });
+
+  if (countEl) countEl.textContent = answered.length + ' / 26 응답';
+
+  if (Object.keys(answers).length === 0) {
+    body.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:12px 0">설문 데이터 없음</div>';
+    return;
+  }
+
+  body.innerHTML = SURVEY_QUESTIONS.map(q => {
+    const a = answers[q.id];
+    let ansStr = '(응답 없음)';
+    if (a) {
+      if (Array.isArray(a) && a.length > 0) {
+        ansStr = a.map((v, i) => (i + 1) + '위: ' + v).join('<br>');
+      } else if (String(a).trim()) {
+        ansStr = String(a).trim();
+      }
+    }
+    const isEmpty = ansStr === '(응답 없음)';
+    return `<div class="survey-q-item">
+      <div class="survey-q-num">Q${String(q.id).padStart(2,'0')}</div>
+      <div class="survey-q-text">${q.q}</div>
+      <div class="survey-q-ans" style="${isEmpty ? 'color:var(--muted);font-style:italic' : ''}">${ansStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// 요청 삭제
+// ══════════════════════════════════════════
+async function deleteRequest() {
+  if (!currentRequest) return;
+  const name = currentRequest.name || '이 요청';
+  if (!confirm(`"${name}" 님의 데이터를 삭제하시겠어요?\n이 작업은 되돌릴 수 없습니다.`)) return;
+
+  try {
+    await supabaseFetch(
+      'life_reports?id=eq.' + currentRequest.id,
+      { method: 'DELETE', headers: { 'Prefer': 'return=minimal' } }
+    );
+    // 로컬 목록에서 제거
+    ALL_REQUESTS = ALL_REQUESTS.filter(r => r.id !== currentRequest.id);
+    currentRequest = null;
+    renderPersonList();
+    document.getElementById('emptyState').classList.remove('hidden');
+    document.getElementById('analysisPanel').classList.add('hidden');
+    alert('✓ 삭제 완료');
+  } catch(e) {
+    alert('⚠ 삭제 오류: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════
+// 게시판 관리
+// ══════════════════════════════════════════
+let currentBoard = 'notice';
+
+function switchBoard(board) {
+  currentBoard = board;
+  ['notice','faq','review','qna'].forEach(b => {
+    document.getElementById('board-' + b).style.display = b === board ? 'block' : 'none';
+    const btn = document.getElementById('btab-' + b);
+    if (btn) {
+      btn.style.color = b === board ? 'var(--gold)' : 'var(--muted)';
+      btn.style.borderBottomColor = b === board ? 'var(--gold)' : 'transparent';
+    }
+  });
+  if (board === 'notice') loadAdminNotices();
+  if (board === 'faq')    loadAdminFaqs();
+  if (board === 'review') loadAdminReviews();
+  if (board === 'qna')    loadAdminQnas();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'naming' && ALL_NAMING.length === 0) loadNamingApplications();
+  if (tab === 'board') { switchBoard('notice'); }
+}
+
+// ── 공지사항 ──
+function showNoticeForm() {
+  const w = document.getElementById('noticeFormWrap');
+  w.style.display = w.style.display === 'none' ? 'block' : 'none';
+}
+async function loadAdminNotices() {
+  const tbody = document.getElementById('adminNoticeList');
+  try {
+    const rows = await supabaseFetch('notices?order=is_pinned.desc,created_at.desc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--muted);">등록된 공지가 없습니다</td></tr>'; return; }
+    tbody.innerHTML = rows.map(n => `
+      <tr style="border-bottom:1px solid var(--border-light);">
+        <td style="padding:10px 14px;color:var(--text);">${n.is_pinned ? '📌 ' : ''}${n.title}</td>
+        <td style="padding:10px 14px;text-align:center;">${n.is_pinned ? '✓' : ''}</td>
+        <td style="padding:10px 14px;text-align:center;color:var(--muted);">${n.created_at.slice(0,10)}</td>
+        <td style="padding:10px 14px;text-align:center;">
+          <button onclick="deleteBoard('notices','${n.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;">삭제</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="padding:16px;color:var(--red);">로딩 오류</td></tr>'; }
+}
+async function saveNotice() {
+  const title   = document.getElementById('a-notice-title').value.trim();
+  const content = document.getElementById('a-notice-content').value.trim();
+  const pinned  = document.getElementById('a-notice-pinned').checked;
+  if (!title || !content) { alert('제목과 내용을 입력해주세요.'); return; }
+  await supabaseFetch('notices', { method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({title, content, is_pinned: pinned, is_published: true}) });
+  document.getElementById('a-notice-title').value = '';
+  document.getElementById('a-notice-content').value = '';
+  document.getElementById('noticeFormWrap').style.display = 'none';
+  loadAdminNotices();
+}
+
+// ── FAQ ──
+function showFaqForm() {
+  const w = document.getElementById('faqFormWrap');
+  w.style.display = w.style.display === 'none' ? 'block' : 'none';
+}
+async function loadAdminFaqs() {
+  const tbody = document.getElementById('adminFaqList');
+  try {
+    const rows = await supabaseFetch('faqs?order=sort_order.asc,created_at.asc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="3" style="padding:16px;text-align:center;color:var(--muted);">등록된 FAQ가 없습니다</td></tr>'; return; }
+    tbody.innerHTML = rows.map(f => `
+      <tr style="border-bottom:1px solid var(--border-light);">
+        <td style="padding:10px 14px;color:var(--text);">${f.question}</td>
+        <td style="padding:10px 14px;text-align:center;color:var(--muted);">${f.category || '—'}</td>
+        <td style="padding:10px 14px;text-align:center;">
+          <button onclick="deleteBoard('faqs','${f.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;">삭제</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="3" style="padding:16px;color:var(--red);">로딩 오류</td></tr>'; }
+}
+async function saveFaq() {
+  const q   = document.getElementById('a-faq-q').value.trim();
+  const a   = document.getElementById('a-faq-a').value.trim();
+  const cat = document.getElementById('a-faq-cat').value.trim();
+  if (!q || !a) { alert('질문과 답변을 입력해주세요.'); return; }
+  await supabaseFetch('faqs', { method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({question:q, answer:a, category:cat||null, is_published:true}) });
+  document.getElementById('a-faq-q').value = '';
+  document.getElementById('a-faq-a').value = '';
+  document.getElementById('a-faq-cat').value = '';
+  document.getElementById('faqFormWrap').style.display = 'none';
+  loadAdminFaqs();
+}
+
+// ── 리뷰 ──
+async function loadAdminReviews() {
+  const tbody = document.getElementById('adminReviewList');
+  try {
+    const rows = await supabaseFetch('reviews?order=created_at.desc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--muted);">등록된 리뷰가 없습니다</td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr style="border-bottom:1px solid var(--border-light);${!r.is_approved ? 'background:#faf8f0;' : ''}">
+        <td style="padding:10px 14px;"><strong style="font-size:13px;">${r.author_name}</strong><br><span style="font-size:11px;color:var(--muted);">${r.service_type||''}</span></td>
+        <td style="padding:10px 14px;font-size:12px;color:var(--text-sub);max-width:300px;">${r.content.slice(0,60)}${r.content.length>60?'…':''}</td>
+        <td style="padding:10px 14px;text-align:center;color:var(--gold);">${'★'.repeat(r.rating)}</td>
+        <td style="padding:10px 14px;text-align:center;font-size:11px;">${r.is_approved ? '<span style="color:var(--green)">승인됨</span>' : '<span style="color:var(--gold)">대기중</span>'}</td>
+        <td style="padding:10px 14px;text-align:center;display:flex;gap:6px;justify-content:center;">
+          ${!r.is_approved ? `<button onclick="approveReview('${r.id}')" style="background:var(--green);color:#fff;border:none;padding:4px 10px;font-size:10px;cursor:pointer;">승인</button>` : ''}
+          <button onclick="deleteBoard('reviews','${r.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;">삭제</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="padding:16px;color:var(--red);">로딩 오류</td></tr>'; }
+}
+async function approveReview(id) {
+  await supabaseFetch('reviews?id=eq.'+id, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({is_approved:true}) });
+  loadAdminReviews();
+}
+
+// ── Q&A ──
+async function loadAdminQnas() {
+  const wrap = document.getElementById('adminQnaList');
+  try {
+    const rows = await supabaseFetch('qnas?order=created_at.desc');
+    if (!rows.length) { wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">등록된 질문이 없습니다</div>'; return; }
+    wrap.innerHTML = rows.map(q => `
+      <div style="background:var(--white);border:1px solid var(--border);margin-bottom:12px;padding:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <span style="font-size:13px;font-weight:600;color:var(--text);">${q.title}</span>
+            <span style="font-size:11px;color:var(--muted);margin-left:10px;">${q.author_name} · ${q.created_at.slice(0,10)}</span>
+            ${q.is_secret ? '<span style="font-size:10px;background:var(--dark);color:rgba(255,255,255,0.6);padding:2px 8px;margin-left:6px;">비밀글</span>' : ''}
+          </div>
+          <button onclick="deleteBoard('qnas','${q.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;">삭제</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-sub);background:var(--bg);padding:10px 12px;margin-bottom:12px;line-height:1.7;">${q.content}</div>
+        ${q.answer
+          ? `<div style="font-size:12px;color:var(--green);background:#e8f4ec;padding:10px 12px;border-left:3px solid var(--green);line-height:1.7;">${q.answer}</div>`
+          : `<div style="display:flex;gap:8px;">
+               <textarea id="ans-${q.id}" placeholder="답변을 입력해주세요" style="flex:1;border:1px solid var(--border);padding:8px 10px;font-family:'Noto Serif KR',serif;font-size:12px;background:var(--bg);outline:none;resize:none;min-height:60px;line-height:1.7;"></textarea>
+               <button onclick="saveAnswer('${q.id}')" class="btn-save-status" style="align-self:flex-end;white-space:nowrap;">답변 등록</button>
+             </div>`
+        }
+      </div>`).join('');
+  } catch(e) { wrap.innerHTML = '<div style="padding:20px;color:var(--red);font-size:12px;">로딩 오류</div>'; }
+}
+async function saveAnswer(id) {
+  const ans = document.getElementById('ans-' + id)?.value?.trim();
+  if (!ans) { alert('답변을 입력해주세요.'); return; }
+  await supabaseFetch('qnas?id=eq.'+id, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({answer: ans, answered_at: new Date().toISOString()}) });
+  loadAdminQnas();
+}
+
+// ── 공통 삭제 ──
+async function deleteBoard(table, id) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  await supabaseFetch(table+'?id=eq.'+id, { method:'DELETE', headers:{'Prefer':'return=minimal'} });
+  if (table === 'notices') loadAdminNotices();
+  if (table === 'faqs')    loadAdminFaqs();
+  if (table === 'reviews') loadAdminReviews();
+  if (table === 'qnas')    loadAdminQnas();
+}
+
+// ══════════════════════════════════════════
+// 시작 — 인증 후에만 init() 호출됨 (위의 checkPW 및 세션 체크에서 호출)
+// ══════════════════════════════════════════
+
+// ══════════════════════════════════════════
+// 작명 접수 관리
+// ══════════════════════════════════════════
+let ALL_NAMING = [];
+let currentNaming = null;
+
+async function loadNamingApplications() {
+  document.getElementById('namingList').innerHTML =
+    '<div style="padding:24px 18px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:0.1em">로딩 중…</div>';
+  try {
+    const rows = await supabaseFetch(
+      'naming_applications?select=*&order=created_at.desc&limit=100'
+    );
+    ALL_NAMING = rows;
+    renderNamingList();
+  } catch(e) {
+    document.getElementById('namingList').innerHTML =
+      '<div style="padding:18px;color:var(--red);font-size:11px;">로딩 실패: ' + e.message + '</div>';
+  }
+}
+
+function renderNamingList() {
+  const list = document.getElementById('namingList');
+  const pending = ALL_NAMING.filter(r => r.status === 'pending').length;
+  document.getElementById('namingPendingCount').textContent = pending;
+
+  if (ALL_NAMING.length === 0) {
+    list.innerHTML = '<div style="padding:24px 18px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:0.1em">접수 내역이 없습니다</div>';
+    return;
+  }
+
+  const statusLabel = {
+    pending: '접수 대기', confirmed: '입금 확인',
+    in_progress: '작명 진행 중', completed: '작명 완료', delivered: '전달 완료'
+  };
+  const statusClass = {
+    pending: 'status-pending', confirmed: 'status-pending',
+    in_progress: 'status-sent', completed: 'status-done', delivered: 'status-done'
+  };
+
+  list.innerHTML = ALL_NAMING.map(r => `
+    <div class="person-item ${currentNaming?.id === r.id ? 'active' : ''}"
+         onclick="selectNaming('${r.id}')">
+      <div class="name">${r.applicant_name || '—'}
+        <small>${r.service_type || ''} ${r.tier ? '· ' + r.tier : ''}</small>
+      </div>
+      <div class="meta">${r.applicant_phone || ''}</div>
+      <div class="meta">${(r.created_at || '').replace('T',' ').slice(0,16)}</div>
+      <span class="status ${statusClass[r.status] || 'status-pending'}">
+        ${statusLabel[r.status] || r.status}
+      </span>
+    </div>
+  `).join('');
+}
+
+function selectNaming(id) {
+  currentNaming = ALL_NAMING.find(r => r.id === id);
+  if (!currentNaming) return;
+
+  document.getElementById('namingEmptyState').classList.add('hidden');
+  document.getElementById('namingDetailPanel').classList.remove('hidden');
+
+  const r = currentNaming;
+  const fd = r.form_data || {};
+
+  document.getElementById('nClientName').textContent = r.applicant_name || '—';
+  document.getElementById('nClientMeta').textContent =
+    (r.service_type || '') + (r.tier ? ' · ' + r.tier : '') +
+    ' · ' + ((r.created_at || '').replace('T',' ').slice(0,16));
+
+  document.getElementById('n-svc-type').textContent  = r.service_type || '—';
+  document.getElementById('n-tier').textContent      = r.tier || '상담 후 안내';
+  document.getElementById('n-price').textContent     = r.total_price ? r.total_price.toLocaleString() + '원' : '상담 후 안내';
+  document.getElementById('n-payment').textContent   = (r.payment_method || '') + (r.depositor_name ? ' / ' + r.depositor_name : '');
+  document.getElementById('n-name').textContent      = r.applicant_name || '—';
+  document.getElementById('n-phone').textContent     = r.applicant_phone || '—';
+  document.getElementById('n-email').textContent     = r.applicant_email || '—';
+  document.getElementById('n-delivery').textContent  = r.delivery_method || '—';
+  document.getElementById('n-kakao').textContent     = fd.kakao_id || '—';
+  document.getElementById('n-referral').textContent  = fd.referral || '—';
+  document.getElementById('n-address').textContent   = fd.address?.trim() || '—';
+  document.getElementById('n-cert').textContent      = r.cert_option ? '✓ 신청함 (+30,000원)' : '미신청';
+
+  // form_data 전체 출력
+  document.getElementById('n-formdata').textContent = JSON.stringify(r.form_data, null, 2);
+
+  // 상태 선택
+  const sel = document.getElementById('n-status-select');
+  sel.value = r.status || 'pending';
+
+  // 메모
+  document.getElementById('n-memo').value = r.memo || '';
+
+  renderNamingList();
+}
+
+async function saveNamingStatus() {
+  if (!currentNaming) return;
+  const status = document.getElementById('n-status-select').value;
+  const memo   = document.getElementById('n-memo').value;
+
+  try {
+    await supabaseFetch(
+      'naming_applications?id=eq.' + currentNaming.id,
+      { method: 'PATCH', headers: { 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ status, memo }) }
+    );
+    currentNaming.status = status;
+    currentNaming.memo   = memo;
+    const idx = ALL_NAMING.findIndex(r => r.id === currentNaming.id);
+    if (idx >= 0) { ALL_NAMING[idx].status = status; ALL_NAMING[idx].memo = memo; }
+    renderNamingList();
+    // 토스트
+    const t = document.createElement('div');
+    t.textContent = '✓ 저장 완료';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 24px;font-size:12px;z-index:9999;letter-spacing:0.08em;';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  } catch(e) {
+    alert('저장 오류: ' + e.message);
+  }
+}
+
+async function deleteNamingApp() {
+  if (!currentNaming) return;
+  if (!confirm(`"${currentNaming.applicant_name}" 님의 접수 건을 삭제하시겠습니까?\n되돌릴 수 없습니다.`)) return;
+  try {
+    await supabaseFetch(
+      'naming_applications?id=eq.' + currentNaming.id,
+      { method: 'DELETE', headers: { 'Prefer': 'return=minimal' } }
+    );
+    ALL_NAMING = ALL_NAMING.filter(r => r.id !== currentNaming.id);
+    currentNaming = null;
+    renderNamingList();
+    document.getElementById('namingEmptyState').classList.remove('hidden');
+    document.getElementById('namingDetailPanel').classList.add('hidden');
+  } catch(e) {
+    alert('삭제 오류: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════
+// 시작 — 인증 후에만 init() 호출됨 (위의 checkPW 및 세션 체크에서 호출)
+// ══════════════════════════════════════════
+</script>
+</body>
+</html>
