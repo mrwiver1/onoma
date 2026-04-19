@@ -1256,16 +1256,16 @@
         <div class="form-row">
           <div class="form-group">
             <label>신청자 이름 <span class="req">*</span></label>
-            <input type="text" placeholder="예: 김정운" maxlength="20">
+            <input id="f-name" type="text" placeholder="예: 김정운" maxlength="20">
           </div>
           <div class="form-group">
             <label>연락처 <span class="req">*</span></label>
             <div style="display:flex;gap:6px;">
-              <select style="width:80px;flex-shrink:0;">
+              <select id="f-phone1" style="width:80px;flex-shrink:0;">
                 <option>010</option><option>011</option><option>016</option><option>017</option><option>019</option>
               </select>
-              <input type="tel" placeholder="0000" maxlength="4" style="flex:1;">
-              <input type="tel" placeholder="0000" maxlength="4" style="flex:1;">
+              <input id="f-phone2" type="tel" placeholder="0000" maxlength="4" style="flex:1;">
+              <input id="f-phone3" type="tel" placeholder="0000" maxlength="4" style="flex:1;">
             </div>
           </div>
         </div>
@@ -1273,11 +1273,11 @@
         <div class="form-row">
           <div class="form-group">
             <label>이메일 <span class="req">*</span></label>
-            <input type="email" placeholder="example@email.com">
+            <input id="f-email" type="email" placeholder="example@email.com">
           </div>
           <div class="form-group">
             <label>결과 전달 방식 <span class="req">*</span></label>
-            <select>
+            <select id="f-delivery">
               <option value="">선택</option>
               <option>카카오톡</option>
               <option>문자</option>
@@ -1289,22 +1289,22 @@
         <div class="form-row single">
           <div class="form-group">
             <label>카카오톡 ID <span class="opt">(카카오 전달 시 필요)</span></label>
-            <input type="text" placeholder="카카오톡 아이디 입력">
+            <input id="f-kakao" type="text" placeholder="카카오톡 아이디 입력">
           </div>
         </div>
 
         <div class="form-row single">
           <div class="form-group">
             <label>주소 <span class="opt">(고급 작명장 신청 시 필수)</span></label>
-            <input type="text" placeholder="주소 입력" style="margin-bottom:6px;">
-            <input type="text" placeholder="상세주소">
+            <input id="f-addr1" type="text" placeholder="주소 입력" style="margin-bottom:6px;">
+            <input id="f-addr2" type="text" placeholder="상세주소">
           </div>
         </div>
 
         <div class="form-row single">
           <div class="form-group">
             <label>유입 경로 <span class="opt">(선택)</span></label>
-            <select>
+            <select id="f-referral">
               <option value="">선택</option>
               <option>네이버 검색</option>
               <option>카카오 검색</option>
@@ -1348,14 +1348,14 @@
         <div class="form-row">
           <div class="form-group">
             <label>결제 방식 <span class="req">*</span></label>
-            <select>
+            <select id="f-payment">
               <option>무통장 입금</option>
               <option>카드 결제</option>
             </select>
           </div>
           <div class="form-group">
             <label>입금자명 <span class="req">*</span></label>
-            <input type="text" placeholder="실제 입금자명 입력">
+            <input id="f-depositor" type="text" placeholder="실제 입금자명 입력">
           </div>
         </div>
 
@@ -1500,13 +1500,89 @@ function addSibling() {
 // =====================
 // 제출
 // =====================
-function submitForm() {
+// =====================
+// Supabase 설정
+// =====================
+const SUPABASE_URL  = 'https://wavhcknviozwadqyjlug.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhdmhja252aW96d2FkcXlqbHVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTQ5NjksImV4cCI6MjA5MDQzMDk2OX0.frq_z3GgL8BEjHCRuVcdOqPLe0DhJp0k-joOXYVK_Ws';
+
+// =====================
+// 제출
+// =====================
+async function submitForm() {
   if (!document.getElementById('privacy-agree').checked) {
     alert('개인정보 수집 및 이용에 동의해주세요.');
     return;
   }
-  // TODO: Supabase 저장 연동 후 이 부분 교체
-  location.href = 'thank-you.html';
+
+  const name = document.getElementById('f-name')?.value?.trim();
+  const phone = (document.getElementById('f-phone1')?.value || '') + '-' +
+                (document.getElementById('f-phone2')?.value || '') + '-' +
+                (document.getElementById('f-phone3')?.value || '');
+  const email = document.getElementById('f-email')?.value?.trim();
+  const delivery = document.getElementById('f-delivery')?.value;
+
+  if (!name) { alert('신청자 이름을 입력해주세요.'); return; }
+  if (!email) { alert('이메일을 입력해주세요.'); return; }
+  if (!delivery) { alert('결과 전달 방식을 선택해주세요.'); return; }
+
+  const svcType  = document.querySelector('input[name="svc-type"]:checked')?.value || '';
+  const tier     = document.querySelector('input[name="tier"]:checked')?.value || '';
+  const totalRaw = document.getElementById('total-price')?.textContent?.replace(/,/g,'') || '0';
+  const total    = isNaN(parseInt(totalRaw)) ? 0 : parseInt(totalRaw);
+
+  const payload = {
+    service_type:    svcType,
+    tier:            tier || null,
+    applicant_name:  name,
+    applicant_phone: phone,
+    applicant_email: email,
+    delivery_method: delivery,
+    total_price:     total,
+    payment_method:  document.getElementById('f-payment')?.value || '',
+    depositor_name:  document.getElementById('f-depositor')?.value?.trim() || '',
+    cert_option:     document.getElementById('cert-option')?.checked || false,
+    status:          'pending',
+    form_data: {
+      kakao_id:  document.getElementById('f-kakao')?.value || '',
+      address:   (document.getElementById('f-addr1')?.value || '') + ' ' +
+                 (document.getElementById('f-addr2')?.value || ''),
+      referral:  document.getElementById('f-referral')?.value || '',
+    }
+  };
+
+  // 버튼 로딩 상태
+  const btn = document.querySelector('.form-submit-btn');
+  btn.textContent = '접수 중...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/naming_applications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      location.href = 'thank-you.html';
+    } else {
+      const err = await res.text();
+      console.error('Supabase error:', err);
+      alert('접수 중 오류가 발생했습니다. 잠시 후 다시 시도하거나 카카오 채널로 문의해주세요.');
+      btn.textContent = '신청하기';
+      btn.disabled = false;
+    }
+  } catch (e) {
+    console.error(e);
+    alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    btn.textContent = '신청하기';
+    btn.disabled = false;
+  }
 }
 
 // =====================
