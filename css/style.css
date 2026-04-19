@@ -1405,6 +1405,7 @@ footer {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 .footer-biz-left span,
 .footer-biz-left a {
@@ -1426,6 +1427,7 @@ footer {
   letter-spacing: 0.02em;
   line-height: 1.8;
   font-weight: 300;
+  text-align: center;
 }
 
 @media (max-width: 900px) {
