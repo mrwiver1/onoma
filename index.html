@@ -3,1176 +3,1261 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>오노마 상담소 · ONOMA — 이름을 통해 삶의 방향을 함께 읽는 상담소</title>
-<meta name="description" content="이름풀이, 작명, 개명, 상호·브랜드 네이밍, 인생 전략 리포트. 전국·해외 온라인 상담 가능. 오노마 상담소.">
+<title>힐링네임 — 이지윤 원장의 21년 작명 서비스</title>
+<meta name="description" content="이지윤 원장이 직접 진행하는 작명·개명 서비스. 신생아 작명, 개명, 상호·브랜드 네이밍. 전국·해외 온라인 접수 가능.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 핵심 팔레트 — 먹빛 & 구리금 */
+  --ink:        #18120a;
+  --ink-mid:    #2e2416;
+  --copper:     #b8834a;
+  --copper-lt:  #d4a96e;
+  --copper-pale:#f0e0c8;
+  --ivory:      #faf6ef;
+  --ivory2:     #f3ece0;
+  --ivory3:     #e8dece;
+  --white:      #ffffff;
+  --muted:      #9a8a72;
+  --border-dk:  rgba(184,131,74,0.25);
+  --border-lt:  rgba(184,131,74,0.15);
+
+  --serif:  'Nanum Myeongjo', 'Noto Serif KR', Georgia, serif;
+  --sans:   'Noto Sans KR', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--ivory); color: var(--ink); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--sans); cursor: pointer; border: none; }
+img { max-width: 100%; display: block; }
+
+/* ═══════════════════════════════
+   TOP STRIP
+═══════════════════════════════ */
+.top-strip {
+  background: var(--ink);
+  padding: 8px 5%;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.5);
+}
+.top-strip a { color: var(--copper-lt); }
+
+/* ═══════════════════════════════
+   NAVIGATION
+═══════════════════════════════ */
+.nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(250,246,239,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-lt);
+  padding: 0 5%;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px;
+}
+.nav-brand { display: flex; flex-direction: column; gap: 3px; line-height: 1; }
+.nav-brand-name {
+  font-family: var(--serif); font-size: 22px;
+  color: var(--ink); letter-spacing: 0.08em;
+}
+.nav-brand-sub {
+  font-size: 9px; letter-spacing: 0.25em;
+  color: var(--copper); text-transform: uppercase;
+}
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 14px; font-weight: 600;
+  color: var(--ink-mid); letter-spacing: 0.05em;
+  transition: color 0.2s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 1.5px; background: var(--copper);
+  transform: scaleX(0); transition: transform 0.2s;
+}
+.nav-links a:hover { color: var(--copper); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-links .hl { color: var(--copper); font-weight: 700; }
+.nav-cta {
+  background: var(--ink); color: var(--ivory);
+  padding: 11px 24px; font-size: 13px;
+  letter-spacing: 0.1em; font-weight: 500;
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--copper); }
+
+/* ═══════════════════════════════
+   HERO — 다크 먹색 배경
+═══════════════════════════════ */
+.hero {
+  background: var(--ink);
+  min-height: 88vh;
+  display: flex; align-items: center;
+  padding: 80px 5%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 배경 한자 워터마크 */
+.hero::before {
+  content: '名';
+  position: absolute;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--serif);
+  font-size: clamp(280px, 28vw, 420px);
+  color: rgba(255,255,255,0.03);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-inner {
+  max-width: 1060px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 380px;
+  gap: 72px; align-items: center;
+  position: relative; z-index: 1;
+}
+
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 32px;
+}
+.hero-eyebrow-line { width: 36px; height: 1px; background: var(--copper); }
+.hero-eyebrow-text {
+  font-size: 11px; letter-spacing: 0.22em;
+  color: var(--copper-lt); text-transform: uppercase;
+}
+
+.hero-headline {
+  font-family: var(--serif);
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 400;
+  color: var(--ivory);
+  line-height: 1.35;
+  margin-bottom: 28px;
+  word-break: keep-all;
+}
+.hero-headline strong {
+  color: var(--copper-lt);
+  font-weight: 400;
+  display: block;
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: rgba(255,255,255,0.6);
+  line-height: 2;
+  margin-bottom: 40px;
+  max-width: 460px;
+}
+
+.hero-quote {
+  border-left: 2px solid var(--copper);
+  padding: 14px 22px;
+  margin-bottom: 44px;
+  max-width: 420px;
+}
+.hero-quote p {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.9;
+}
+.hero-quote cite {
+  display: block; margin-top: 8px;
+  font-size: 12px;
+  color: var(--copper);
+  letter-spacing: 0.1em;
+}
+
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.btn-copper {
+  background: var(--copper); color: #fff;
+  padding: 14px 32px; font-size: 14px;
+  letter-spacing: 0.1em; font-weight: 500;
+  transition: background 0.2s;
+}
+.btn-copper:hover { background: var(--copper-lt); color: var(--ink); }
+.btn-ghost {
+  background: transparent; color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 13px 28px; font-size: 14px;
+  letter-spacing: 0.08em;
+  transition: all 0.2s; display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--copper); color: var(--copper-lt); }
+.hero-note { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.05em; }
+
+/* 히어로 우측: 원장 사진 */
+.hero-photo-col { position: relative; }
+.hero-photo-frame {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: linear-gradient(160deg, #2e2416 0%, #1a1308 100%);
+  border: 1px solid rgba(184,131,74,0.2);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; overflow: hidden;
+  position: relative;
+}
+.hero-photo-frame img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.hero-photo-ph {
+  text-align: center;
+}
+.hero-photo-ph-icon { font-size: 52px; opacity: 0.3; margin-bottom: 10px; }
+.hero-photo-ph-text {
+  font-size: 12px; color: rgba(255,255,255,0.25);
+  letter-spacing: 0.1em; line-height: 1.8;
+}
+.hero-badge {
+  position: absolute;
+  bottom: -1px; left: -1px; right: -1px;
+  background: linear-gradient(to top, var(--ink) 0%, transparent 100%);
+  padding: 40px 24px 20px;
+  text-align: center;
+}
+.hero-badge-name { font-family: var(--serif); font-size: 18px; color: var(--ivory); letter-spacing: 0.06em; }
+.hero-badge-title { font-size: 11px; color: var(--copper); letter-spacing: 0.15em; margin-top: 4px; }
+
+.hero-stat {
+  position: absolute; top: 20px; left: -20px;
+  background: var(--copper);
+  padding: 14px 18px; text-align: center;
+}
+.hero-stat-num { font-family: var(--serif); font-size: 28px; color: #fff; line-height: 1; }
+.hero-stat-label { font-size: 10px; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; margin-top: 3px; }
+
+/* ═══════════════════════════════
+   신뢰 띠 — 구리색 배경
+═══════════════════════════════ */
+.trust-band {
+  background: var(--copper);
+  padding: 20px 5%;
+}
+.trust-band-inner {
+  max-width: 860px; margin: 0 auto;
+  display: flex; justify-content: space-around;
+  flex-wrap: wrap; gap: 12px;
+}
+.trust-item { text-align: center; padding: 6px 16px; }
+.trust-num {
+  font-family: var(--serif); font-size: 28px;
+  color: #fff; font-weight: 400; line-height: 1; margin-bottom: 4px;
+}
+.trust-label { font-size: 11px; color: rgba(255,255,255,0.8); letter-spacing: 0.08em; }
+
+/* ═══════════════════════════════
+   섹션 공통
+═══════════════════════════════ */
+.sec-eyebrow {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.sec-eyebrow-line { width: 24px; height: 1px; background: var(--copper); }
+.sec-eyebrow-text { font-size: 10px; letter-spacing: 0.22em; color: var(--copper); text-transform: uppercase; }
+.sec-title {
+  font-family: var(--serif);
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 400; color: var(--ink);
+  line-height: 1.4; margin-bottom: 10px;
+}
+.sec-sub { font-size: 14px; color: var(--muted); margin-bottom: 40px; }
+
+/* ═══════════════════════════════
+   서비스 카드
+═══════════════════════════════ */
+.services-sec {
+  padding: 80px 5%;
+  background: var(--ivory2);
+}
+.services-inner { max-width: 860px; margin: 0 auto; }
+.svc-grid {
+  display: grid; grid-template-columns: repeat(2,1fr); gap: 2px;
+  background: var(--border-lt);
+  border: 1px solid var(--border-lt);
+}
+.svc-card {
+  background: var(--ivory);
+  padding: 32px 28px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+.svc-card:hover { background: #fff; }
+.svc-card.active { background: #fff; }
+.svc-card.active::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--copper);
+}
+.svc-card-tag {
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--copper); text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+.svc-card-name {
+  font-family: var(--serif); font-size: 22px;
+  font-weight: 400; color: var(--ink); margin-bottom: 12px;
+}
+.svc-card-desc { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+/* ═══════════════════════════════
+   가격표
+═══════════════════════════════ */
+.pricing-sec {
+  padding: 80px 5%;
+  background: var(--ivory);
+}
+.pricing-inner { max-width: 860px; margin: 0 auto; }
+.tier-wrap {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; background: var(--border-lt);
+  border: 1px solid var(--border-lt); margin-bottom: 16px;
+}
+.tier-card {
+  background: var(--ivory);
+  padding: 28px 22px; text-align: center;
+  display: flex; flex-direction: column;
+}
+.tier-card.featured {
+  background: var(--ink); color: #fff;
+}
+.tier-badge {
+  display: inline-block; background: var(--copper);
+  color: #fff; font-size: 10px; padding: 3px 10px;
+  letter-spacing: 0.1em; margin-bottom: 12px;
+  align-self: center;
+}
+.tier-name-label {
+  font-family: var(--serif); font-size: 18px;
+  font-weight: 400; margin-bottom: 8px;
+}
+.tier-price-label {
+  font-family: var(--serif); font-size: 28px;
+  font-weight: 400; margin-bottom: 4px;
+}
+.tier-price-label span { font-size: 14px; }
+.tier-vat-label { font-size: 11px; opacity: 0.5; margin-bottom: 20px; }
+.tier-features {
+  list-style: none; text-align: left;
+  flex: 1; margin-bottom: 24px;
+}
+.tier-features li {
+  font-size: 12px; padding: 7px 0;
+  border-bottom: 1px solid var(--border-lt);
+  display: flex; align-items: center; gap: 8px;
+}
+.tier-card.featured .tier-features li { border-bottom-color: rgba(255,255,255,0.08); }
+.tier-features li .ck { color: var(--copper); font-size: 14px; flex-shrink: 0; }
+.tier-features li .dh { opacity: 0.3; flex-shrink: 0; }
+.tier-btn {
+  padding: 12px; font-size: 13px;
+  letter-spacing: 0.08em; font-weight: 500; cursor: pointer;
+  font-family: var(--sans); transition: all 0.2s;
+}
+.tier-btn-outline {
+  background: transparent; color: var(--ink);
+  border: 1px solid var(--border-dk);
+}
+.tier-btn-outline:hover { background: var(--ivory2); }
+.tier-btn-fill { background: var(--copper); color: #fff; border: none; }
+.tier-btn-fill:hover { background: var(--copper-lt); color: var(--ink); }
+.tier-btn-ghost { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); }
+.tier-btn-ghost:hover { border-color: var(--copper); color: var(--copper-lt); }
+
+/* ═══════════════════════════════
+   진행 과정
+═══════════════════════════════ */
+.process-sec {
+  padding: 80px 5%;
+  background: var(--ink);
+}
+.process-inner { max-width: 860px; margin: 0 auto; }
+.process-sec .sec-title { color: var(--ivory); }
+.process-sec .sec-sub { color: rgba(255,255,255,0.45); }
+.process-steps {
+  display: grid; grid-template-columns: repeat(5,1fr);
+  gap: 0; margin-top: 48px; position: relative;
+}
+.process-steps::before {
+  content: '';
+  position: absolute; top: 26px; left: 8%; right: 8%;
+  height: 1px; background: rgba(184,131,74,0.3);
+}
+.process-step { text-align: center; padding: 0 4px; }
+.process-num {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--ink-mid);
+  border: 1.5px solid rgba(184,131,74,0.35);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-family: var(--serif); font-size: 16px; color: var(--copper);
+  position: relative; z-index: 1; transition: all 0.2s;
+}
+.process-step:first-child .process-num {
+  background: var(--copper); border-color: var(--copper); color: #fff;
+}
+.process-label { font-size: 13px; font-weight: 600; color: var(--ivory); margin-bottom: 6px; }
+.process-desc  { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+
+/* ═══════════════════════════════
+   결과물
+═══════════════════════════════ */
+.result-sec { padding: 80px 5%; background: var(--ivory2); }
+.result-inner { max-width: 860px; margin: 0 auto; }
+.result-grid {
+  display: grid; grid-template-columns: repeat(2,1fr);
+  gap: 2px; background: var(--border-lt);
+  border: 1px solid var(--border-lt); margin-top: 40px;
+}
+.result-item {
+  background: var(--ivory); padding: 28px 26px;
+}
+.result-num {
+  font-family: var(--serif); font-size: 36px;
+  color: var(--copper-pale); font-weight: 400;
+  line-height: 1; margin-bottom: 14px;
+}
+.result-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.result-desc  { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+/* ═══════════════════════════════
+   작명장
+═══════════════════════════════ */
+.cert-sec {
+  padding: 80px 5%;
+  background: var(--ivory);
+}
+.cert-inner {
+  max-width: 860px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 56px; align-items: center;
+}
+.cert-options { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.cert-option {
+  background: var(--ivory2);
+  border: 1px solid var(--border-lt);
+  padding: 16px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: border-color 0.2s;
+}
+.cert-option:hover { border-color: var(--copper); }
+.cert-option-name { font-size: 14px; color: var(--ink); font-weight: 500; }
+.cert-option-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.cert-option-price { font-family: var(--serif); font-size: 16px; color: var(--copper); }
+
+/* 작명장 미리보기 */
+.cert-preview {
+  background: #fff;
+  border: 1px solid var(--border-lt);
+  padding: 40px 32px; text-align: center;
+  position: relative;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.08);
+}
+.cert-preview-sample {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 0.1em; border: 1px solid var(--border-lt);
+  padding: 2px 8px;
+}
+.cert-preview-wm {
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--muted); margin-bottom: 28px; text-transform: uppercase;
+}
+.cert-preview-name {
+  font-family: var(--serif); font-size: 42px;
+  color: var(--ink); font-weight: 400; margin-bottom: 8px;
+}
+.cert-preview-hanja {
+  font-size: 22px; color: var(--muted);
+  margin-bottom: 24px; letter-spacing: 0.2em;
+}
+.cert-preview-divider {
+  width: 32px; height: 1px;
+  background: var(--copper); margin: 0 auto 22px;
+}
+.cert-preview-brand {
+  font-size: 12px; color: var(--muted);
+  letter-spacing: 0.1em; line-height: 1.9;
+}
+.cert-preview-stamp {
+  width: 48px; height: 48px;
+  border: 2px solid #c0392b; border-radius: 50%;
+  margin: 18px auto 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #c0392b; font-size: 11px; font-weight: 700;
+  transform: rotate(-15deg);
+}
+
+/* ═══════════════════════════════
+   준비서류
+═══════════════════════════════ */
+.docs-sec { padding: 80px 5%; background: var(--ivory2); }
+.docs-inner { max-width: 860px; margin: 0 auto; }
+.docs-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; background: var(--border-lt);
+  border: 1px solid var(--border-lt); margin-top: 40px;
+}
+.docs-card { background: var(--ivory); padding: 28px 24px; }
+.docs-icon  { font-size: 22px; margin-bottom: 14px; }
+.docs-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+.docs-list  { list-style: none; }
+.docs-list li {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.85; padding-left: 14px; position: relative;
+}
+.docs-list li::before {
+  content: '—'; position: absolute; left: 0;
+  color: var(--copper); font-size: 10px; top: 4px;
+}
+
+/* ═══════════════════════════════
+   오노마 연결
+═══════════════════════════════ */
+.onoma-sec {
+  padding: 80px 5%;
+  background: var(--ink-mid);
+}
+.onoma-inner {
+  max-width: 860px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 56px; align-items: center;
+}
+.onoma-eyebrow { font-size: 10px; letter-spacing: 0.22em; color: var(--copper); text-transform: uppercase; margin-bottom: 16px; }
+.onoma-title {
+  font-family: var(--serif); font-size: clamp(22px,3vw,32px);
+  font-weight: 400; color: var(--ivory); line-height: 1.45; margin-bottom: 16px;
+}
+.onoma-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.9; margin-bottom: 28px; }
+.btn-ivory {
+  display: inline-block; background: var(--ivory); color: var(--ink);
+  padding: 13px 28px; font-size: 14px; font-weight: 600;
+  letter-spacing: 0.06em; transition: background 0.2s;
+}
+.btn-ivory:hover { background: var(--copper-pale); }
+.onoma-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 12px; display: block; }
+.onoma-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(184,131,74,0.2); padding: 28px;
+}
+.onoma-card-label { font-size: 10px; letter-spacing: 0.15em; color: rgba(255,255,255,0.35); margin-bottom: 20px; }
+.onoma-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+.onoma-item:last-child { margin-bottom: 0; }
+.onoma-item-icon {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border: 1px solid rgba(184,131,74,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); color: var(--copper-lt); font-size: 15px;
+}
+.onoma-item-title { font-size: 13px; color: var(--ivory); font-weight: 600; margin-bottom: 3px; }
+.onoma-item-desc  { font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+/* ═══════════════════════════════
+   게시판
+═══════════════════════════════ */
+.board-sec { padding: 64px 5%; background: var(--ivory); }
+.board-inner { max-width: 860px; margin: 0 auto; }
+.board-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 2px; background: var(--border-lt);
+  border: 1px solid var(--border-lt); margin-top: 32px;
+}
+.board-card {
+  background: var(--ivory2); padding: 24px 20px;
+  display: block; transition: background 0.15s;
+}
+.board-card:hover { background: #fff; }
+.board-card-icon { font-size: 20px; margin-bottom: 10px; }
+.board-card-name {
+  font-family: var(--serif); font-size: 16px;
+  color: var(--ink); margin-bottom: 6px;
+}
+.board-card-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+/* ═══════════════════════════════
+   CTA
+═══════════════════════════════ */
+.cta-sec {
+  padding: 96px 5%;
+  background: var(--ink);
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta-sec::before {
+  content: '作名';
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  font-family: var(--serif);
+  font-size: 240px; color: rgba(255,255,255,0.02);
+  pointer-events: none; white-space: nowrap;
+}
+.cta-inner { max-width: 560px; margin: 0 auto; position: relative; z-index: 1; }
+.cta-eyebrow {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  margin-bottom: 24px;
+}
+.cta-eyebrow-line { width: 32px; height: 1px; background: var(--copper); }
+.cta-eyebrow-text { font-size: 11px; letter-spacing: 0.2em; color: var(--copper); text-transform: uppercase; }
+.cta-title {
+  font-family: var(--serif); font-size: clamp(28px,4vw,42px);
+  font-weight: 400; color: var(--ivory); line-height: 1.4; margin-bottom: 16px;
+}
+.cta-sub { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.9; margin-bottom: 40px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.cta-note { font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 20px; }
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+.footer { background: #110d07; padding: 52px 5% 32px; }
+.footer-inner { max-width: 860px; margin: 0 auto; }
+.footer-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 24px; flex-wrap: wrap; gap: 20px;
+}
+.footer-brand-name { font-family: var(--serif); font-size: 20px; color: var(--ivory); letter-spacing: 0.06em; margin-bottom: 4px; }
+.footer-brand-sub  { font-size: 9px; letter-spacing: 0.22em; color: var(--copper); text-transform: uppercase; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.footer-links a { font-size: 12px; color: rgba(255,255,255,0.4); transition: color 0.2s; }
+.footer-links a:hover { color: rgba(255,255,255,0.75); }
+.footer-info { font-size: 12px; color: rgba(255,255,255,0.3); line-height: 2.1; letter-spacing: 0.02em; }
+.footer-copy {
+  margin-top: 20px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 11px; color: rgba(255,255,255,0.2); letter-spacing: 0.06em;
+}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media(max-width:900px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-photo-col { display: none; }
+  .cert-inner { grid-template-columns: 1fr; }
+  .onoma-inner { grid-template-columns: 1fr; }
+}
+@media(max-width:768px) {
+  .nav-links { display: none; }
+  .svc-grid { grid-template-columns: 1fr; }
+  .tier-wrap { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
+  .docs-grid { grid-template-columns: 1fr; }
+  .board-grid { grid-template-columns: repeat(2,1fr); }
+  .process-steps { grid-template-columns: 1fr; gap: 24px; }
+  .process-steps::before { display: none; }
+  .trust-band-inner { gap: 16px; }
+  .footer-top { flex-direction: column; }
+  .cta-btns { flex-direction: column; align-items: center; }
+}
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">
-    <img src="images/onoma_logo_nav.png" alt="오노마 상담소">
-    <span class="nav-logo-text">오노마 상담소</span>
+<!-- 상단 스트립 -->
+<div class="top-strip">
+  힐링네임은 <a href="https://onomalife.com" target="_blank">ONOMA</a> 이름 분석 플랫폼의 전문 작명 서비스입니다
+</div>
+
+<!-- 네비게이션 -->
+<nav class="nav">
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-brand-name">힐링네임</span>
+    <span class="nav-brand-sub">by ONOMA</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#services">서비스</a></li>
-    <li><a href="#diagnosis">무료 진단</a></li>
+    <li><a href="#services">서비스 종류</a></li>
     <li><a href="#pricing">가격 안내</a></li>
-    <li><a href="#director">원장 소개</a></li>
-    <li><a href="#reviews">후기</a></li>
-    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#process">진행 과정</a></li>
+    <li><a href="#docs">준비 서류</a></li>
+    <li><a href="https://onomalife.com" target="_blank" class="hl">이름풀이 받기</a></li>
   </ul>
-  <button class="nav-cta" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+  <button class="nav-cta" onclick="location.href='form'">작명·개명 신청하기</button>
 </nav>
 
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-grid">
-    <!-- 왼쪽: 헤드라인 + CTA + 서비스 리스트 -->
-    <div class="hero-content reveal">
-      <div class="hero-eyebrow">ONOMA COUNSELING · 이름의 해석</div>
-      <h1 class="hero-headline">
-        당신의 이름,<br>
-        <em>제대로 해석해본 적<br>있나요?</em>
-      </h1>
-      <div class="hero-divider"></div>
-      <p class="hero-sub">반복되는 문제의 이유를<br>이름의 구조에서 읽어냅니다.</p>
-      <div class="hero-cta-row">
-        <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">진단 시작하기</button>
-        <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">서비스 보기 →</button>
-      </div>
-      <div class="hero-svc-list">
-        <div class="hero-svc-item" onclick="document.querySelectorAll('.service-card')[1].scrollIntoView({behavior:'smooth',block:'center'})">
-          <div class="hero-svc-left">
-            <span class="hero-svc-num">01</span>
-            <span class="hero-svc-ttl">지금 이 이름, 계속 써도 괜찮을까요?</span>
-          </div>
-          <span class="hero-svc-arr">→</span>
-        </div>
-        <div class="hero-svc-item" onclick="document.querySelectorAll('.service-card')[2].scrollIntoView({behavior:'smooth',block:'center'})">
-          <div class="hero-svc-left">
-            <span class="hero-svc-num">02</span>
-            <span class="hero-svc-ttl">아이의 이름, 처음부터 제대로 짓고 싶다면</span>
-          </div>
-          <span class="hero-svc-arr">→</span>
-        </div>
-        <div class="hero-svc-item" onclick="document.querySelectorAll('.service-card')[0].scrollIntoView({behavior:'smooth',block:'center'})">
-          <div class="hero-svc-left">
-            <span class="hero-svc-num">03</span>
-            <span class="hero-svc-ttl">왜 저한테 이런 일들이 자꾸 생길까요?</span>
-          </div>
-          <span class="hero-svc-arr">→</span>
-        </div>
-        <div class="hero-svc-item" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">
-          <div class="hero-svc-left">
-            <span class="hero-svc-num">04</span>
-            <span class="hero-svc-ttl">지금 상호와 브랜드, 정말 만족하고 계신가요?</span>
-          </div>
-          <span class="hero-svc-arr">→</span>
-        </div>
-      </div>
-    </div>
-    <!-- 오른쪽: 원장 사진 꽉 채움 -->
-    <div class="hero-photo">
-      <img src="images/onoma-director.png" alt="이지윤 원장">
-      <div class="hero-photo-badge">
-        <strong>이지윤 원장</strong><br>성명학 분석 · 작명 전문가 · 21년 경력
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- 무료 진단 -->
-<section id="diagnosis">
-  <div class="section-inner">
-    <div class="reveal" style="text-align:center; margin-bottom:48px;">
-      <div class="section-label" style="justify-content:center;">
-        <span style="display:block;width:28px;height:1px;background:var(--green-dark);opacity:0.5;"></span>
-        무료 1차 진단
-        <span style="display:block;width:28px;height:1px;background:var(--green-dark);opacity:0.5;"></span>
-      </div>
-      <h2 class="section-title">3분 이름 1차 진단</h2>
-      <p class="section-sub" style="margin:0 auto;text-align:center;">이름 수리 사격과 사주 오행을 함께 분석해 개명 필요도를 진단합니다.</p>
-    </div>
-    <div class="diag-container reveal">
-      <div class="trust-bar">
-        <div class="trust-bar-icon">◈</div>
-        <p>오노마 상담소는 21년간 서울, 일산, 김포에서 성명학 작명연구소 <strong>'이지윤의 힐링네임'</strong>을 운영해온 전문성을 바탕으로 새롭게 런칭한 프리미엄 이름 상담 브랜드입니다.<br>이 1차 진단은 실제 상담 해석 로직을 바탕으로 이름 구조를 간략히 확인할 수 있도록 설계된 참고용 도구입니다.</p>
-      </div>
-
-      <!-- 입력 폼 -->
-      <div style="margin-bottom:20px;">
-        <!-- 생년월일 + 음양력 + 성별 한 줄 -->
-        <div style="margin-bottom:14px;">
-          <label class="form-label">생년월일 <span style="font-size:11px;color:#c0392b;font-weight:600;">* 필수</span></label>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <select class="form-select" id="diag-year" style="flex:2;min-width:90px;">
-              <option value="">년도</option>
-              <option value="2024">2024년</option><option value="2023">2023년</option><option value="2022">2022년</option><option value="2021">2021년</option><option value="2020">2020년</option>
-              <option value="2019">2019년</option><option value="2018">2018년</option><option value="2017">2017년</option><option value="2016">2016년</option><option value="2015">2015년</option>
-              <option value="2014">2014년</option><option value="2013">2013년</option><option value="2012">2012년</option><option value="2011">2011년</option><option value="2010">2010년</option>
-              <option value="2009">2009년</option><option value="2008">2008년</option><option value="2007">2007년</option><option value="2006">2006년</option><option value="2005">2005년</option>
-              <option value="2004">2004년</option><option value="2003">2003년</option><option value="2002">2002년</option><option value="2001">2001년</option><option value="2000">2000년</option>
-              <option value="1999">1999년</option><option value="1998">1998년</option><option value="1997">1997년</option><option value="1996">1996년</option><option value="1995">1995년</option>
-              <option value="1994">1994년</option><option value="1993">1993년</option><option value="1992">1992년</option><option value="1991">1991년</option><option value="1990">1990년</option>
-              <option value="1989">1989년</option><option value="1988">1988년</option><option value="1987">1987년</option><option value="1986">1986년</option><option value="1985">1985년</option>
-              <option value="1984">1984년</option><option value="1983">1983년</option><option value="1982">1982년</option><option value="1981">1981년</option><option value="1980">1980년</option>
-              <option value="1979">1979년</option><option value="1978">1978년</option><option value="1977">1977년</option><option value="1976">1976년</option><option value="1975">1975년</option>
-              <option value="1974">1974년</option><option value="1973">1973년</option><option value="1972">1972년</option><option value="1971">1971년</option><option value="1970">1970년</option>
-              <option value="1969">1969년</option><option value="1968">1968년</option><option value="1967">1967년</option><option value="1966">1966년</option><option value="1965">1965년</option>
-              <option value="1964">1964년</option><option value="1963">1963년</option><option value="1962">1962년</option><option value="1961">1961년</option><option value="1960">1960년</option>
-              <option value="1959">1959년</option><option value="1958">1958년</option><option value="1957">1957년</option><option value="1956">1956년</option><option value="1955">1955년</option>
-              <option value="1954">1954년</option><option value="1953">1953년</option><option value="1952">1952년</option><option value="1951">1951년</option><option value="1950">1950년</option>
-              <option value="1949">1949년</option><option value="1948">1948년</option><option value="1947">1947년</option><option value="1946">1946년</option><option value="1945">1945년</option>
-            </select>
-            <select class="form-select" id="diag-month" style="flex:1;min-width:60px;">
-              <option value="">월</option>
-              <option value="1">1월</option><option value="2">2월</option><option value="3">3월</option><option value="4">4월</option><option value="5">5월</option><option value="6">6월</option>
-              <option value="7">7월</option><option value="8">8월</option><option value="9">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
-            </select>
-            <select class="form-select" id="diag-day" style="flex:1;min-width:60px;">
-              <option value="">일</option>
-              <option value="1">1일</option><option value="2">2일</option><option value="3">3일</option><option value="4">4일</option><option value="5">5일</option>
-              <option value="6">6일</option><option value="7">7일</option><option value="8">8일</option><option value="9">9일</option><option value="10">10일</option>
-              <option value="11">11일</option><option value="12">12일</option><option value="13">13일</option><option value="14">14일</option><option value="15">15일</option>
-              <option value="16">16일</option><option value="17">17일</option><option value="18">18일</option><option value="19">19일</option><option value="20">20일</option>
-              <option value="21">21일</option><option value="22">22일</option><option value="23">23일</option><option value="24">24일</option><option value="25">25일</option>
-              <option value="26">26일</option><option value="27">27일</option><option value="28">28일</option><option value="29">29일</option><option value="30">30일</option><option value="31">31일</option>
-            </select>
-            <!-- 음력/양력 -->
-            <div style="display:flex;gap:4px;flex-shrink:0;">
-              <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;color:var(--ink3);padding:8px 10px;border:1px solid rgba(196,162,74,0.35);background:rgba(196,162,74,0.08);white-space:nowrap;">
-                <input type="radio" name="diag-calendar" value="solar" checked style="accent-color:var(--gold-dark);margin:0;">양력
-              </label>
-              <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;color:var(--ink3);padding:8px 10px;border:1px solid rgba(196,162,74,0.2);background:#fff;white-space:nowrap;">
-                <input type="radio" name="diag-calendar" value="lunar" style="accent-color:var(--gold-dark);margin:0;">음력
-              </label>
-            </div>
-            <!-- 성별 -->
-            <select class="form-select" id="diag-gender" style="flex:1;min-width:70px;">
-              <option value="">성별</option>
-              <option value="남성">남성</option>
-              <option value="여성">여성</option>
-            </select>
-          </div>
-        </div>
-        <!-- 한글 이름 -->
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">한글 이름 <span style="font-size:11px;color:#c0392b;font-weight:600;">* 필수</span></label>
-          <input class="form-input" id="diag-hangul" type="text" placeholder="예: 이지윤" maxlength="6">
-        </div>
-        <!-- 한자 이름 + 피커 -->
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">한자 이름 <span style="font-size:10px;color:var(--gold-dark);font-weight:400;">✓ 입력 시 더 정확한 수리 계산</span></label>
-          <!-- 한자 이름 없음 체크 -->
-          <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;font-size:13px;color:var(--ink3);">
-            <input type="checkbox" id="diag-no-hanja" onchange="toggleHanjaInput()" style="width:16px;height:16px;accent-color:var(--gold-dark);cursor:pointer;">
-            한자 이름 없음 (한글 기준으로만 진단)
-          </label>
-          <!-- 한자 찾기 영역 -->
-          <div id="diag-hanja-area">
-            <div style="display:flex;gap:8px;margin-bottom:8px;">
-              <input class="form-input" id="diag-hanja-search" type="text" placeholder="한글 이름 입력 후 찾기 (예: 이정운)" style="flex:1;">
-              <button type="button" onclick="diagHanjaSearch()" style="padding:10px 14px;background:var(--gold-pale);border:1px solid rgba(196,162,74,0.4);color:var(--gold-dark);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">한자 찾기</button>
-            </div>
-            <div id="diag-hanja-slots" style="display:none;margin-bottom:8px;"></div>
-            <input type="hidden" id="diag-hanja">
-            <div style="font-size:11px;color:var(--ink3);">한글 이름으로 한자를 찾은 후 글자를 클릭해 변경할 수 있어요</div>
-          </div>
-        </div>
-        <!-- 고민 -->
-        <div class="form-group" style="margin-bottom:20px;">
-          <label class="form-label">현재 가장 고민되는 부분 (선택)</label>
-          <textarea class="form-textarea" id="diag-concern" placeholder="예: 직장, 관계, 재정, 건강 등 가장 마음에 걸리는 것을 적어주세요" style="min-height:70px;"></textarea>
-        </div>
-        <!-- 진단 버튼 하나 -->
-        <button class="btn-primary" onclick="runDiag()" style="width:100%;padding:17px;font-size:14px;font-weight:500;letter-spacing:0.06em;">
-          내 이름 확인하기
-        </button>
-        <div style="font-size:12px;color:var(--ink3);margin-top:8px;text-align:center;">현재 나이를 기준으로 앞으로 남은 시절의 수리 흐름을 판단합니다</div>
-        <div style="font-size:11px;color:var(--ink-faint);margin-top:10px;text-align:center;line-height:1.8;">
-          입력하신 정보는 진단 및 상담 안내 외 목적으로 사용되지 않습니다. &nbsp;·&nbsp;
-          <a href="/privacy.html" style="color:var(--ink-faint);text-decoration:underline;text-underline-offset:2px;">개인정보처리방침</a> &nbsp;·&nbsp;
-          <a href="/terms.html" style="color:var(--ink-faint);text-decoration:underline;text-underline-offset:2px;">이용약관</a> &nbsp;·&nbsp;
-          <a href="/refund.html" style="color:var(--ink-faint);text-decoration:underline;text-underline-offset:2px;">환불정책</a>
-        </div>
-      </div>
-
-      <!-- 결과 박스 -->
-      <div id="result-box" style="display:none;">
-        <!-- 진단 등급 헤더 -->
-        <div class="result-header">
-          <div class="result-title" id="result-title">진단 결과</div>
-          <div id="result-grade" class="result-grade"></div>
-          <div id="result-grade-sub" style="font-size:13px;color:var(--ink3);margin-top:8px;"></div>
-        </div>
-        <div class="result-body">
-          <!-- 운세 별점 -->
-          <div id="fortune-grid" style="display:none;margin-bottom:20px;"></div>
-          <!-- 수리 사격 그리드 -->
-          <div id="suri-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;"></div>
-          <!-- 주역괘 (full-width) -->
-          <div id="gua-display" style="margin-bottom:20px;"></div>
-          <!-- 오행 흐름 -->
-          <div id="ohang-row" style="margin-bottom:14px;"></div>
-          <!-- 사주 오행 분석 -->
-          <!-- 운세 포인트 -->
-          <ul class="result-points" id="result-points"></ul>
-          <!-- 판정 결과 재강조 (블러 제거) -->
-          <div id="result-grade-repeat" style="margin-bottom:16px;padding:20px 24px;background:var(--bg2);border:1px solid rgba(196,162,74,0.2);text-align:center;">
-            <div style="font-size:12px;color:var(--ink3);margin-bottom:8px;letter-spacing:0.1em;">이 이름의 최종 판정</div>
-            <div id="result-grade-repeat-badge" style="font-size:26px;font-weight:700;font-family:var(--serif);"></div>
-            <div id="result-grade-repeat-msg" style="font-size:13px;color:var(--ink3);margin-top:8px;line-height:1.7;"></div>
-          </div>
-          <p style="font-size:12px;color:var(--ink-faint);line-height:1.8;margin-top:8px;">※ 1차 진단은 참고용입니다. 실제 판단은 이름 구조와 삶의 흐름을 함께 봐야 정확해집니다.</p>
-        </div>
-        <!-- 불안 자극 -->
-        <div class="urgency-block">
-          <div class="urgency-text" id="urgency-text"></div>
-          <div class="urgency-warning">이 1차 진단 결과는 <strong>참고용</strong>입니다. 정확한 해석은 이름의 구조와 현재 삶의 흐름을 함께 보는 전문 상담을 통해 확인하시길 권합니다.<br><span style="color:var(--gold-dark);font-size:12px;">오노마 상담소 전문 상담은 카카오 채널로 편하게 문의하실 수 있습니다.</span></div>
-        </div>
-        <!-- 퍼널 CTA -->
-        <div class="funnel-cta">
-          <!-- 고민 키워드 기반 상담 연결 -->
-          <div id="concern-cta" style="display:none;margin-bottom:20px;padding:16px 20px;background:#fff;border:1px solid rgba(196,162,74,0.2);border-left:3px solid var(--green);">
-            <div style="font-size:11px;color:var(--gold-dark);letter-spacing:0.1em;margin-bottom:8px;">고민 영역 기반 상담 연결</div>
-            <div id="concern-cta-text" style="font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:12px;"></div>
-            <a id="concern-cta-btn" href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="btn-primary" style="display:inline-block;padding:10px 20px;font-size:13px;"></a>
-          </div>
-          <div class="funnel-label" style="font-size:22px;font-weight:700;letter-spacing:-0.01em;">지금 이 결과를 어떻게 활용하실 건가요?</div>
-          <div class="funnel-cards">
-            <div class="funnel-card">
-              <div class="funnel-tier" style="font-size:15px;font-weight:700;">무료</div>
-              <div class="funnel-name">카카오 채널로<br>간단 문의</div>
-              <div class="funnel-price">간단 질문 가능</div>
-            </div>
-            <div class="funnel-card featured">
-              <div class="funnel-tier" style="font-size:15px;font-weight:700;">가장 많이 선택</div>
-              <div class="funnel-name">이름 검토<br>상담 신청</div>
-              <div class="funnel-price">3~5만원 · 빠른 결과</div>
-              <div style="font-size:11px;color:var(--gold-dark);margin-top:6px;line-height:1.5;">진입 부담 낮고<br>개명 여부 판단까지 가능</div>
-            </div>
-            <div class="funnel-card">
-              <div class="funnel-tier" style="font-size:15px;font-weight:700;">심층 분석</div>
-              <div class="funnel-name">인생통찰<br>리포트</div>
-              <div style="font-size:12px;color:var(--ink3);text-decoration:line-through;margin-top:4px;">정상가 99,000원</div>
-              <div class="funnel-price" style="color:#c0392b;font-weight:700;">런칭 이벤트 49,000원</div>
-              <div style="font-size:10px;color:var(--ink3);margin-top:4px;">한정 특가</div>
-            </div>
-          </div>
-          <div class="funnel-btn-row">
-            <a class="btn-primary" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널로 상담 신청하기</a>
-            <a class="btn-outline" href="https://life.theweros.com/" target="_blank">인생 전략 리포트 보기</a>
-          </div>
-          <p class="funnel-note">전국·해외 교민 온라인 상담 가능 · 화상·전화·카카오</p>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- 위험 신호 -->
-<section id="user-choice">
-  <div class="section-inner">
-    <p class="choice-label">나는 지금…</p>
-    <div class="choice-grid">
-      <button class="choice-btn" onclick="document.querySelectorAll('.service-card')[1].scrollIntoView({behavior:'smooth',block:'center'})">
-        내 이름이 정말 괜찮은지 궁금하다 <span>이름 검토 →</span>
-      </button>
-      <button class="choice-btn" onclick="document.querySelectorAll('.service-card')[0].scrollIntoView({behavior:'smooth',block:'center'})">
-        인생이 왜 계속 꼬이는지 알고 싶다 <span>삶의 흐름 상담 →</span>
-      </button>
-      <button class="choice-btn" onclick="document.querySelectorAll('.service-card')[3].scrollIntoView({behavior:'smooth',block:'center'})">
-        사업·브랜드 이름을 만들고 싶다 <span>비즈니스 네이밍 →</span>
-      </button>
-    </div>
-  </div>
-</section>
-
-<section id="signal">
-  <div class="section-inner">
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-inner">
     <div>
-      <div class="reveal" style="margin-bottom:36px;">
-        <div class="section-label" style="color:var(--dark-section-sub);">
-          <span style="display:block;width:28px;height:1px;background:var(--dark-section-text);opacity:0.5;"></span>
-          지금 확인해야 하는 이유
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-line"></span>
+        <span class="hero-eyebrow-text">이지윤 원장 · 21년 작명 전문</span>
+      </div>
+      <h1 class="hero-headline">
+        좋은 이름은<br>
+        그 사람의 흐름에<br>
+        <strong>꼭 맞아야 합니다</strong>
+      </h1>
+      <p class="hero-desc">
+        이름 하나에는 생각보다 많은 것이 담깁니다.<br>
+        수리의 구조, 오행의 흐름, 가족의 맥락까지.<br>
+        이지윤 원장은 그 모든 것을 함께 읽어 작명합니다.
+      </p>
+      <div class="hero-quote">
+        <p>"예쁜 이름을 찾는 게 아니라,<br>이 아이에게 어울리는 흐름을 찾습니다."</p>
+        <cite>— 이지윤 원장</cite>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-copper" onclick="location.href='form'">작명·개명 신청하기 →</button>
+        <button class="btn-ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">가격 확인하기</button>
+      </div>
+      <p class="hero-note">전국 · 해외 교민 온라인 접수 가능 &nbsp;·&nbsp; VAT 포함 &nbsp;·&nbsp; 선결제</p>
+    </div>
+
+    <div class="hero-photo-col">
+      <div class="hero-photo-frame">
+        <!-- 사진 준비 시: <img src="../images/director-photo.jpg" alt="이지윤 원장"> -->
+        <div class="hero-photo-ph">
+          <div class="hero-photo-ph-icon">🌿</div>
+          <div class="hero-photo-ph-text">이지윤 원장 사진<br>images/director-photo.jpg</div>
         </div>
-        <h2 class="section-title" style="color:var(--dark-section-text);">이런 패턴이 반복된다면,<br>이름을 점검해야 할 수 있습니다</h2>
+        <div class="hero-badge">
+          <div class="hero-badge-name">이지윤 원장</div>
+          <div class="hero-badge-title">힐링네임 · 광미명성학</div>
+        </div>
       </div>
-      <div class="signal-grid reveal">
-      <div class="signal-card">
-        <div class="signal-icon">🔄</div>
-        <h3>관계에서 같은 문제 반복</h3>
-        <p>좋은 관계로 시작했다가 항상 비슷한 방식으로 어긋납니다. 사람이 문제가 아니라 이름의 흐름일 수 있습니다.</p>
+      <div class="hero-stat">
+        <div class="hero-stat-num">21년</div>
+        <div class="hero-stat-label">작명 경력</div>
       </div>
-      <div class="signal-card">
-        <div class="signal-icon">💸</div>
-        <h3>재정 흐름이 늘 막히는 느낌</h3>
-        <p>열심히 하는데도 돈이 모이지 않고 새나갑니다. 재물 흐름과 이름 구조는 연결되어 있습니다.</p>
-      </div>
-      <div class="signal-card">
-        <div class="signal-icon">🧭</div>
-        <h3>방향이 흐리고 결정이 어렵습니다</h3>
-        <p>무엇을 선택해야 할지 늘 확신이 없고, 같은 고민이 반복됩니다. 삶의 구조를 다시 봐야 할 때입니다.</p>
-      </div>
-    </div>
-    <div class="signal-bottom reveal">
-      이름이 삶과 맞지 않으면 <strong>반복되는 패턴</strong>이 생깁니다.<br>
-      이 패턴은 의지나 노력만으로 해결되지 않을 수 있습니다. <strong>이름 구조를 먼저 점검해보세요.</strong>
-    </div>
-    <div class="reveal" style="text-align:center;margin-bottom:48px;">
-      <button class="btn-primary" style="background:var(--green-dark);border:1px solid rgba(200,221,168,0.3);" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">무료 진단 시작하기</button>
-    </div>
-  </div>
-  <div class="signal-img-col reveal">
-    <img src="images/onoma-signal-night2.png" alt="창가에서 고민하는 여성">
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="section-inner">
-    <div class="about-grid">
-      <div class="about-text reveal">
-        <div class="section-label">오노마 상담소 소개</div>
-        <h2 class="section-title">이름을 통해<br>삶의 문제를 함께 읽습니다</h2>
-        <div class="green-line"></div>
-        <p>오노마 상담소는 <strong>이름을 단순히 풀이하는 곳이 아닙니다.</strong> 이름을 통해 현재 삶의 흐름, 관계의 반복, 진로의 방향, 가족과 일의 문제를 함께 읽고, 지금 무엇이 막혀 있는지를 함께 보는 상담소입니다.</p>
-        <p>작명과 개명은 오노마 상담소의 여러 서비스 중 하나입니다. 핵심은 <strong>이름을 원인 진단의 도구로 활용해 삶의 방향을 함께 정리하는 상담</strong>입니다. 진로·연애·재회·가족·사업 등 삶의 영역에서 반복되는 문제를 다룹니다.</p>
-        <p style="font-style:italic;color:var(--gold-dark);border-left:2px solid var(--green);padding-left:14px;font-size:14px;line-height:1.9;">"이름은 문제의 원인을 읽는 단서이고, 상담은 그 문제의 방향을 함께 정리하는 과정입니다."</p>
-      </div>
-      <div class="about-stat-box reveal">
-        <div class="stat-row"><div class="stat-num">21년</div><div class="stat-label">이름·삶 상담 경험</div></div>
-        <div class="stat-row"><div class="stat-num">전국</div><div class="stat-label">온라인 화상·전화 상담</div></div>
-        <div class="stat-row"><div class="stat-num">해외</div><div class="stat-label">교민 대상 온라인 상담 가능</div></div>
-        <div class="stat-row"><div class="stat-num">10,000건+</div><div class="stat-label">누적 상담 건수</div></div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- WHY -->
-<section id="why">
-  <div class="section-inner">
-    <div class="reveal">
-      <div class="section-label">왜 지금인가</div>
-      <h2 class="section-title">이름은 평생 불리지만,<br>대부분 한 번도 제대로 점검받지 않습니다</h2>
-    </div>
-    <div class="why-grid reveal">
-      <div class="why-card"><div class="why-num">01</div><h3>지금 쓰는 이름이 나에게 맞는지 확인해본 적 있으신가요?</h3><p>대부분은 태어날 때 받은 이름을 평생 그대로 씁니다. 그 이름이 현재의 삶과 어떤 방식으로 맞물리고 있는지, 한 번도 깊이 있게 확인해본 적이 없는 경우가 많습니다.</p></div>
-      <div class="why-card"><div class="why-num">02</div><h3>직접 지었거나 다른 곳에서 받은 이름도 다시 확인하고 싶을 때가 있습니다</h3><p>직접 지은 이름이나 타 작명소에서 받은 이름도, 시간이 지나면 다시 검토받고 싶어지는 순간이 옵니다. 확신이 없을 때, 다시 보는 것이 맞습니다.</p></div>
-      <div class="why-card"><div class="why-num">03</div><h3>개명은 이름을 바꾸는 일이 아니라, 삶과의 정합성을 보는 과정입니다</h3><p>개명을 고민할 때, 단순히 예쁜 이름을 찾는 것이 아닙니다. 현재 삶의 흐름과 충돌하는 부분이 있는지, 무엇을 다시 정렬해야 하는지를 살펴보는 것이 핵심입니다.</p></div>
-      <div class="why-card"><div class="why-num">04</div><h3>상호와 브랜드명도 결국 첫인상과 방향성을 결정하는 구조입니다</h3><p>사업의 이름은 단순한 명칭이 아닙니다. 고객이 처음 받는 인상, 기억되는 방식, 사업의 방향성까지 담겨있습니다.</p></div>
     </div>
   </div>
 </section>
 
-<!-- 서비스 -->
-<section id="services">
-  <div class="section-inner">
-    <div class="reveal"><div class="section-label">핵심 서비스</div><h2 class="section-title">오노마 상담소의<br>5가지 서비스</h2></div>
-    <div class="services-grid reveal">
-      <!-- 카드 1: 삶의 흐름 상담 -->
-      <div class="service-card">
-        <div class="svc-img"><img src="images/onoma-svc-counseling.png" alt="삶의 흐름 상담"></div>
-        <span class="service-tag">삶의 흐름 상담</span>
-        <h3>반복되는 문제,<br>이유가 있습니다</h3>
-        <p>왜 비슷한 일이 계속 반복되는지 — 이름과 삶의 흐름 구조를 함께 읽어 원인을 분석합니다. 진로, 관계, 가족, 사업에서 막히는 지점을 구조적으로 짚어드립니다.</p>
-        <ul class="service-points">
-          <li>진로 · 직업 방향 상담</li><li>연애 · 재회 관계 상담</li>
-          <li>가족 · 부부 갈등 상담</li><li>사업 · 매출 흐름 상담</li>
+<!-- 신뢰 띠 -->
+<div class="trust-band">
+  <div class="trust-band-inner">
+    <div class="trust-item"><div class="trust-num">21년</div><div class="trust-label">작명 경력</div></div>
+    <div class="trust-item"><div class="trust-num">수천 건</div><div class="trust-label">작명 완료</div></div>
+    <div class="trust-item"><div class="trust-num">전국</div><div class="trust-label">온라인 접수</div></div>
+    <div class="trust-item"><div class="trust-num">원장</div><div class="trust-label">직접 진행</div></div>
+  </div>
+</div>
+
+<!-- 서비스 종류 -->
+<section class="services-sec" id="services">
+  <div class="services-inner">
+    <div class="sec-eyebrow">
+      <span class="sec-eyebrow-line"></span>
+      <span class="sec-eyebrow-text">Services</span>
+    </div>
+    <h2 class="sec-title">어떤 작명을 원하시나요?</h2>
+    <p class="sec-sub">원하시는 서비스를 선택하고 신청서를 작성해주세요</p>
+
+    <!-- 선택 가이드 -->
+    <div style="background:var(--copper-pale);border-left:3px solid var(--copper);padding:14px 20px;margin-bottom:24px;font-size:13px;color:var(--ink2);line-height:1.9;">
+      아이 이름이라면 <strong>신생아 작명</strong> &nbsp;·&nbsp;
+      현재 이름이 불편하다면 <strong>개명</strong> &nbsp;·&nbsp;
+      활동명·아호가 필요하다면 <strong>예명·아호</strong> &nbsp;·&nbsp;
+      사업 이름이라면 <strong>상호·브랜드명</strong>
+    </div>
+    <div class="svc-grid">
+      <div class="svc-card active" onclick="selectSvc(this)">
+        <span class="svc-card-tag">Newborn</span>
+        <div class="svc-card-name">신생아 작명</div>
+        <div class="svc-card-desc">태어날 아이 또는 갓 태어난 아이의 이름을 처음부터 설계합니다. 사주 오행과 부모 이름 흐름을 함께 분석합니다.</div>
+      </div>
+      <div class="svc-card" onclick="selectSvc(this)">
+        <span class="svc-card-tag">Rename</span>
+        <div class="svc-card-name">개명</div>
+        <div class="svc-card-desc">현재 이름과 삶의 흐름이 맞지 않을 때. 이름 구조를 분석하고 더 나은 방향의 이름을 제안합니다.</div>
+      </div>
+      <div class="svc-card" onclick="selectSvc(this)">
+        <span class="svc-card-tag">Pen Name · 雅號</span>
+        <div class="svc-card-name">예명 · 아호</div>
+        <div class="svc-card-desc">활동명·예명이 필요한 분, 또는 학문·예술 활동에 쓸 아호를 만들고 싶은 분께 맞춤 제안합니다.</div>
+      </div>
+      <div class="svc-card" onclick="selectSvc(this)">
+        <span class="svc-card-tag">Business · Brand</span>
+        <div class="svc-card-name">상호 · 브랜드명</div>
+        <div class="svc-card-desc">사업의 방향성과 대표자 이름 구조를 함께 읽어 오래 써도 흔들리지 않는 상호를 설계합니다.</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px;">※ 상호·브랜드명은 상담 후 가격 안내드립니다</p>
+  </div>
+</section>
+
+<!-- 왜 힐링네임인가 — 가격 정당화 섹션 -->
+<section style="padding:80px 5%;background:var(--ivory2);">
+  <div style="max-width:860px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <span style="width:24px;height:1px;background:var(--copper);display:block;"></span>
+      <span style="font-size:10px;letter-spacing:0.22em;color:var(--copper);text-transform:uppercase;">Why Healing Name</span>
+    </div>
+    <h2 style="font-family:var(--serif);font-size:clamp(22px,3vw,32px);font-weight:400;color:var(--ink);margin-bottom:10px;">다른 작명소와 무엇이 다른가요?</h2>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:48px;">가격보다 먼저 이해해야 할 것이 있습니다</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border-lt);border:1px solid var(--border-lt);margin-bottom:48px;">
+
+      <div style="background:var(--ivory);padding:32px 24px;">
+        <div style="font-family:var(--serif);font-size:32px;color:var(--copper-pale);font-weight:400;margin-bottom:16px;">01</div>
+        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px;">획수 맞추기가 아닙니다</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.85;">
+          많은 작명소는 획수와 음양오행 수치를 맞추는 방식으로 이름을 짓습니다. 힐링네임은 수리 구조에 더해 사주 오행, 부모·형제 이름의 흐름까지 함께 읽습니다. 이름 하나를 짓기 위해 가족 전체의 구조를 봅니다.
+        </p>
+      </div>
+
+      <div style="background:var(--ivory);padding:32px 24px;">
+        <div style="font-family:var(--serif);font-size:32px;color:var(--copper-pale);font-weight:400;margin-bottom:16px;">02</div>
+        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px;">원장이 직접 합니다</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.85;">
+          접수만 받고 분석은 외주로 처리하는 경우가 적지 않습니다. 힐링네임은 접수부터 분석, 이름 도출, 전달까지 이지윤 원장이 직접 진행합니다. 21년간 단 한 건도 예외가 없었습니다.
+        </p>
+      </div>
+
+      <div style="background:var(--ivory);padding:32px 24px;">
+        <div style="font-family:var(--serif);font-size:32px;color:var(--copper-pale);font-weight:400;margin-bottom:16px;">03</div>
+        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px;">이름의 이유를 설명합니다</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.85;">
+          왜 이 이름인지 설명 없이 결과만 전달하는 경우가 많습니다. 힐링네임은 제안한 이름이 이 아이에게 왜 맞는지, 어떤 구조에서 나온 것인지를 함께 전달합니다. 부모가 납득해야 진짜 좋은 이름입니다.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- 원장 경력 요약 -->
+    <div style="background:var(--ink);padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+      <div style="display:flex;gap:40px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--serif);font-size:28px;color:var(--copper-lt);font-weight:400;line-height:1;">21년</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;letter-spacing:0.08em;">작명 경력</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--serif);font-size:28px;color:var(--copper-lt);font-weight:400;line-height:1;">수천 건</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;letter-spacing:0.08em;">누적 작명</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--serif);font-size:28px;color:var(--copper-lt);font-weight:400;line-height:1;">전국</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;letter-spacing:0.08em;">온라인 접수</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--serif);font-size:28px;color:var(--copper-lt);font-weight:400;line-height:1;">직접</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;letter-spacing:0.08em;">원장 진행</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.8;max-width:320px;">
+        명리심리상담사 1급 · 볼보자동차·새마을금고 VIP 전문 이름상담 · 사임당 산후조리원 신촌점 전담 작명가 · 맘&amp;베이비 엑스포 작명 외부강사
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 가격표 -->
+<section class="pricing-sec" id="pricing">
+  <div class="pricing-inner">
+    <div class="sec-eyebrow">
+      <span class="sec-eyebrow-line"></span>
+      <span class="sec-eyebrow-text">Pricing</span>
+    </div>
+    <h2 class="sec-title">서비스 구성 및 가격</h2>
+    <p class="sec-sub">신생아 작명 · 개명 동일 가격 적용 · VAT 포함</p>
+    <div class="tier-wrap">
+      <!-- 베이직 -->
+      <div class="tier-card">
+        <div class="tier-name-label">베이직</div>
+        <div class="tier-price-label">330,000<span>원</span></div>
+        <div class="tier-vat-label">VAT 포함</div>
+        <ul class="tier-features">
+          <li><span class="ck">✓</span> 이름 후보 3개 제안</li>
+          <li><span class="ck">✓</span> 한자 이름 제공</li>
+          <li><span class="ck">✓</span> 수리 사격 분석</li>
+          <li><span class="dh">—</span> 사주 오행 분석</li>
+          <li><span class="dh">—</span> 이름 해설 리포트</li>
+          <li><span class="ck">✓</span> 수정 1회</li>
+          <li><span class="dh">—</span> 원장 직접 통화</li>
+          <li><span class="ck">✓</span> 작명장 PDF</li>
         </ul>
-        <button class="btn-primary" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">지금 내 고민 상담받기</button>
+        <button class="tier-btn tier-btn-outline" onclick="location.href='form?tier=basic'">신청하기</button>
       </div>
+      <!-- 프리미엄 -->
+      <div class="tier-card featured">
+        <div class="tier-badge">추천</div>
+        <div class="tier-name-label">프리미엄</div>
+        <div class="tier-price-label">550,000<span>원</span></div>
+        <div class="tier-vat-label">VAT 포함</div>
+        <ul class="tier-features">
+          <li><span class="ck">✓</span> 이름 후보 5개 제안</li>
+          <li><span class="ck">✓</span> 한자 이름 제공</li>
+          <li><span class="ck">✓</span> 수리 사격 분석</li>
+          <li><span class="ck">✓</span> 사주 오행 분석</li>
+          <li><span class="ck">✓</span> 이름 해설 리포트</li>
+          <li><span class="ck">✓</span> 수정 1회</li>
+          <li><span class="dh">—</span> 원장 직접 통화</li>
+          <li><span class="ck">✓</span> 작명장 PDF</li>
+        </ul>
+        <button class="tier-btn tier-btn-fill" onclick="location.href='form?tier=premium'">신청하기</button>
+      </div>
+      <!-- 시그니처 -->
+      <div class="tier-card">
+        <div class="tier-name-label">시그니처</div>
+        <div class="tier-price-label">880,000<span>원</span></div>
+        <div class="tier-vat-label">VAT 포함</div>
+        <ul class="tier-features">
+          <li><span class="ck">✓</span> 이름 후보 5개 제안</li>
+          <li><span class="ck">✓</span> 한자 이름 제공</li>
+          <li><span class="ck">✓</span> 수리 사격 분석</li>
+          <li><span class="ck">✓</span> 사주 오행 분석</li>
+          <li><span class="ck">✓</span> 이름 해설 리포트</li>
+          <li><span class="ck">✓</span> 수정 1회</li>
+          <li><span class="ck">✓</span> 원장 직접 통화</li>
+          <li><span class="ck">✓</span> 작명장 PDF</li>
+        </ul>
+        <button class="tier-btn tier-btn-outline" onclick="location.href='form?tier=signature'">신청하기</button>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px;">※ 한자 이름은 한글 이름 확정 후 1일 이내 별도 제공 · 상호·브랜드명은 상담 후 가격 안내</p>
+  </div>
+</section>
 
-      <!-- 카드 2: 이름 검토 (핵심 전환 카드) -->
-      <div class="service-card" style="border-color:rgba(192,57,43,0.2);box-shadow:0 4px 24px rgba(192,57,43,0.07);">
-        <div class="svc-img"><img src="images/onoma-naming-write.png" alt="이름 검토"></div>
-        <span class="service-tag" style="background:rgba(192,57,43,0.08);border-color:rgba(192,57,43,0.2);color:#8B2A20;">이름 검토</span>
-        <h3>이 이름, 정말<br>괜찮은 걸까요?</h3>
-        <p>다른 곳에서 받은 이름, 직접 지은 이름 — 실제로 좋은 이름인지 기준 없이 판단하기 어렵습니다. 오노마는 이름이 만들어진 논리와 구조를 직접 설명합니다.</p>
-        <div class="naming-doubt-block">
-          <div class="naming-doubt-label">이런 경험, 있으신가요?</div>
-          <div class="naming-chips">
-            <div class="naming-chip">왜 좋은지<br>설명이 없었다</div>
-            <div class="naming-chip">"하나 고르세요"<br>말만 들었다</div>
-            <div class="naming-chip">다른 곳에선<br>나쁜 이름이라 한다</div>
-            <div class="naming-chip">누구 말을 믿어야<br>할지 혼란스럽다</div>
+<!-- 진행 과정 -->
+<section class="process-sec" id="process">
+  <div class="process-inner">
+    <div class="sec-eyebrow">
+      <span class="sec-eyebrow-line"></span>
+      <span class="sec-eyebrow-text">Process</span>
+    </div>
+    <h2 class="sec-title">이렇게 진행됩니다</h2>
+    <p class="sec-sub">접수부터 작명장 수령까지 평균 7~10일</p>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="process-num">01</div>
+        <div class="process-label">온라인 접수</div>
+        <div class="process-desc">신청서 작성<br>및 선결제</div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">02</div>
+        <div class="process-label">사주 분석</div>
+        <div class="process-desc">오행·수리<br>구조 분석</div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">03</div>
+        <div class="process-label">이름 작성</div>
+        <div class="process-desc">이름 후보<br>3~5개 도출</div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">04</div>
+        <div class="process-label">이름 전달</div>
+        <div class="process-desc">카카오·문자<br>로 전달</div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">05</div>
+        <div class="process-label">작명장 발급</div>
+        <div class="process-desc">확정 후<br>PDF 발급</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 결과물 -->
+<section class="result-sec">
+  <div class="result-inner">
+    <div class="sec-eyebrow">
+      <span class="sec-eyebrow-line"></span>
+      <span class="sec-eyebrow-text">Deliverables</span>
+    </div>
+    <h2 class="sec-title">받으시는 것들</h2>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="result-num">01</div>
+        <div class="result-title">한글 이름 후보 (3~5개)</div>
+        <div class="result-desc">수리 사격과 오행을 분석해 선별한 이름 후보를 카카오 또는 문자로 전달드립니다.</div>
+      </div>
+      <div class="result-item">
+        <div class="result-num">02</div>
+        <div class="result-title">한자 이름</div>
+        <div class="result-desc">한글 이름 확정 후 1일 이내, 획수와 뜻과 함께 별도 제공합니다.</div>
+      </div>
+      <div class="result-item">
+        <div class="result-num">03</div>
+        <div class="result-title">수정 1회 제공</div>
+        <div class="result-desc">처음 제안한 이름이 마음에 들지 않으실 경우, 1회에 한해 추가 이름 3개를 더 제안드립니다.</div>
+      </div>
+      <div class="result-item">
+        <div class="result-num">04</div>
+        <div class="result-title">온라인 작명장 PDF</div>
+        <div class="result-desc">모든 서비스에 기본 포함. 이름 확정 후 공식 작명장을 PDF로 발급해드립니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 작명장 안내 -->
+<section class="cert-sec">
+  <div class="cert-inner">
+    <div>
+      <div class="sec-eyebrow">
+        <span class="sec-eyebrow-line"></span>
+        <span class="sec-eyebrow-text">Naming Certificate</span>
+      </div>
+      <h2 class="sec-title">작명장 안내</h2>
+      <p class="sec-sub" style="margin-bottom:0;">이름 확정 후 공식 작명장을 발급해드립니다.<br>온라인 PDF는 모든 서비스에 기본 포함이며,<br>고급 실물 작명장은 별도 신청하실 수 있습니다.</p>
+      <div class="cert-options">
+        <div class="cert-option">
+          <div>
+            <div class="cert-option-name">온라인 작명장 PDF</div>
+            <div class="cert-option-sub">모든 서비스 기본 포함</div>
           </div>
-          <div class="naming-diff-strip">
-            <p>오노마는 <strong>이름이 만들어진 기준과 논리</strong>를 직접 설명합니다.<br>단순 추천이 아닌, 이름을 이해하고 선택하는 서비스입니다.</p>
+          <div class="cert-option-price">무료 포함</div>
+        </div>
+        <div class="cert-option">
+          <div>
+            <div class="cert-option-name">고급 실물 작명장</div>
+            <div class="cert-option-sub">별도 신청 · 등기 발송</div>
           </div>
+          <div class="cert-option-price">+30,000원</div>
         </div>
-        <button class="btn-primary" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">이름 검토 상담 신청</button>
       </div>
-
-      <!-- 카드 3: 작명 / 개명 -->
-      <div class="service-card">
-        <div class="svc-img"><img src="images/onoma-svc-diagnosis.png" alt="작명·개명"></div>
-        <span class="service-tag">작명 · 개명</span>
-        <h3>이름, 기준 없이<br>정하지 마세요</h3>
-        <p>문제가 확인됐다면, 다음 단계는 새 이름을 설계하는 것입니다. 현재 이름의 구조를 분석한 뒤 개인에게 맞는 이름을 처음부터 다시 만듭니다.</p>
-        <ul class="service-points">
-          <li>신생아 이름 작명</li><li>성인 개명 상담 및 작명</li>
-          <li>이름 구조 분석 포함</li><li>개명 후보 비교 제공</li>
-        </ul>
-        <p class="svc-connect-note">검토에서 문제가 확인된 경우 바로 이어서 진행할 수 있습니다.</p>
-        <button class="btn-primary" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">작명 · 개명 상담 신청</button>
-      </div>
-
-      <!-- 카드 4: 비즈니스 네이밍 -->
-      <div class="service-card">
-        <div class="svc-img"><img src="images/onoma-svc-brand.png" alt="비즈니스 네이밍"></div>
-        <span class="service-tag" style="color:var(--gold-dark);background:var(--gold-pale);border-color:rgba(191,164,106,0.3);">PREMIUM · 비즈니스 네이밍</span>
-        <h3>상호부터 브랜드까지,<br>제대로 만드세요</h3>
-        <p class="svc-price-note">상호 / CI · BI 패키지</p>
-        <p>상호, 브랜드가 좋아야 사업이 바로 섭니다. 어감만 좋은 네이밍이 아니라 — 업의 방향성과 구조를 함께 읽고, 오래 써도 흔들리지 않는 상호·브랜드를 설계합니다.</p>
-        <ul class="service-points">
-          <li>상호 작명 및 브랜드 네이밍</li><li>콘셉트·방향성 해석 및 전략 설계</li>
-          <li>상호·브랜드 후보 구조 분석 및 비교</li><li>CI · BI 패키지 연계 가능</li>
-        </ul>
-        <button class="btn-primary" onclick="openPortfolio()">포트폴리오 보기</button>
-      </div>
-
     </div>
-  </div>
-
-  <!-- 인생 전략 리포트 — section-inner와 동일 폭 -->
-  <div class="svc-featured-outer">
-    <div class="service-card--featured-wrap">
-      <div class="svc-featured-img">
-        <img src="images/onoma-insight-report.png" alt="인생 전략 리포트">
+    <div class="cert-preview">
+      <div class="cert-preview-sample">SAMPLE</div>
+      <div class="cert-preview-wm">Naming Certificate</div>
+      <div class="cert-preview-name">김하늘</div>
+      <div class="cert-preview-hanja">金 河 늘</div>
+      <div class="cert-preview-divider"></div>
+      <div class="cert-preview-brand">
+        이지윤의 힐링네임<br>
+        <span style="font-size:10px;opacity:0.6;">by ONOMA</span>
       </div>
-      <div class="svc-featured-body">
-        <span class="service-tag">대표 심층 서비스</span>
-        <h3>인생 전략 리포트 <span class="svc-sub-label">— 단순 이름풀이로 해결되지 않는 경우</span></h3>
-        <p>이름 상담만으로 설명되지 않는 반복 패턴이 있다면, 이름·생년월일·성향·현재 고민을 함께 교차 분석하는 오노마 상담소의 상위 서비스입니다.</p>
-        <ul class="service-points">
-          <li>이름 + 생년월일 + 성향 통합 해석</li>
-          <li>반복되는 삶의 패턴 구조 분석</li>
-          <li>현재 고민 중심 심층 진단</li>
-          <li>리포트 기반 심층 상담 연결 가능</li>
-        </ul>
-
-        <!-- 전환 push 블록 -->
-        <div class="svc-featured-push">
-          <div class="svc-push-price">
-            <div class="svc-push-price-left">
-              <span class="svc-push-label">정가</span>
-              <span class="svc-push-original">99,000원</span>
-            </div>
-            <div class="svc-push-arrow">→</div>
-            <div class="svc-push-price-right">
-              <span class="svc-push-label">선착순 특가</span>
-              <span class="svc-push-sale">49,000원</span>
-            </div>
-          </div>
-          <div class="svc-push-badge">🔥 선착순 50명 특가 — 현재 <strong>43명</strong> 신청 완료</div>
-        </div>
-
-        <a class="btn-primary svc-featured-btn" href="https://life.theweros.com/" target="_blank">샘플 확인하기 →</a>
-        <p class="svc-push-footnote">무료 분석 → 결과 확인 → 필요 시 리포트 구매</p>
-      </div>
+      <div class="cert-preview-stamp">원장인</div>
     </div>
   </div>
 </section>
-<hr class="divider">
 
-<!-- 블로그 -->
-<section id="blog-preview">
-  <div class="section-inner">
-    <div class="reveal">
-      <div class="section-label">이름과 삶에 대한 이야기</div>
-      <h2 class="section-title">상담 전에<br>한 번 읽어보세요</h2>
+<!-- 준비서류 -->
+<section class="docs-sec" id="docs">
+  <div class="docs-inner">
+    <div class="sec-eyebrow">
+      <span class="sec-eyebrow-line"></span>
+      <span class="sec-eyebrow-text">Checklist</span>
     </div>
-    <div class="blog-grid reveal">
-
-      <!-- 카드 1 -->
-      <div class="blog-card" onclick="toggleBlog(this)">
-        <div class="blog-tag">개명</div>
-        <h3 class="blog-title">개명을 고민할 때 가장 먼저 봐야 하는 것</h3>
-        <p class="blog-desc">이름 구조에서 먼저 확인해야 할 핵심 신호를 정리했습니다.</p>
-        <span class="blog-more">핵심 보기 ↓</span>
-        <div class="blog-expand">
-          <p>개명을 고민하는 분들이 가장 많이 하는 실수가 있습니다. "예쁜 이름"을 먼저 찾는 것입니다. 하지만 개명의 핵심은 <strong>지금 이름이 현재 삶의 흐름과 얼마나 충돌하고 있는가</strong>를 먼저 보는 것입니다.</p>
-          <ul class="blog-points">
-            <li>정격(55세 이후)이 흉수인 경우 — 평생 영향</li>
-            <li>현재 구간 수리와 주역괘가<br>동시에 불안정한 경우</li>
-            <li>이름 오행과 삶의 반복 패턴이 충돌하는 경우</li>
-          </ul>
-          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="blog-full-link">내 이름 구조 상담받기 →</a>
-        </div>
+    <h2 class="sec-title">신청 전 준비하세요</h2>
+    <p class="sec-sub">아래 정보를 미리 준비하시면 신청이 빠르게 진행됩니다</p>
+    <div class="docs-grid">
+      <div class="docs-card">
+        <div class="docs-icon">👶</div>
+        <div class="docs-title">아기 정보</div>
+        <ul class="docs-list">
+          <li>생년월일 (양력/음력)</li>
+          <li>태어난 시간 (모를 경우 생략 가능)</li>
+          <li>성별</li>
+          <li>성씨 (한자 포함)</li>
+          <li>태명 (있을 경우)</li>
+        </ul>
       </div>
-
-      <!-- 카드 2 -->
-      <div class="blog-card" onclick="toggleBlog(this)">
-        <div class="blog-tag">진로 · 직업</div>
-        <h3 class="blog-title">진로가 자꾸 흔들릴 때<br>이름 구조를 보는 이유</h3>
-        <p class="blog-desc">열심히 하는데도 방향이 안 잡힌다면, 이름의 흐름과 삶이 충돌하고 있을 수 있습니다.</p>
-        <span class="blog-more">핵심 보기 ↓</span>
-        <div class="blog-expand">
-          <p>진로 고민의 80%는 "뭘 해야 할지 모르겠다"가 아니라 <strong>"하는데도 안 풀린다"</strong>는 구조입니다. 이름의 형격(직업 구간)이 흉수이거나 주역괘가 갈등성일 때 이런 패턴이 반복됩니다.</p>
-          <ul class="blog-points">
-            <li>이직을 반복하지만 상황이 비슷하게 반복되는 경우</li>
-            <li>실력은 있는데 인정받지 못하는<br>느낌이 드는 경우</li>
-            <li>선택의 순간마다 확신이 서지 않는 경우</li>
-          </ul>
-          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="blog-full-link">진로 흐름 상담받기 →</a>
-        </div>
+      <div class="docs-card">
+        <div class="docs-icon">👨‍👩‍👧</div>
+        <div class="docs-title">가족 정보 (필수)</div>
+        <ul class="docs-list">
+          <li>부모 이름 + 생년월일 (양/음력)</li>
+          <li>형제·자매 이름</li>
+          <li>조부모 이름</li>
+          <li>사촌 이름 (있을 경우)</li>
+        </ul>
       </div>
-
-      <!-- 카드 3 -->
-      <div class="blog-card" onclick="toggleBlog(this)">
-        <div class="blog-tag">관계 · 연애</div>
-        <h3 class="blog-title">반복되는 관계 문제, 이름과 연결될 수 있을까</h3>
-        <p class="blog-desc">같은 패턴의 관계가 이어진다면, 이름의 구조가 관계 흐름에 영향을 주고 있을 수 있습니다.</p>
-        <span class="blog-more">핵심 보기 ↓</span>
-        <div class="blog-expand">
-          <p>관계 문제가 반복된다는 건 <strong>나를 둘러싼 구조적 흐름이 바뀌지 않고 있다</strong>는 신호일 수 있습니다. 이름의 이격(관계 구간) 수리와 오행이 이 패턴과 연결되는 경우가 많습니다.</p>
-          <ul class="blog-points">
-            <li>비슷한 유형의 사람과 반복해서 만나는 경우</li>
-            <li>재회를 반복하거나 관계가 깊어지지 않는 경우</li>
-            <li>가족 관계에서 같은 갈등이 반복되는 경우</li>
-          </ul>
-          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="blog-full-link">관계 흐름 상담받기 →</a>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- 원장 -->
-<section id="director">
-  <div class="section-inner">
-    <div class="director-grid">
-      <div class="director-real-photo reveal">
-        <img src="images/onoma-director.png" alt="오노마 상담소 원장 이지윤">
-      </div>
-      <div class="director-info reveal">
-        <div class="section-label">원장 소개</div>
-        <h3>이지윤</h3>
-        <p class="director-role">오노마 상담소 원장 · 이지윤의 힐링네임 대표</p>
-        <p class="director-phil">이름을 볼 때, 저는 좋다 나쁘다를 먼저 말하지 않습니다.<br>지금 이 이름이 이 사람의 삶과 어떻게 맞물리고 있는지,<br>무엇을 다시 점검해야 하는지를 함께 보는 것이 상담입니다.</p>
-        <ul class="director-specs">
-          <li><span class="spec-label">전문 분야</span>이름풀이, 작명, 개명, 상호·브랜드 네이밍</li>
-          <li><span class="spec-label">경력</span>성명학 입문 21년차</li>
-          <li><span class="spec-label">자격</span>명리심리상담사 1급</li>
-          <li><span class="spec-label">前</span>볼보자동차, 새마을금고, 동부제강 등 VIP고객 및 임원 전문 이름상담</li>
-          <li><span class="spec-label">前</span>사임당 산후조리원 신촌점 전담 작명가</li>
-          <li><span class="spec-label">前</span>맘&amp;베이비 엑스포 작명분야 외부강사</li>
-          <li><span class="spec-label">오프라인</span>이지윤의 힐링네임 (김포 운양동)</li>
-          <li><span class="spec-label">상담 방식</span>전화, 화상, 카카오 채널, 대면 상담</li>
-          <li><span class="spec-label">공동 상담</span>인생상담, 심리상담, 진로상담 (부부 공동)</li>
-          <li><span class="spec-label">지역</span>전국·해외 교민 온라인 상담 가능</li>
+      <div class="docs-card">
+        <div class="docs-icon">✏️</div>
+        <div class="docs-title">희망 조건</div>
+        <ul class="docs-list">
+          <li>원하는 이름 느낌·분위기</li>
+          <li>피하고 싶은 글자</li>
+          <li>돌림자 여부</li>
+          <li>기타 요청사항</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 대상 -->
-<section id="target">
-  <div class="section-inner">
-    <div class="reveal"><div class="section-label">이런 분께 권합니다</div><h2 class="section-title">당신의 상황이<br>여기에 해당하나요?</h2></div>
-    <div class="target-grid reveal">
-      <div class="target-item"><div class="target-num">01</div><p>지금 쓰는 이름이 왠지 오래 마음에 걸리고, 개명을 진지하게 고민 중인 분</p></div>
-      <div class="target-item"><div class="target-num">02</div><p>직접 지은 이름이나 다른 곳에서 받은 이름이 정말 괜찮은지 확인받고 싶은 분</p></div>
-      <div class="target-item"><div class="target-num">03</div><p>아기 이름을 신중하게 정하고 싶지만, 최종 판단이 서지 않는 부모님</p></div>
-      <div class="target-item"><div class="target-num">04</div><p>상호명이나 브랜드명을 정해야 하는데 어감과 방향성까지 함께 검토받고 싶은 분</p></div>
-      <div class="target-item"><div class="target-num">05</div><p>이름풀이를 넘어서, 현재 삶의 흐름과 고민을 함께 상담받고 싶은 분</p></div>
-      <div class="target-item"><div class="target-num">06</div><p>반복되는 관계 문제, 진로 고민, 감정 기복 속에서 삶의 구조를 다시 점검하고 싶은 분</p></div>
+<!-- 오노마 연결 -->
+<section class="onoma-sec">
+  <div class="onoma-inner">
+    <div>
+      <div class="onoma-eyebrow">ONOMA Life Report</div>
+      <h2 class="onoma-title">이름이 완성됐다면<br>이 이름으로 어떻게 살아야 할까요?</h2>
+      <p class="onoma-desc">
+        이름은 삶의 방향을 담는 그릇입니다.<br>
+        오노마 인생 통찰 보고서는 이름의 구조와 사주를 함께 읽어<br>
+        당신이 어떤 구조로 살아가고 있는지를 분석합니다.
+      </p>
+      <a class="btn-ivory" href="https://onomalife.com" target="_blank">인생 통찰 보고서 받기 →</a>
+      <span class="onoma-note">작명 고객 할인 적용 가능</span>
+    </div>
+    <div class="onoma-card">
+      <div class="onoma-card-label">오노마가 분석하는 것들</div>
+      <div class="onoma-item">
+        <div class="onoma-item-icon">名</div>
+        <div>
+          <div class="onoma-item-title">이름의 수리 구조</div>
+          <div class="onoma-item-desc">원격·이격·정격으로 읽는 삶의 패턴</div>
+        </div>
+      </div>
+      <div class="onoma-item">
+        <div class="onoma-item-icon">命</div>
+        <div>
+          <div class="onoma-item-title">사주 오행 분석</div>
+          <div class="onoma-item-desc">타고난 기질과 운의 흐름 해석</div>
+        </div>
+      </div>
+      <div class="onoma-item">
+        <div class="onoma-item-icon">路</div>
+        <div>
+          <div class="onoma-item-title">인생 전략 설계</div>
+          <div class="onoma-item-desc">나는 어떻게 살아야 하는가에 대한 답</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- 후기 -->
-<section id="reviews">
-  <div class="section-inner">
-    <div class="reviews-img-banner">
-      <img src="images/onoma-hero-cafe.png" alt="상담 후 안정된 여성">
-      <div class="reviews-img-banner-text">상담을 통해<br>방향을 다시 정리한 분들의 이야기</div>
+<section style="padding:80px 5%;background:var(--ink);">
+  <div style="max-width:860px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <span style="width:24px;height:1px;background:var(--copper);display:block;"></span>
+      <span style="font-size:10px;letter-spacing:0.22em;color:var(--copper);text-transform:uppercase;">Reviews</span>
     </div>
-    <div class="reveal">
-      <div class="section-label">상담 후기</div>
-      <h2 class="section-title" style="display:none;">상담을 통해<br>방향을 다시 정리한 분들의 이야기</h2>
-      <div class="reviews-header-bar"><span style="color:var(--gold-dark);font-size:13px;">★</span>체험 후기 아닌 100% 내돈내산 후기 · 네이버 플레이스 실제 후기 기반</div>
-    </div>
-    <div class="reviews-grid reveal">
-      <div class="review-card">
-        <div class="review-type">이름풀이 · 소름 후기</div>
-        <p class="review-text">제가 워낙에 긁힌 게 많아 이런 데 믿음을 두고 싶지 않았는데, 이름 하나로 제 상황을 너무 정확하게 짚어주셔서 깜짝 놀랐어요. 이름에 대해 상담받는다는 게 이런 건지 처음 알게 됐습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>이름풀이 상담 · 반신반의로 방문</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">신생아 작명 후기</div>
-        <p class="review-text">아들 이름 지으려고 찾아갔는데, 아이를 타인 사회에서 잘 살아갈 수 있도록 이름 짓는 게 이렇게 중요한 건지 몰랐어요. 단순히 예쁜 이름 말고 삶에 잘 맞는 이름으로 신중하게 정할 수 있었습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>신생아 작명 · 30대 부모님</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">이름풀이 · 정확도 후기</div>
-        <p class="review-text">생년월일 사주 보는 거랑 다르게, 이름 하나만으로 이렇게 잘 맞출 수 있다는 게 너무 신기했어요. 점집 느낌이 아니라 논리적으로 설명해주셔서 더 신뢰가 갔습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>이름풀이 상담 · 40대</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">인생상담 후기</div>
-        <p class="review-text">사주도 많이 보고 명상도 해봤는데, 이름으로 이렇게 깊이 있는 인생상담이 되는 줄 몰랐어요. 제 반복되는 패턴이 왜 생기는지, 어떻게 바라봐야 하는지 방향이 잡혔습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>인생상담 · 30대 여성</div>
-      </div>
-      <div class="review-divider">
-        <div class="review-divider-line"></div>
-        <span class="review-divider-label">인생 전략 리포트 후기</span>
-        <div class="review-divider-line"></div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">인생통찰 · 인간관계 반복 문제</div>
-        <p class="review-text">처음엔 별로 기대 안 했어요. 근데 읽다가 손이 멈췄어요. "당신은 관계에서 먼저 주고, 나중에 지쳐서 조용히 사라진다"는 문장에서요. 눈물이 났어요. 제 패턴인 걸 처음으로 인정했어요. 그 뒤로 오래된 관계 하나를 정리했는데, 이상하게 후련했어요.</p>
-        <div class="review-meta"><div class="review-dot"></div>38세 여성, 프리랜서 디자이너 · 인간관계 반복 문제로 진단</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">인생통찰 · 퇴사 후 방향 탐색</div>
-        <p class="review-text">퇴사하고 6개월 동안 아무것도 못 했어요. 리포트 읽고 나서 "나는 혼자 파고드는 방식으로 일해야 하는 사람이구나"라는 게 딱 정리됐어요. 그냥 느낌이 아니라 근거가 생긴 거죠. 창업했고 6개월째 굴리고 있습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>44세 남성, 전직 회사원 · 퇴사 후 방향 탐색</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">인생통찰 · 자기이해 목적</div>
-        <p class="review-text">자기계발서를 정말 많이 읽었어요. 근데 이건 좀 달랐습니다. 책은 "이렇게 해라"인데, 이 리포트는 "당신은 원래 이렇게 작동하는 사람이라서, 이 방식이 맞다"고 하거든요. 억지로 바꾸려 했던 게 사실은 바꿀 필요가 없었던 거라는 걸 알게 됐고, 이상하게 그게 더 편해졌어요.</p>
-        <div class="review-meta"><div class="review-dot"></div>51세 여성, 상담사 · 자기이해 목적으로 진단</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">인생통찰 · 진로 전환 고민</div>
-        <p class="review-text">40대 중반에 직업을 바꿔도 되는 건지 너무 무서웠어요. 리포트에서 "당신은 한 곳에 오래 머물기보다 새로운 환경에서 에너지를 얻는 구조"라고 나왔는데, 그게 제 불안이 아니라 제 특성이라는 걸 알게 됐어요. 지금은 전환 준비 중이고, 생각보다 훨씬 마음이 가볍습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>46세 여성, 직장인 · 진로 전환 고민으로 진단</div>
-      </div>
-      <div class="review-divider">
-        <div class="review-divider-line"></div>
-        <span class="review-divider-label">상호 · 브랜드 네이밍 후기</span>
-        <div class="review-divider-line"></div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">상호 작명 후기</div>
-        <p class="review-text">이름 짓는 게 이렇게 복잡한 작업인 줄 몰랐어요. 단순히 예쁜 이름이 아니라 업의 방향, 고객이 받는 인상, 기억되는 방식까지 같이 봐주시더라고요. 최종 상호명에 확신이 생겼습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>소상공인 · 카페 상호 작명</div>
-      </div>
-      <div class="review-card">
-        <div class="review-type">브랜드 네이밍 후기</div>
-        <p class="review-text">브랜드명 후보를 4개 들고 갔는데, 단순히 좋다 나쁘다가 아니라 각각 어떤 인상을 주는지, 어떤 고객을 끌어당기는지까지 설명해주셨어요. 그 설명을 듣고 나니 스스로 판단이 됐습니다.</p>
-        <div class="review-meta"><div class="review-dot"></div>1인 창업자 · 브랜드 네이밍 상담</div>
-      </div>
-      <!-- 후기 하단 CTA -->
-      <div class="review-cta-bar">
-        <div class="review-cta-text">나도 비슷한 상황인가요?<br><span>내 이름도 같은 문제인지 먼저 확인해보세요.</span></div>
-        <div class="review-cta-btns">
-          <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">내 이름 무료로 확인하기</button>
-          <a class="btn-outline" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널 상담 문의</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <h2 style="font-family:var(--serif);font-size:clamp(22px,3vw,32px);font-weight:400;color:var(--ivory);margin-bottom:8px;">실제 고객 후기</h2>
+    <p style="font-size:14px;color:rgba(255,255,255,0.45);margin-bottom:12px;">체험 후기 아닌 100% 내돈내산 후기 · 네이버 플레이스 실제 후기 기반</p>
+    <p style="font-size:13px;color:rgba(255,255,255,0.3);margin-bottom:40px;letter-spacing:0.03em;">★★★★★</p>
 
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(184,131,74,0.1);border:1px solid rgba(184,131,74,0.1);margin-bottom:24px;">
 
-<!-- 카카오 CTA 바 -->
-<!-- 실시간 신청 티커 — 인생 전략 리포트 ~ 블로그 사이 -->
-<div class="realtime-ticker realtime-ticker--mid">
-  <div class="ticker-track">
-    <span class="ticker-item">✦ 서울 강남구 님이 이름 검토 상담을 신청했습니다 <em>3분 전</em></span>
-    <span class="ticker-item">✦ 경기 수원시 님이 인생 전략 리포트를 결제했습니다 <em>11분 전</em></span>
-    <span class="ticker-item">✦ 부산 해운대구 님이 작명 상담을 신청했습니다 <em>24분 전</em></span>
-    <span class="ticker-item">✦ 서울 마포구 님이 무료 이름 진단을 완료했습니다 <em>38분 전</em></span>
-    <span class="ticker-item">✦ 인천 연수구 님이 개명 상담을 신청했습니다 <em>52분 전</em></span>
-    <span class="ticker-item">✦ 대구 수성구 님이 인생 전략 리포트를 결제했습니다 <em>1시간 전</em></span>
-    <span class="ticker-item">✦ 경기 고양시 님이 비즈니스 네이밍 상담을 신청했습니다 <em>1시간 전</em></span>
-    <span class="ticker-item">✦ 서울 송파구 님이 이름 검토 상담을 신청했습니다 <em>2시간 전</em></span>
-    <!-- 반복 -->
-    <span class="ticker-item">✦ 서울 강남구 님이 이름 검토 상담을 신청했습니다 <em>3분 전</em></span>
-    <span class="ticker-item">✦ 경기 수원시 님이 인생 전략 리포트를 결제했습니다 <em>11분 전</em></span>
-    <span class="ticker-item">✦ 부산 해운대구 님이 작명 상담을 신청했습니다 <em>24분 전</em></span>
-    <span class="ticker-item">✦ 서울 마포구 님이 무료 이름 진단을 완료했습니다 <em>38분 전</em></span>
-    <span class="ticker-item">✦ 인천 연수구 님이 개명 상담을 신청했습니다 <em>52분 전</em></span>
-    <span class="ticker-item">✦ 대구 수성구 님이 인생 전략 리포트를 결제했습니다 <em>1시간 전</em></span>
-  </div>
-</div>
-<section id="kakao-bar">
-  <div class="section-inner">
-    <div class="kakao-bar-inner">
-      <div class="reveal">
-        <div class="section-label" style="color:var(--dark-section-sub);">지금 바로 상담 신청</div>
-        <h2 class="section-title" style="color:var(--dark-section-text);">카카오 채널로<br>편하게 문의하세요</h2>
-        <div class="green-line" style="background:var(--dark-section-text);"></div>
-        <p style="font-size:15px;color:var(--dark-section-sub);line-height:1.9;margin-bottom:28px;">전화 부담 없이, 텍스트로 먼저 상담 가능합니다.<br>전국·해외 어디서든 카카오로 연결됩니다.</p>
-        <a class="btn-primary" href="http://pf.kakao.com/_Txfxmpn" target="_blank" style="background:var(--green-dark);">카카오 채널 바로가기</a>
-      </div>
-      <div class="kakao-bar-img reveal">
-        <img src="images/onoma-kakao-chat.png" alt="카카오로 상담 신청하는 모습">
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<hr class="divider">
-
-
-<!-- 가격 안내 -->
-<section id="pricing">
-  <div class="section-inner">
-    <div class="reveal" style="text-align:center; margin-bottom:56px;">
-      <div class="section-label" style="justify-content:center;">가격 안내</div>
-      <h2 class="section-title">투명한 가격,<br><em>합리적인 상담</em></h2>
-      <p class="section-sub" style="margin:0 auto; text-align:center;">모든 서비스는 카카오 채널 상담 후 진행됩니다</p>
-    </div>
-
-    <div class="pricing-grid reveal">
-
-      <!-- 이름 검토 -->
-      <div class="pricing-card">
-        <div class="pricing-tag">이름 검토</div>
-        <div class="pricing-price">
-          <span class="pricing-amount">55,000</span>
-          <span class="pricing-unit">원</span>
-        </div>
-        <p class="pricing-vat">VAT 포함</p>
-        <ul class="pricing-list">
-          <li>이름 구조 분석</li>
-          <li>수리 사격 해석</li>
-          <li>개명 필요도 진단</li>
-          <li>결과 리포트 제공</li>
-        </ul>
-        <button class="pricing-cta" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">상담 신청하기</button>
+      <div style="background:var(--ink-mid);padding:28px 24px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--copper);margin-bottom:14px;text-transform:uppercase;">이름풀이 · 소름 후기</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.9;margin-bottom:16px;">이름 하나로 제 상황을 너무 정확하게 짚어주셔서 깜짝 놀랐어요. 이름에 대해 상담받는다는 게 이런 건지 처음 알게 됐습니다.</p>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;">이름풀이 상담 · 반신반의로 방문</div>
       </div>
 
-      <!-- 삶의 흐름 상담 -->
-      <div class="pricing-card">
-        <div class="pricing-tag">삶의 흐름 상담</div>
-        <div class="pricing-price">
-          <span class="pricing-amount">77,000</span>
-          <span class="pricing-unit">원</span>
-        </div>
-        <p class="pricing-vat">VAT 포함</p>
-        <ul class="pricing-list">
-          <li>이름 · 삶의 흐름 구조 분석</li>
-          <li>반복 패턴 원인 해석</li>
-          <li>진로 · 관계 · 사업 방향 상담</li>
-          <li>1:1 상담 진행</li>
-        </ul>
-        <button class="pricing-cta" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">상담 신청하기</button>
+      <div style="background:var(--ink-mid);padding:28px 24px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--copper);margin-bottom:14px;text-transform:uppercase;">신생아 작명 후기</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.9;margin-bottom:16px;">단순히 예쁜 이름 말고 삶에 잘 맞는 이름으로 신중하게 정할 수 있었습니다. 이름을 짓는 게 이런 의미가 있는 줄 몰랐어요.</p>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;">신생아 작명 · 30대 부모님</div>
       </div>
 
-      <!-- 작명 · 개명 -->
-      <div class="pricing-card pricing-card--wide">
-        <div class="pricing-tag">작명 · 개명</div>
-        <div class="pricing-tiers">
-          <div class="pricing-tier">
-            <div class="pricing-tier-name">베이직</div>
-            <div class="pricing-tier-price">330,000<span>원</span> <span style="font-size:12px;font-weight:400;opacity:0.6;letter-spacing:0;">VAT 포함</span></div>
-            <ul class="pricing-list">
-              <li>기본 이름 설계</li>
-              <li>이름 후보 제안</li>
-              <li>비대면 진행</li>
-            </ul>
-          </div>
-          <div class="pricing-tier pricing-tier--mid">
-            <div class="pricing-tier-badge">추천</div>
-            <div class="pricing-tier-name">프리미엄</div>
-            <div class="pricing-tier-price">550,000<span>원</span> <span style="font-size:12px;font-weight:400;opacity:0.6;letter-spacing:0;">VAT 포함</span></div>
-            <ul class="pricing-list">
-              <li>이름 설계 + 1:1 상담</li>
-              <li>심층 구조 분석 포함</li>
-              <li>수정 1회 포함</li>
-            </ul>
-          </div>
-          <div class="pricing-tier">
-            <div class="pricing-tier-name">시그니처</div>
-            <div class="pricing-tier-price">880,000<span>원</span> <span style="font-size:12px;font-weight:400;opacity:0.6;letter-spacing:0;">VAT 포함</span></div>
-            <ul class="pricing-list">
-              <li>원장 직접 심층 상담</li>
-              <li>전체 구조 분석 리포트</li>
-              <li>사후 관리 포함</li>
-            </ul>
-          </div>
-        </div>
-        <button class="pricing-cta" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">작명 · 개명 상담 신청</button>
+      <div style="background:var(--ink-mid);padding:28px 24px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--copper);margin-bottom:14px;text-transform:uppercase;">이름풀이 · 정확도 후기</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.9;margin-bottom:16px;">점집 느낌이 아니라 논리적으로 설명해주셔서 더 신뢰가 갔습니다. 이름 하나만으로 이렇게 잘 맞출 수 있다는 게 신기했어요.</p>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;">이름풀이 상담 · 40대</div>
       </div>
 
-      <!-- 인생 전략 리포트 -->
-      <div class="pricing-card pricing-card--report">
-        <div class="pricing-special-badge">🔥 선착순 오픈특가</div>
-        <div class="pricing-tag">인생 전략 리포트</div>
-        <div class="pricing-price-wrap">
-          <div class="pricing-price pricing-price--strike">
-            <span class="pricing-amount">99,000</span><span class="pricing-unit">원</span>
-          </div>
-          <div class="pricing-price">
-            <span class="pricing-amount pricing-amount--sale">49,000</span>
-            <span class="pricing-unit">원</span>
-          </div>
-        </div>
-        <p class="pricing-vat">50% 할인 · 즉시 다운로드</p>
-        <ul class="pricing-list">
-          <li>이름 + 생년월일 + 성향 통합 해석</li>
-          <li>반복되는 삶의 패턴 구조 분석</li>
-          <li>현재 고민 중심 심층 진단</li>
-          <li>리포트 기반 상담 연결 가능</li>
-        </ul>
-        <a class="pricing-cta pricing-cta--gold" href="https://life.theweros.com/" target="_blank">샘플 확인하기 →</a>
+      <div style="background:var(--ink-mid);padding:28px 24px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--copper);margin-bottom:14px;text-transform:uppercase;">상호 작명 후기</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.9;margin-bottom:16px;">업의 방향, 고객이 받는 인상, 기억되는 방식까지 같이 봐주시더라고요. 최종 상호명에 확신이 생겼습니다.</p>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;">소상공인 · 카페 상호 작명</div>
       </div>
 
-      <!-- 비즈니스 네이밍 -->
-      <div class="pricing-card pricing-card--biz">
-        <div class="pricing-tag">비즈니스 네이밍</div>
-        <div class="pricing-price">
-          <span class="pricing-amount" style="font-size:28px;">상담 후 안내</span>
-        </div>
-        <p class="pricing-vat">상호 / CI · BI 패키지 포함 가능</p>
-        <ul class="pricing-list">
-          <li>상호 · 브랜드 네이밍</li>
-          <li>콘셉트 · 방향성 해석</li>
-          <li>후보 구조 분석 및 비교</li>
-          <li>CI · BI 패키지 연계 가능</li>
-        </ul>
-        <button class="pricing-cta" onclick="document.getElementById('kakao-bar').scrollIntoView({behavior:'smooth'})">문의하기</button>
+      <div style="background:var(--ink-mid);padding:28px 24px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--copper);margin-bottom:14px;text-transform:uppercase;">브랜드 네이밍 후기</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.9;margin-bottom:16px;">각각의 이름이 어떤 인상을 주는지, 어떤 고객을 끌어당기는지까지 설명해주셨어요. 그 설명을 듣고 나니 스스로 판단이 됐습니다.</p>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;">1인 창업자 · 브랜드 네이밍 상담</div>
+      </div>
+
+      <div style="background:var(--ink-mid);padding:28px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:16px;">
+        <div style="font-size:24px;color:rgba(255,255,255,0.15);">✦</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8;">21년간 수천 건의<br>작명 후기가 있습니다</p>
+        <a href="https://map.naver.com/p/entry/place/1403415410?placePath=/review" target="_blank"
+          style="display:inline-block;background:transparent;color:var(--copper-lt);border:1px solid rgba(184,131,74,0.4);padding:10px 20px;font-size:12px;letter-spacing:0.08em;transition:all 0.2s;"
+          onmouseover="this.style.borderColor='var(--copper)'" onmouseout="this.style.borderColor='rgba(184,131,74,0.4)'">
+          네이버 플레이스 후기 더 보기 →
+        </a>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section id="faq">
-  <div class="section-inner">
-    <div class="reveal"><div class="section-label">자주 묻는 질문</div><h2 class="section-title">FAQ</h2></div>
-    <div class="faq-list reveal">
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">직접 방문하지 않아도 상담이 가능한가요?<span class="faq-icon">+</span></button>
-        <div class="faq-answer">네. 오노마 상담소는 온라인 기반 브랜드로, 전화상담 및 카카오 채널 상담, 화상 상담이 가능합니다. 국내 전 지역은 물론, 해외 교민도 신청하실 수 있습니다.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">지금 이름이 개명할 정도인지 먼저 알 수 있나요?<span class="faq-icon">+</span></button>
-        <div class="faq-answer">네. 위 무료 1차 진단을 통해 현재 이름 상태를 먼저 확인한 뒤, 필요시 심층 상담으로 연결하실 수 있습니다. 1차 진단은 참고용이며, 정확한 판단은 전문 상담을 통해 이루어집니다.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">제가 직접 지은 이름도 검토받을 수 있나요?<span class="faq-icon">+</span></button>
-        <div class="faq-answer">가능합니다. 직접 지은 이름, 타 작명소에서 받은 이름, 개명 후보 이름, 가족이 추천한 이름 모두 검토 가능합니다.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">상호와 브랜드명도 상담하시나요?<span class="faq-icon">+</span></button>
-        <div class="faq-answer">네. 상호 작명, 브랜드 네이밍, 콘셉트 방향, 이름 후보 비교 분석, 필요시 로고 패키지 연계까지 상담 가능합니다.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">인생 전략 리포트는 이름풀이와 어떻게 다른가요?<span class="faq-icon">+</span></button>
-        <div class="faq-answer">이름풀이가 이름 구조 중심 해석이라면, 인생통찰은 이름, 생년월일, 성향, 현재 고민과 삶의 반복 패턴까지 함께 보는 심층 서비스입니다. 단순 이름풀이로 설명되지 않는 구조적 문제가 있을 때 더 적합합니다.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">오프라인 방문 상담도 가능한가요?<span class="faq-icon">+</span></button>
-        <div class="faq-answer">오프라인 방문 상담은 김포 운양동의 '이지윤의 힐링네임'을 통해 가능합니다. 오노마 상담소는 온라인 기반이나, 필요에 따라 연계 상담을 안내해드릴 수 있습니다.</div>
-      </div>
+<!-- 게시판 -->
+<section class="board-sec">
+  <div class="board-inner">
+    <div class="sec-eyebrow">
+      <span class="sec-eyebrow-line"></span>
+      <span class="sec-eyebrow-text">고객 지원</span>
+    </div>
+    <div class="board-grid">
+      <a class="board-card" href="notice">
+        <div class="board-card-icon">📢</div>
+        <div class="board-card-name">공지사항</div>
+        <div class="board-card-desc">서비스 운영 안내 및 업데이트 소식</div>
+      </a>
+      <a class="board-card" href="faq">
+        <div class="board-card-icon">❓</div>
+        <div class="board-card-name">자주 묻는 질문</div>
+        <div class="board-card-desc">작명·개명 서비스 FAQ 모음</div>
+      </a>
+      <a class="board-card" href="review">
+        <div class="board-card-icon">⭐</div>
+        <div class="board-card-name">고객 리뷰</div>
+        <div class="board-card-desc">실제 이용 고객의 솔직한 후기</div>
+      </a>
+      <a class="board-card" href="qna">
+        <div class="board-card-icon">💬</div>
+        <div class="board-card-name">질문과 답변</div>
+        <div class="board-card-desc">궁금한 점을 남기면 원장이 직접 답변</div>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- 최종 CTA -->
-<section id="cta-final">
-  <div class="cta-bg"><img src="images/onoma-cta-path.png" alt="삶의 방향을 향한 길"></div>
-  <div class="section-inner">
-    <div class="cta-final-inner reveal">
-      <div class="section-label">지금 시작하세요</div>
-      <h2 class="section-title">지금 이름, 그냥 써도 되는지<br>먼저 확인해보세요</h2>
-      <p class="section-sub">이름은 바꾸지 않아도 되는 경우도 있습니다.<br>하지만 확인하지 않으면 알 수 없습니다.</p>
-      <div class="cta-btn-row">
-        <button class="btn-primary" onclick="document.getElementById('diagnosis').scrollIntoView({behavior:'smooth'})">무료 진단 시작하기</button>
-        <a class="btn-outline" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 채널로 상담 신청</a>
-        <a class="btn-outline" href="https://life.theweros.com/" target="_blank">인생 전략 리포트 보기</a>
-      </div>
-      <p class="cta-note">이름을 제대로 보는 일은,<br>삶을 더 명확하게 이해하는 첫 걸음입니다.</p>
+<!-- CTA -->
+<section class="cta-sec">
+  <div class="cta-inner">
+    <div class="cta-eyebrow">
+      <span class="cta-eyebrow-line"></span>
+      <span class="cta-eyebrow-text">지금 시작하세요</span>
+      <span class="cta-eyebrow-line"></span>
     </div>
+    <h2 class="cta-title">이름 하나가<br>삶의 방향을 바꿉니다</h2>
+    <p class="cta-sub">21년 경력 이지윤 원장이 직접 분석하고 작명합니다.<br>온라인으로 간편하게 접수하세요.</p>
+    <div class="cta-btns">
+      <button class="btn-copper" style="padding:16px 40px;font-size:15px;" onclick="location.href='form'">작명·개명 신청하기 →</button>
+      <a class="btn-ghost" style="padding:15px 32px;font-size:15px;" href="http://pf.kakao.com/_Txfxmpn" target="_blank">아직 고민 중이라면 카카오 문의</a>
+    </div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-top:16px;line-height:1.8;">
+      신청 전 궁금한 점은 카카오로 먼저 물어보셔도 됩니다.<br>
+      부담 없이 텍스트로 먼저 문의해보세요.
+    </p>
+    <p class="cta-note" style="margin-top:8px;">전국·해외 교민 온라인 접수 가능 · VAT 포함 · 선결제</p>
   </div>
 </section>
 
 <!-- 푸터 -->
-<!-- 포트폴리오 팝업 -->
-<div id="portfolio-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,35,10,0.72); backdrop-filter:blur(4px); overflow-y:auto; padding:40px 20px;">
-  <div style="max-width:960px; margin:0 auto; background:#FAFAF6; border-radius:4px; overflow:hidden; position:relative;">
-    <!-- 팝업 헤더 -->
-    <div style="padding:32px 40px 24px; border-bottom:1px solid rgba(196,162,74,0.15); display:flex; align-items:center; justify-content:space-between;">
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
       <div>
-        <div style="font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold-dark); margin-bottom:8px;">BRAND PORTFOLIO</div>
-        <h3 style="font-family:var(--serif); font-size:22px; font-weight:400; color:var(--ink);">오노마 상담소 브랜드 네이밍 · 제작 사례</h3>
+        <div class="footer-brand-name">힐링네임</div>
+        <div class="footer-brand-sub">by ONOMA</div>
       </div>
-      <button onclick="closePortfolio()" style="background:none; border:1px solid rgba(196,162,74,0.3); width:40px; height:40px; cursor:pointer; font-size:18px; color:var(--ink3); border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✕</button>
+      <div class="footer-links">
+        <a href="../privacy.html">개인정보처리방침</a>
+        <a href="../terms.html">이용약관</a>
+        <a href="../refund.html">환불정책</a>
+        <a href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 문의</a>
+      </div>
     </div>
-    <!-- 포트폴리오 그리드 -->
-    <div style="padding:36px 40px 48px; display:grid; grid-template-columns:repeat(2,1fr); gap:24px;">
-
-      <!-- 1 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-01.png" alt="온기소반" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">카페</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">온기소반</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">따뜻함과 한 끼의 정성을 담은 브런치 카페. 온기(온기)와 소반(소반)을 결합해 일상의 온기를 전달하는 이름으로 설계.</p>
-      </div>
-
-      <!-- 2 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-02.png" alt="달빛마당" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">베이커리</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">달빛마당</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">달빛처럼 은은하고 포근한 베이커리. 마당처럼 누구나 편하게 드나들 수 있는 공간의 이미지를 브랜드명에 담음.</p>
-      </div>
-
-      <!-- 3 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-03.png" alt="초록결" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">플로리스트</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">초록결</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">자연의 결을 담은 플라워 숍. 초록과 결의 조합으로 식물의 생명력과 섬세한 감각을 동시에 표현.</p>
-      </div>
-
-      <!-- 4 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-04.png" alt="솔바람" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">한식당</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">솔바람</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">솔숲의 바람처럼 청정하고 깊은 한식. 자연에서 온 재료와 정직한 맛을 브랜드명으로 표현.</p>
-      </div>
-
-      <!-- 5 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-05.png" alt="페이지숲" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">독립서점</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">페이지숲</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">책장을 넘기다 보면 숲처럼 깊어지는 공간. 페이지와 숲의 결합으로 독서의 몰입감을 표현.</p>
-      </div>
-
-      <!-- 6 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-06.png" alt="백담" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">스킨케어</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">백담</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">맑고 깨끗한 물을 담은 스킨케어 브랜드. 백(白)의 순수함과 담(潭)의 깊이로 피부 본연의 아름다움을 표현.</p>
-      </div>
-
-      <!-- 7 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-07.png" alt="결이음" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">인테리어</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">결이음</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">공간의 결을 잇는 인테리어 브랜드. 소재와 공간, 사람을 자연스럽게 연결하는 철학을 이름에 담음.</p>
-      </div>
-
-      <!-- 8 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-08.png" alt="숨빛" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">요가스튜디오</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">숨빛</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">숨결에 빛이 깃드는 요가 공간. 호흡(숨)과 빛(빛)의 결합으로 몸과 마음의 정화를 표현.</p>
-      </div>
-
-      <!-- 9 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-09.png" alt="씨앗뜰" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">아동교육</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">씨앗뜰</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">아이의 가능성이 자라나는 뜰. 씨앗처럼 작지만 무한한 잠재력을 품은 교육 공간의 이름.</p>
-      </div>
-
-      <!-- 10 -->
-      <div style="background:#fff; border:1px solid rgba(196,162,74,0.15); border-top:3px solid var(--green); padding:24px; box-shadow:0 2px 12px rgba(44,50,32,0.05);">
-        <div style="width:100%; height:180px; overflow:hidden; margin:-24px -24px 20px; width:calc(100% + 48px);">
-          <img src="images/portfolio/pf-10.png" alt="나침" style="width:100%; height:100%; object-fit:cover; display:block;">
-        </div>
-        <div style="font-size:10px; letter-spacing:0.15em; color:var(--gold-dark); text-transform:uppercase; margin-bottom:8px;">1인 컨설팅</div>
-        <h4 style="font-family:var(--serif); font-size:18px; font-weight:400; color:var(--ink); margin-bottom:8px;">나침</h4>
-        <p style="font-size:13px; color:var(--ink3); line-height:1.8;">나만의 방향을 찾는 컨설팅. 나침반의 나침(羅針)에서 따와 삶의 방향을 설계한다는 의미를 담음.</p>
-      </div>
-
+    <div class="footer-info">
+      주식회사 위버플레인 &nbsp;|&nbsp; 대표이사 이정운 &nbsp;|&nbsp; 사업자등록번호 128-86-27688 &nbsp;|&nbsp; 통신판매업번호 2018-경기김포-0227호<br>
+      경기도 김포시 김포한강11로 322 138-P44호 (운양동, 더 파크뷰테라스 상업시설) &nbsp;|&nbsp; 이메일 help@onomalife.com
     </div>
-    <!-- 팝업 하단 CTA -->
-    <div style="padding:28px 40px; background:var(--bg2); border-top:1px solid rgba(196,162,74,0.15); text-align:center;">
-      <p style="font-size:14px; color:var(--ink3); margin-bottom:16px;">내 브랜드 이름도 함께 설계해드립니다</p>
-      <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="btn-primary">카카오 채널로 상담 문의하기</a>
-    </div>
-  </div>
-</div>
-
-<footer>
-  <div class="footer-main">
-    <div class="footer-inner">
-
-      <!-- 브랜드 -->
-      <div class="footer-brand-col">
-        <img src="images/onoma_logo_white.png" alt="오노마 상담소" class="footer-logo">
-        <p class="footer-tagline">이름을 통해 삶의 방향을 함께 읽는 상담소</p>
-        <p class="footer-loc">오프라인 · 이지윤의 힐링네임<br>경기도 김포시 운양동 · 전국·해외 온라인 상담</p>
-        <div class="footer-social">
-          <a href="#" target="_blank" title="네이버 블로그"><svg viewBox="0 0 24 24"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg></a>
-          <a href="#" target="_blank" title="유튜브"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
-          <a href="#" target="_blank" title="인스타그램"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
-          <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" title="카카오톡"><svg viewBox="0 0 24 24"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.612 5.087 4.07 6.542L5.1 21l4.507-2.97C10.028 18.17 11 18.3 12 18.3c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/></svg></a>
-        </div>
-      </div>
-
-      <!-- 서비스 메뉴 -->
-      <div class="footer-nav-col">
-        <p class="footer-nav-title">서비스</p>
-        <ul class="footer-nav-list">
-          <li><a href="#services">이름 검토</a></li>
-          <li><a href="#services">삶의 흐름 상담</a></li>
-          <li><a href="#services">작명 · 개명</a></li>
-          <li><a href="#services">비즈니스 네이밍</a></li>
-          <li><a href="https://life.theweros.com/" target="_blank">인생 전략 리포트</a></li>
-        </ul>
-      </div>
-
-      <!-- 안내 메뉴 -->
-      <div class="footer-nav-col">
-        <p class="footer-nav-title">안내</p>
-        <ul class="footer-nav-list">
-          <li><a href="#diagnosis">무료 이름 진단</a></li>
-          <li><a href="#director">원장 소개</a></li>
-          <li><a href="#reviews">상담 후기</a></li>
-          <li><a href="#faq">자주 묻는 질문</a></li>
-        </ul>
-      </div>
-
-      <!-- 상담 CTA -->
-      <div class="footer-cta-col">
-        <p class="footer-nav-title">상담 신청</p>
-        <p class="footer-cta-desc">카카오 채널로<br>간편하게 문의하세요</p>
-        <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="footer-cta-btn">카카오 채널 바로가기 →</a>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- 사업자 정보 -->
-  <div class="footer-biz">
-    <div class="footer-biz-inner">
-      <div class="footer-biz-left">
-        <span>© 2025 오노마상담소</span>
-        <span class="footer-biz-div">|</span>
-        <a href="/privacy.html">개인정보처리방침</a>
-        <span class="footer-biz-div">|</span>
-        <a href="/terms.html">이용약관</a>
-        <span class="footer-biz-div">|</span>
-        <a href="/refund.html">환불정책</a>
-      </div>
-      <p class="footer-biz-corp">주식회사 위버플레인 &nbsp;|&nbsp; 대표이사 이정운 &nbsp;|&nbsp; 사업자등록번호 128-86-27688 &nbsp;|&nbsp; 통신판매업번호 2018-경기김포-0227호</p>
-      <p class="footer-biz-corp">경기도 김포시 김포한강11로 322 138-P44호 (운양동, 더 파크뷰테라스 상업시설) &nbsp;|&nbsp; 이메일 &nbsp;<a href="mailto:mrwiver@naver.com?from=help@onomalife.com" class="footer-biz-email">help@onomalife.com</a></p>
-    </div>
+    <div class="footer-copy">© 2026 힐링네임 · 주식회사 위버플레인. All rights reserved.</div>
   </div>
 </footer>
 
-<!-- DB 스크립트 — 인라인 스크립트보다 먼저 로드 -->
-<script src="hanja-db.js"></script>
-<script src="suri-db.js"></script>
-<script src="manse-db.js"></script>
-
-<script src="js/diagnosis.js" defer></script>
-<script src="js/main.js" defer></script>
-<!-- 한자 피커 모달 -->
-<div id="diag-hanja-picker" onclick="diagClosePicker(event)" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(26,20,10,0.55);align-items:flex-end;justify-content:center;">
-  <div style="background:#fff;border-top-left-radius:16px;border-top-right-radius:16px;padding:24px 18px 36px;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;animation:sheetUp 0.28s cubic-bezier(0.22,1,0.36,1);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div id="diag-picker-title" style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink);">한자 선택</div>
-      <button onclick="diagClosePicker()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink3);padding:4px 8px;">✕</button>
-    </div>
-    <div id="diag-picker-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;"></div>
-  </div>
-</div>
-
-
-<!-- 실시간 신청 토스트 알림 -->
-<div id="realtime-toast" class="realtime-toast" style="display:none;">
-  <div class="toast-icon">🌿</div>
-  <div class="toast-text">
-    <strong id="toast-title"></strong>
-    <span id="toast-desc"></span>
-  </div>
-  <button class="toast-close" onclick="closeToast()">×</button>
-</div>
-
 <script>
-(function(){
-  var alerts = [
-    { title: "서울 강남구 님", desc: "이름 검토 상담을 신청했습니다" },
-    { title: "경기 수원시 님", desc: "인생 전략 리포트를 결제했습니다" },
-    { title: "부산 해운대구 님", desc: "작명 · 개명 상담을 신청했습니다" },
-    { title: "서울 마포구 님", desc: "무료 이름 진단을 완료했습니다" },
-    { title: "인천 연수구 님", desc: "개명 상담을 신청했습니다" },
-    { title: "대구 수성구 님", desc: "인생 전략 리포트를 결제했습니다" },
-    { title: "경기 고양시 님", desc: "비즈니스 네이밍 상담을 신청했습니다" },
-    { title: "서울 송파구 님", desc: "삶의 흐름 상담을 신청했습니다" },
-    { title: "광주 서구 님", desc: "이름 검토 상담을 신청했습니다" },
-    { title: "경기 성남시 님", desc: "인생 전략 리포트를 결제했습니다" },
-  ];
-  var idx = 0;
-  var toast = document.getElementById('realtime-toast');
-
-  function showToast() {
-    var a = alerts[idx % alerts.length];
-    document.getElementById('toast-title').textContent = a.title;
-    document.getElementById('toast-desc').textContent = a.desc;
-    toast.style.display = 'flex';
-    toast.classList.remove('toast-out');
-    toast.classList.add('toast-in');
-    idx++;
-    setTimeout(function(){
-      toast.classList.remove('toast-in');
-      toast.classList.add('toast-out');
-      setTimeout(function(){ toast.style.display='none'; }, 600);
-    }, 4000);
-  }
-
-  function closeToast() {
-    toast.classList.add('toast-out');
-    setTimeout(function(){ toast.style.display='none'; }, 400);
-  }
-  window.closeToast = closeToast;
-
-  // 첫 등장 8초 후, 이후 18~28초 랜덤 반복
-  setTimeout(function loop(){
-    showToast();
-    setTimeout(loop, 18000 + Math.random() * 10000);
-  }, 8000);
-})();
+function selectSvc(el) {
+  document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
 </script>
-
 </body>
 </html>
