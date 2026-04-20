@@ -5,168 +5,306 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>자주 묻는 질문 — 힐링네임 by ONOMA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink:#1a140a;--ink2:#3a2e1e;--ink3:#6b5a3e;--ink-faint:#b0a08a;
-    --gold:#c4a24a;--gold-dark:#8a6a1f;--green-dark:#4a6b42;
-    --bg:#f5f0e8;--bg2:#ede8de;
-    --serif:'Cormorant Garamond','Noto Serif KR',serif;
-    --sans:'Noto Sans KR',sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--sans);background:var(--bg);color:var(--ink);}
+:root {
+  --ink:#18120a; --ink2:#2e2416; --ink3:#5a4a32;
+  --copper:#b8834a; --copper-lt:#d4a96e; --copper-pale:#f0e0c8;
+  --ivory:#faf6ef; --ivory2:#f3ece0;
+  --muted:#9a8a72; --border:rgba(184,131,74,0.18);
+  --serif:'Nanum Myeongjo',Georgia,serif;
+  --sans:'Noto Sans KR',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--ivory);color:var(--ink);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+button{font-family:var(--sans);cursor:pointer;}
 
-  .board-hero{padding:56px 5% 40px;border-bottom:1px solid rgba(196,162,74,0.15);}
-  .board-hero-inner{max-width:860px;margin:0 auto;}
-  .board-eyebrow{font-size:10px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:12px;}
-  .board-title{font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:var(--ink);margin-bottom:8px;}
-  .board-sub{font-size:13px;color:var(--ink3);}
+.nav{position:sticky;top:0;z-index:200;background:rgba(250,246,239,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:68px;}
+.nav-brand{display:flex;flex-direction:column;gap:3px;line-height:1;}
+.nav-brand-name{font-family:var(--serif);font-size:22px;color:var(--ink);letter-spacing:0.08em;}
+.nav-brand-sub{font-size:9px;letter-spacing:0.25em;color:var(--copper);text-transform:uppercase;}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{font-size:14px;font-weight:600;color:var(--ink2);letter-spacing:0.04em;transition:color 0.2s;}
+.nav-links a:hover,.nav-links .hl{color:var(--copper);}
+.nav-links .hl{font-weight:700;}
+.nav-cta{background:var(--ink);color:var(--ivory);border:none;padding:11px 24px;font-size:13px;letter-spacing:0.1em;font-weight:500;transition:background 0.2s;}
+.nav-cta:hover{background:var(--copper);}
 
-  .board-wrap{max-width:860px;margin:0 auto;padding:40px 5% 80px;}
+.faq-hero{padding:64px 5% 40px;background:var(--ivory);border-bottom:1px solid var(--border);}
+.faq-hero-inner{max-width:760px;margin:0 auto;}
+.eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.eyebrow-line{width:24px;height:1px;background:var(--copper);}
+.eyebrow-text{font-size:10px;letter-spacing:0.22em;color:var(--copper);text-transform:uppercase;}
+.faq-title{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:400;color:var(--ink);margin-bottom:10px;}
+.faq-sub{font-size:14px;color:var(--muted);line-height:1.8;}
 
-  /* 카테고리 필터 */
-  .cat-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
-  .cat-btn{
-    background:#fff;border:1px solid rgba(196,162,74,0.3);
-    padding:7px 16px;font-size:12px;color:var(--ink3);
-    cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;
-    font-family:var(--sans);
-  }
-  .cat-btn.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark);}
+.faq-filter{max-width:760px;margin:0 auto;padding:28px 5% 0;display:flex;gap:8px;flex-wrap:wrap;}
+.filter-btn{background:#fff;border:1px solid var(--border);padding:7px 16px;font-size:12px;color:var(--muted);letter-spacing:0.06em;transition:all 0.2s;}
+.filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.filter-btn:hover:not(.active){border-color:var(--copper);color:var(--copper);}
 
-  /* 아코디언 */
-  .faq-list{border-top:2px solid var(--ink);}
-  .faq-item{border-bottom:1px solid rgba(196,162,74,0.15);}
-  .faq-question{
-    display:flex;justify-content:space-between;align-items:flex-start;
-    gap:16px;padding:20px 0;cursor:pointer;
-  }
-  .faq-question:hover .faq-q-text{color:var(--green-dark);}
-  .faq-q-mark{font-family:var(--serif);font-size:20px;color:var(--gold-dark);font-weight:300;flex-shrink:0;margin-top:2px;}
-  .faq-q-text{font-size:14px;color:var(--ink);font-weight:500;line-height:1.6;flex:1;}
-  .faq-q-arrow{font-size:12px;color:var(--ink-faint);flex-shrink:0;margin-top:4px;transition:transform 0.2s;}
-  .faq-item.open .faq-q-arrow{transform:rotate(180deg);}
-  .faq-answer{
-    display:none;padding:0 0 20px 32px;
-    font-size:14px;color:var(--ink2);line-height:1.9;
-  }
-  .faq-item.open .faq-answer{display:block;}
-  .faq-a-mark{color:var(--green-dark);font-weight:700;margin-right:8px;}
+.faq-wrap{max-width:760px;margin:0 auto;padding:28px 5% 72px;}
 
-  .empty-msg{text-align:center;padding:60px 0;color:var(--ink-faint);font-size:13px;letter-spacing:0.1em;}
+.faq-group{margin-bottom:36px;}
+.faq-group-label{font-size:10px;letter-spacing:0.2em;color:var(--copper);text-transform:uppercase;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid var(--ink);}
 
-  /* 하단 CTA */
-  .faq-bottom{
-    margin-top:48px;background:var(--bg2);
-    border:1px solid rgba(196,162,74,0.2);padding:32px;text-align:center;
-  }
-  .faq-bottom-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--ink);margin-bottom:8px;}
-  .faq-bottom-sub{font-size:13px;color:var(--ink3);margin-bottom:20px;line-height:1.8;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-btn{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;text-align:left;}
+.faq-btn:hover .faq-q{color:var(--copper);}
+.faq-q{font-size:15px;font-weight:500;color:var(--ink);line-height:1.6;flex:1;}
+.faq-icon{width:28px;height:28px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);flex-shrink:0;transition:all 0.2s;line-height:1;}
+.faq-item.open .faq-icon{background:var(--ink);color:#fff;border-color:var(--ink);}
+.faq-a{display:none;padding:0 0 20px 0;font-size:14px;color:var(--ink3);line-height:1.95;}
+.faq-item.open .faq-a{display:block;}
+
+.faq-cta-wrap{max-width:760px;margin:0 auto;padding:0 5% 72px;}
+.faq-cta-box{background:var(--ink);padding:32px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.faq-cta-title{font-family:var(--serif);font-size:20px;color:var(--ivory);font-weight:400;}
+.faq-cta-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-top:6px;}
+.faq-cta-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-copper{background:var(--copper);color:#fff;border:none;padding:12px 24px;font-size:13px;letter-spacing:0.08em;font-weight:500;transition:background 0.2s;}
+.btn-copper:hover{background:var(--copper-lt);color:var(--ink);}
+.btn-ghost{background:transparent;color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.2);padding:11px 22px;font-size:13px;letter-spacing:0.06em;transition:all 0.2s;display:inline-block;}
+.btn-ghost:hover{border-color:var(--copper);color:var(--copper-lt);}
+
+.footer{background:#110d07;padding:40px 5% 28px;}
+.footer-inner{max-width:860px;margin:0 auto;}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:18px;flex-wrap:wrap;gap:14px;}
+.footer-brand-name{font-family:var(--serif);font-size:18px;color:var(--ivory);letter-spacing:0.06em;margin-bottom:3px;}
+.footer-brand-sub{font-size:9px;letter-spacing:0.22em;color:var(--copper);text-transform:uppercase;}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+.footer-links a{font-size:12px;color:rgba(255,255,255,0.38);transition:color 0.2s;}
+.footer-links a:hover{color:rgba(255,255,255,0.7);}
+.footer-info{font-size:12px;color:rgba(255,255,255,0.28);line-height:2.1;}
+.footer-copy{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:rgba(255,255,255,0.18);letter-spacing:0.06em;}
+
+@media(max-width:768px){.nav-links{display:none;}.faq-cta-box{flex-direction:column;}}
 </style>
 </head>
 <body>
 
-<nav>
-  <a class="nav-logo" href="./" style="display:flex;flex-direction:column;gap:2px;line-height:1;text-decoration:none;">
-    <span style="font-family:var(--serif);font-size:18px;color:var(--ink);letter-spacing:0.05em;">힐링네임</span>
-    <span style="font-size:9px;letter-spacing:0.2em;color:var(--gold-dark);text-transform:uppercase;">by ONOMA</span>
+<nav class="nav">
+  <a href="./" class="nav-brand">
+    <span class="nav-brand-name">힐링네임</span>
+    <span class="nav-brand-sub">by ONOMA</span>
   </a>
   <ul class="nav-links">
     <li><a href="./">서비스 안내</a></li>
     <li><a href="notice">공지사항</a></li>
     <li><a href="review">고객 리뷰</a></li>
     <li><a href="qna">질문과 답변</a></li>
+    <li><a href="https://onomalife.com" target="_blank" class="hl">이름풀이 받기</a></li>
   </ul>
-  <button class="nav-cta" onclick="location.href='form.html'">작명 신청하기</button>
+  <button class="nav-cta" onclick="location.href='form'">작명·개명 신청하기</button>
 </nav>
 
-<section class="board-hero">
-  <div class="board-hero-inner">
-    <div class="board-eyebrow">FAQ</div>
-    <h1 class="board-title">자주 묻는 질문</h1>
-    <p class="board-sub">작명·개명 서비스에 대해 가장 많이 물어보시는 내용을 정리했습니다</p>
+<section class="faq-hero">
+  <div class="faq-hero-inner">
+    <div class="eyebrow">
+      <span class="eyebrow-line"></span>
+      <span class="eyebrow-text">FAQ</span>
+    </div>
+    <h1 class="faq-title">자주 묻는 질문</h1>
+    <p class="faq-sub">작명·개명 서비스에 대해 가장 많이 물어보시는 내용을 정리했습니다</p>
   </div>
 </section>
 
-<div class="board-wrap">
-  <!-- 카테고리 필터 -->
-  <div class="cat-filter" id="catFilter"></div>
+<div class="faq-filter">
+  <button class="filter-btn active" onclick="filterFaq('전체',this)">전체</button>
+  <button class="filter-btn" onclick="filterFaq('신청방법',this)">신청방법</button>
+  <button class="filter-btn" onclick="filterFaq('비용',this)">비용</button>
+  <button class="filter-btn" onclick="filterFaq('작명 과정',this)">작명 과정</button>
+  <button class="filter-btn" onclick="filterFaq('기간',this)">기간</button>
+  <button class="filter-btn" onclick="filterFaq('기타',this)">기타</button>
+</div>
 
-  <!-- FAQ 목록 -->
-  <div class="faq-list" id="faqList">
-    <div class="empty-msg" style="padding:40px 0;font-size:12px;">불러오는 중…</div>
+<div class="faq-wrap">
+
+  <div class="faq-group" data-cat="신청방법">
+    <div class="faq-group-label">신청방법</div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">온라인으로 신청하면 어떻게 진행되나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">신청서 작성 후 선결제하시면 접수가 확정됩니다. 담당자(이지윤 원장)가 1영업일 이내 확인 연락을 드리며, 이후 7~10일 이내에 이름 후보를 카카오 또는 문자로 전달드립니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">직접 방문하지 않아도 되나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">네, 전 과정이 온라인으로 진행됩니다. 전국 어디서든, 해외 교민도 신청 가능합니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">신청 후 취소할 수 있나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">작명 시작 전에는 전액 환불이 가능합니다. 작명이 시작된 이후에는 환불이 불가합니다. 자세한 내용은 환불정책을 확인해주세요.</div>
+    </div>
   </div>
 
-  <!-- 하단 CTA -->
-  <div class="faq-bottom">
-    <div class="faq-bottom-title">원하는 답변을 찾지 못하셨나요?</div>
-    <p class="faq-bottom-sub">카카오 채널로 편하게 문의주세요.<br>빠르게 답변드리겠습니다.</p>
-    <a href="http://pf.kakao.com/_Txfxmpn" target="_blank" class="btn-primary" style="display:inline-block;padding:14px 28px;text-decoration:none;">카카오로 문의하기</a>
+  <div class="faq-group" data-cat="비용">
+    <div class="faq-group-label">비용</div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">가격에 VAT가 포함되어 있나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">네, 표시된 모든 가격에 VAT가 포함되어 있습니다. 추가 비용은 없습니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">고급 실물 작명장은 어떻게 신청하나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">신청서 작성 시 고급 실물 작명장 옵션을 선택하시면 됩니다. 추가 비용 30,000원이 발생하며, 이름 확정 후 등기로 발송해드립니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">상호·브랜드명 가격은 왜 상담 후 안내인가요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">상호·브랜드명은 업종, 대표자 사주, 네이밍 범위에 따라 작업량이 다르기 때문에 상담 후 맞춤 안내드립니다. 카카오 채널로 먼저 문의해주세요.</div>
+    </div>
+  </div>
+
+  <div class="faq-group" data-cat="작명 과정">
+    <div class="faq-group-label">작명 과정</div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">이름은 몇 개나 제안해주시나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">베이직은 3개, 프리미엄·시그니처는 5개입니다. 마음에 드는 이름을 선택하시면 됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">마음에 드는 이름이 없으면 어떻게 하나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">수정 1회가 기본 포함되어 있어 추가로 3개를 더 제안드립니다. 수정 1회 이상이 필요하신 경우 별도 상담 후 진행됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">한자 이름은 어떻게 제공되나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">한글 이름 확정 후 1일 이내에 해당 이름에 맞는 한자를 획수와 뜻과 함께 별도로 제공해드립니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">원장님이 직접 작명하시나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">네, 접수부터 분석, 이름 도출, 전달까지 이지윤 원장이 직접 진행합니다. 외주나 대리인 없이 21년 경력 원장이 모든 과정을 담당합니다.</div>
+    </div>
+  </div>
+
+  <div class="faq-group" data-cat="기간">
+    <div class="faq-group-label">기간</div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">작명은 얼마나 걸리나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">평균 7~10일이 소요됩니다. 시그니처 등급은 7일 이내 완료됩니다. 신청이 몰리는 시기에는 다소 늘어날 수 있으며, 이 경우 사전에 안내드립니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">급하게 필요한 경우에도 가능한가요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">빠른 진행이 필요하신 경우 카카오 채널로 먼저 문의해주세요. 상황에 따라 일정 조율이 가능할 수 있습니다.</div>
+    </div>
+  </div>
+
+  <div class="faq-group" data-cat="기타">
+    <div class="faq-group-label">기타</div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">이미 다른 곳에서 받은 이름도 검토해주시나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">힐링네임은 작명 전문 서비스로, 기존 이름 검토는 오노마 상담소의 이름 검토 서비스를 이용해주세요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">아호·예명도 작명 신청으로 진행하면 되나요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">네, 신청서에서 서비스 유형을 아호 또는 예명으로 선택하시면 됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggle(this)">
+        <span class="faq-q">오프라인 방문 상담도 가능한가요?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">오프라인 방문은 김포 운양동의 '이지윤의 힐링네임'을 통해 가능합니다. 방문 전 카카오 채널로 먼저 일정을 문의해주세요.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="faq-cta-wrap">
+  <div class="faq-cta-box">
+    <div>
+      <div class="faq-cta-title">원하는 답변을 찾지 못하셨나요?</div>
+      <div class="faq-cta-sub">카카오 채널로 편하게 문의주세요. 빠르게 답변드립니다.</div>
+    </div>
+    <div class="faq-cta-btns">
+      <button class="btn-copper" onclick="location.href='form'">작명·개명 신청하기</button>
+      <a class="btn-ghost" href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오로 문의하기</a>
+    </div>
   </div>
 </div>
 
-<script>
-const SUPABASE_URL = 'https://wavhcknviozwadqyjlug.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhdmhja252aW96d2FkcXlqbHVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTQ5NjksImV4cCI6MjA5MDQzMDk2OX0.frq_z3GgL8BEjHCRuVcdOqPLe0DhJp0k-joOXYVK_Ws';
-
-let ALL_FAQS = [];
-let currentCat = '전체';
-
-async function loadFaqs() {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/faqs?is_published=eq.true&order=sort_order.asc,created_at.asc`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
-    );
-    ALL_FAQS = await res.json();
-    renderCats();
-    renderFaqs();
-  } catch(e) {
-    document.getElementById('faqList').innerHTML = '<div class="empty-msg">데이터를 불러올 수 없습니다</div>';
-  }
-}
-
-function renderCats() {
-  const cats = ['전체', ...new Set(ALL_FAQS.map(f => f.category).filter(Boolean))];
-  document.getElementById('catFilter').innerHTML = cats.map(c =>
-    `<button class="cat-btn ${c === currentCat ? 'active' : ''}" onclick="filterCat('${c}')">${c}</button>`
-  ).join('');
-}
-
-function filterCat(cat) {
-  currentCat = cat;
-  renderCats();
-  renderFaqs();
-}
-
-function renderFaqs() {
-  const list = currentCat === '전체' ? ALL_FAQS : ALL_FAQS.filter(f => f.category === currentCat);
-  const el = document.getElementById('faqList');
-  if (!list || list.length === 0) {
-    el.innerHTML = '<div class="empty-msg">등록된 FAQ가 없습니다</div>';
-    return;
-  }
-  el.innerHTML = list.map((f, i) => `
-    <div class="faq-item" id="faq-${i}">
-      <div class="faq-question" onclick="toggleFaq(${i})">
-        <span class="faq-q-mark">Q</span>
-        <span class="faq-q-text">${f.question}</span>
-        <span class="faq-q-arrow">▼</span>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">힐링네임</div>
+        <div class="footer-brand-sub">by ONOMA</div>
       </div>
-      <div class="faq-answer">
-        <span class="faq-a-mark">A</span>${f.answer}
+      <div class="footer-links">
+        <a href="../privacy.html">개인정보처리방침</a>
+        <a href="../terms.html">이용약관</a>
+        <a href="../refund.html">환불정책</a>
+        <a href="http://pf.kakao.com/_Txfxmpn" target="_blank">카카오 문의</a>
       </div>
     </div>
-  `).join('');
+    <div class="footer-info">
+      주식회사 위버플레인 &nbsp;|&nbsp; 대표이사 이정운 &nbsp;|&nbsp; 사업자등록번호 128-86-27688 &nbsp;|&nbsp; 통신판매업번호 2018-경기김포-0227호<br>
+      경기도 김포시 김포한강11로 322 138-P44호 (운양동, 더 파크뷰테라스 상업시설) &nbsp;|&nbsp; 이메일 help@onomalife.com
+    </div>
+    <div class="footer-copy">© 2026 힐링네임 · 주식회사 위버플레인. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+function toggle(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  item.closest('.faq-group').querySelectorAll('.faq-item').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-icon').textContent = '+';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    btn.querySelector('.faq-icon').textContent = '−';
+  }
 }
 
-function toggleFaq(i) {
-  document.getElementById('faq-' + i).classList.toggle('open');
+function filterFaq(cat, el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.faq-group').forEach(g => {
+    g.style.display = (cat === '전체' || g.dataset.cat === cat) ? 'block' : 'none';
+  });
 }
-
-loadFaqs();
 </script>
 </body>
 </html>
