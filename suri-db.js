@@ -348,3 +348,8 @@ function calcHanjaGua(성s, 첫f, 마지l) {
   const jung  = norm(성s + 첫f + 마지l);
   return calcGua(won, hyung, yi, jung);
 }
+
+// window에 명시적 등록 (admin.html에서 접근 가능하도록)
+window.SURI = SURI;
+window.GUA_DATA = GUA_DATA;
+window.calcGua = calcGua;
