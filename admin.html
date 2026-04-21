@@ -572,6 +572,9 @@ function checkPW() {
       대기 중인 분석 요청
       <span class="count" id="pendingCount">0</span>
     </div>
+    <div style="padding:8px 16px;border-bottom:1px solid rgba(0,0,0,.08)">
+      <button onclick="deleteAllRequests()" style="width:100%;padding:7px;background:none;border:1px solid #e07070;color:#c04040;font-size:11px;letter-spacing:.05em;cursor:pointer;border-radius:2px;" onmouseover="this.style.background='#fdf0f0'" onmouseout="this.style.background='none'">🗑 전체 테스트 데이터 삭제</button>
+    </div>
     <div id="personList">
       <!-- JS로 렌더링 -->
     </div>
@@ -1155,7 +1158,9 @@ async function supabaseFetch(path, options = {}) {
     const err = await res.text();
     throw new Error('Supabase error: ' + err);
   }
-  return res.json();
+  const text = await res.text();
+  if (!text) return null;
+  return JSON.parse(text);
 }
 
 // DB 레코드 → 내부 형식 변환
@@ -2020,8 +2025,28 @@ async function deleteRequest() {
   }
 }
 
+// 요청 전체 삭제
 // ══════════════════════════════════════════
-// 게시판 관리
+async function deleteAllRequests() {
+  if (ALL_REQUESTS.length === 0) { alert('삭제할 데이터가 없습니다.'); return; }
+  if (!confirm(`총 ${ALL_REQUESTS.length}건의 데이터를 모두 삭제하시겠어요?\n이 작업은 되돌릴 수 없습니다.`)) return;
+  try {
+    await supabaseFetch(
+      'life_reports?id=neq.00000000-0000-0000-0000-000000000000',
+      { method: 'DELETE', headers: { 'Prefer': 'return=minimal' } }
+    );
+    ALL_REQUESTS = [];
+    currentRequest = null;
+    renderPersonList();
+    document.getElementById('emptyState').classList.remove('hidden');
+    document.getElementById('analysisPanel').classList.add('hidden');
+    alert('✓ 전체 삭제 완료');
+  } catch(e) {
+    alert('⚠ 삭제 오류: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════
 // ══════════════════════════════════════════
 let currentBoard = 'notice';
 
