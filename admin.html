@@ -870,8 +870,8 @@ function checkPW() {
 
       <!-- 고객 프로파일 노트 -->
       <div class="note-box">
-        <label>고객 프로파일 / 라이프스타일 노트 <span id="profileNoteSaveStatus" style="font-size:10px;color:var(--muted);font-weight:300;margin-left:8px"></span></label>
-        <textarea id="profileNote" placeholder="설문에서 파악된 고객 특징, 직업, 고민 포인트 등을 간단히 메모..." oninput="scheduleProfileNoteSave()"></textarea>
+        <label>고객 프로파일 / 라이프스타일 노트</label>
+        <textarea id="profileNote" placeholder="설문에서 파악된 고객 특징, 직업, 고민 포인트 등을 간단히 메모..."></textarea>
       </div>
 
     </div><!-- /analysisPanel -->
@@ -1182,7 +1182,6 @@ function dbRowToRequest(row) {
     birthYear:  parseInt(row.birth_year)  || 0,
     birthMonth: parseInt(row.birth_month) || 1,
     birthDay:   parseInt(row.birth_day)   || 1,
-    birthAmPm:  row.birth_am_pm || '모름',
     birthHour:  row.birth_hour !== null && row.birth_hour !== undefined ? parseInt(row.birth_hour) : null,
     birthMin:   row.birth_min  !== null && row.birth_min  !== undefined ? parseInt(row.birth_min)  : null,
     calType:   row.cal_type  || '양력',
@@ -1200,8 +1199,11 @@ function dbRowToRequest(row) {
     koGuaL:   row.ko_gua_l || null,
     status:    row.status || 'pending',
     reportHtml: row.report_html || '',
-    profileNote: row.profile_note || '',
-    submittedAt: row.created_at ? row.created_at.replace('T', ' ').slice(0, 16) : '',
+    submittedAt: row.created_at ? (function(d) {
+      var dt = new Date(d);
+      dt.setHours(dt.getHours() + 9);
+      return dt.toISOString().replace('T', ' ').slice(0, 16);
+    })(row.created_at) : '',
   };
 }
 
@@ -1443,6 +1445,14 @@ function populateSuriFields() {
   var r = currentRequest;
   if (!r) return;
 
+  // DB 로딩 확인 후 실행
+  var SURI_DB = window.SURI || (typeof SURI !== 'undefined' ? SURI : null);
+  var GUA_DB  = window.GUA_DATA || (typeof GUA_DATA !== 'undefined' ? GUA_DATA : null);
+  if (!SURI_DB || !GUA_DB) {
+    setTimeout(populateSuriFields, 300);
+    return;
+  }
+
   // 한글 수리값 (currentRequest에 있으면 채우기)
   var fields = [
     ['ko-won',   r.koWon],
@@ -1505,12 +1515,6 @@ function populateSuriFields() {
   var hjNameEl = document.getElementById('admin-hj-name');
   if (koNameEl && r.name)      koNameEl.value = r.name;
   if (hjNameEl && r.nameHanja) hjNameEl.value = r.nameHanja;
-
-  // 프로파일 노트 불러오기
-  var profileNoteEl = document.getElementById('profileNote');
-  if (profileNoteEl) profileNoteEl.value = r.profileNote || '';
-  var status = document.getElementById('profileNoteSaveStatus');
-  if (status) status.textContent = '';
 }
 
 // 사주 오행 문자열 생성
@@ -1521,38 +1525,6 @@ function getOhangStr(s) {
     return str.split('').map(function(c){ return map[c]||c; }).join('');
   }
   return '년' + toKo(s.wuxing.year) + ' 월' + toKo(s.wuxing.month) + ' 일' + toKo(s.wuxing.day) + ' 시' + toKo(s.wuxing.time);
-}
-
-// ══════════════════════════════════════════
-// 프로파일 노트 자동 저장
-// ══════════════════════════════════════════
-let _profileNoteTimer = null;
-function scheduleProfileNoteSave() {
-  const status = document.getElementById('profileNoteSaveStatus');
-  if (status) status.textContent = '입력 중...';
-  clearTimeout(_profileNoteTimer);
-  _profileNoteTimer = setTimeout(saveProfileNote, 2000);
-}
-
-async function saveProfileNote() {
-  if (!currentRequest) return;
-  const note = document.getElementById('profileNote').value;
-  const status = document.getElementById('profileNoteSaveStatus');
-  try {
-    await supabaseFetch(
-      'life_reports?id=eq.' + currentRequest.id,
-      {
-        method: 'PATCH',
-        headers: { 'Prefer': 'return=minimal', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile_note: note })
-      }
-    );
-    currentRequest.profileNote = note;
-    if (status) { status.textContent = '저장됨 ✓'; setTimeout(() => { if(status) status.textContent = ''; }, 2000); }
-  } catch(e) {
-    if (status) status.textContent = '저장 실패 ✗';
-    console.error('프로파일 노트 저장 오류:', e);
-  }
 }
 
 function regenerateSaju() {
@@ -1840,48 +1812,26 @@ function showSuriDesc(inputId, val, descId) {
   var el = document.getElementById(descId);
   if (!el) return;
   var num = parseInt(val);
-  if (!val || isNaN(num) || num < 1 || num > 81) {
-    el.innerHTML = '';
-    el.className = 'suri-desc-item';
-    return;
-  }
+  if (!val || isNaN(num) || num < 1 || num > 81) { el.innerHTML = ''; el.className = 'suri-desc-item'; return; }
   var SURI_DB = window.SURI || (typeof SURI !== 'undefined' ? SURI : null);
-  if (!SURI_DB) {
-    el.innerHTML = '<div style="padding:10px 11px;font-size:11px;color:var(--muted)">⚠ suri-db.js 로딩 필요</div>';
-    el.classList.add('visible');
-    return;
-  }
+  if (!SURI_DB) { el.innerHTML = '<div style="padding:10px 11px;font-size:11px;color:var(--muted)">⚠ suri-db.js 로딩 필요</div>'; el.classList.add('visible'); return; }
   var data = SURI_DB[num];
   if (!data) return;
-  var luckClass = 'luck-' + data.l;
-  el.className = 'suri-desc-item visible ' + luckClass;
-  el.innerHTML = '<div class="suri-desc-name">' + num + '수 &middot; ' + data.n +
-    ' <span class="suri-luck-badge">' + (LUCK_LABEL[data.l]||'') + '</span></div>' +
-    '<div class="suri-desc-text">' + data.d + '</div>';
+  el.className = 'suri-desc-item visible luck-' + data.l;
+  el.innerHTML = '<div class="suri-desc-name">' + num + '수 &middot; ' + data.n + ' <span class="suri-luck-badge">' + (LUCK_LABEL[data.l]||'') + '</span></div><div class="suri-desc-text">' + data.d + '</div>';
 }
 
 function showGuaDesc(val, descId) {
   var el = document.getElementById(descId);
   if (!el) return;
   var num = parseInt(val);
-  if (!val || isNaN(num) || num < 1 || num > 64) {
-    el.innerHTML = '';
-    el.className = 'gua-desc-box';
-    return;
-  }
+  if (!val || isNaN(num) || num < 1 || num > 64) { el.innerHTML = ''; el.className = 'gua-desc-box'; return; }
   var GUA_DB = window.GUA_DATA || (typeof GUA_DATA !== 'undefined' ? GUA_DATA : null);
-  if (!GUA_DB) {
-    el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:10px 11px">⚠ suri-db.js 로딩 필요</div>';
-    el.classList.add('visible');
-    return;
-  }
+  if (!GUA_DB) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:10px 11px">⚠ suri-db.js 로딩 필요</div>'; el.classList.add('visible'); return; }
   var data = GUA_DB[num];
   if (!data) return;
   el.className = 'gua-desc-box visible';
-  el.innerHTML = '<div class="gua-name"><span class="gua-sym">' + data.sym + '</span>' +
-    num + '괘 &middot; ' + data.name + ' ' + data.hanja + '</div>' +
-    '<div class="gua-meaning">' + data.meaning + '</div>' +
-    '<div class="gua-desc-text">' + data.desc + '</div>';
+  el.innerHTML = '<div class="gua-name"><span class="gua-sym">' + data.sym + '</span>' + num + '괘 &middot; ' + data.name + ' ' + data.hanja + '</div><div class="gua-meaning">' + data.meaning + '</div><div class="gua-desc-text">' + data.desc + '</div>';
 }
 
 // ══════════════════════════════════════════
