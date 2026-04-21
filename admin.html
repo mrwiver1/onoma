@@ -1798,9 +1798,9 @@ function showSuriDesc(inputId, val, descId) {
     el.className = 'suri-desc-item';
     return;
   }
-  var SURI_DB = (typeof SURI !== 'undefined') ? SURI : window.SURI;
+  var SURI_DB = window.SURI || (typeof SURI !== 'undefined' ? SURI : null);
   if (!SURI_DB) {
-    el.innerHTML = '<div style="padding:10px 11px;font-size:11px;color:var(--muted)">&#9888; suri-db.js 로딩 필요</div>';
+    el.innerHTML = '<div style="padding:10px 11px;font-size:11px;color:var(--muted)">⚠ suri-db.js 로딩 필요</div>';
     el.classList.add('visible');
     return;
   }
@@ -1822,9 +1822,9 @@ function showGuaDesc(val, descId) {
     el.className = 'gua-desc-box';
     return;
   }
-  var GUA_DB = (typeof GUA_DATA !== 'undefined') ? GUA_DATA : window.GUA_DATA;
+  var GUA_DB = window.GUA_DATA || (typeof GUA_DATA !== 'undefined' ? GUA_DATA : null);
   if (!GUA_DB) {
-    el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:10px 11px">&#9888; suri-db.js 로딩 필요</div>';
+    el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:10px 11px">⚠ suri-db.js 로딩 필요</div>';
     el.classList.add('visible');
     return;
   }
